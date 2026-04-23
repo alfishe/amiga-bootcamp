@@ -22,6 +22,7 @@ This section covers the complete lifecycle of an AmigaOS executable:
 | [exe_load_pipeline.md](exe_load_pipeline.md) | LoadSeg → AllocMem → relocation → segment chain → CreateProc → entry point |
 | [object_file_format.md](object_file_format.md) | Compiler object files (HUNK_UNIT), multi-section layout, HUNK_LIB archives, linker operation |
 | [overlay_system.md](overlay_system.md) | HUNK_OVERLAY: tree architecture, runtime overlay manager, worked binary example, modern alternatives |
+| [**exe_crunchers.md**](exe_crunchers.md) | **Executable packers: PowerPacker/Imploder/Shrinkler, decrunch stubs, compression algorithms, detection** |
 
 ## Why HUNK?
 

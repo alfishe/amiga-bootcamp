@@ -98,6 +98,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [exe_load_pipeline.md](03_loader_and_exec_format/exe_load_pipeline.md) | LoadSeg → AllocMem → relocation → segment chain → CreateProc → entry point |
 | [object_file_format.md](03_loader_and_exec_format/object_file_format.md) | HUNK_UNIT object files, multi-section layout, HUNK_LIB archives, linker operation |
 | [overlay_system.md](03_loader_and_exec_format/overlay_system.md) | HUNK_OVERLAY: tree architecture, runtime overlay manager, modern alternatives |
+| [**exe_crunchers.md**](03_loader_and_exec_format/exe_crunchers.md) | **Executable packers: PP20/Imploder/Shrinkler, decrunch stubs, algorithms, detection** |
 
 ### 04 — Linking & Library Integration
 | File | Topic |
