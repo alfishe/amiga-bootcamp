@@ -17,6 +17,7 @@ Intuition is the AmigaOS windowing system and user interface manager. It sits be
 | [idcmp.md](idcmp.md) | IDCMP message classes and IntuiMessage |
 | [boopsi.md](boopsi.md) | BOOPSI object-oriented gadget system |
 | [input_events.md](input_events.md) | InputEvent, input.device, commodities |
+| **[frameworks/](frameworks/)** | **GUI Frameworks: MUI, ReAction, BGUI** |
 
 ---
 
