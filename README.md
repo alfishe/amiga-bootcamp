@@ -82,10 +82,11 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 02 — Boot Sequence
 | File | Topic |
 |---|---|
-| [cold_boot.md](02_boot_sequence/cold_boot.md) | Power-on, ROM checksum, memory detection |
-| [kickstart_init.md](02_boot_sequence/kickstart_init.md) | ROM scan, ExecBase creation, resident modules |
-| [dos_boot.md](02_boot_sequence/dos_boot.md) | Bootstrap, mount list, startup-sequence |
-| [early_startup.md](02_boot_sequence/early_startup.md) | Early Startup Control menu, boot options |
+| [cold_boot.md](02_boot_sequence/cold_boot.md) | Power-on: CPU reset vectors, ROM checksum, hardware reset, memory detection, diagnostic indicators |
+| [**kickstart_rom.md**](02_boot_sequence/kickstart_rom.md) | **Kickstart ROM internals: binary structure, module inventory, extraction tools, custom ROM building** |
+| [kickstart_init.md](02_boot_sequence/kickstart_init.md) | ExecBase creation, capture vectors, ROM scan algorithm, 4-phase resident init |
+| [dos_boot.md](02_boot_sequence/dos_boot.md) | strap module, boot block format and execution, MountList, Startup-Sequence walkthrough |
+| [early_startup.md](02_boot_sequence/early_startup.md) | Early Startup Control menu: device selection, display mode, recovery scenarios |
 
 ### 03 — Executable Loader & HUNK Format
 | File | Topic |
