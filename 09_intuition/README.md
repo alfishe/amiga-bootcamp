@@ -8,15 +8,15 @@ Intuition is the AmigaOS windowing system and user interface manager. It sits be
 
 | File | Description |
 |---|---|
-| [intuition_base.md](intuition_base.md) | IntuitionBase structure and global state |
-| [screens.md](screens.md) | Screen, OpenScreen, CloseScreen, SA_ tags |
-| [windows.md](windows.md) | Window, OpenWindow, IDCMP messaging |
-| [gadgets.md](gadgets.md) | Gadget structures, GadTools, BOOPSI |
-| [menus.md](menus.md) | Menu, MenuItem, MenuStrip construction |
-| [requesters.md](requesters.md) | EasyRequest, AutoRequest, file requesters |
-| [idcmp.md](idcmp.md) | IDCMP message classes and IntuiMessage |
-| [boopsi.md](boopsi.md) | BOOPSI object-oriented gadget system |
-| [input_events.md](input_events.md) | InputEvent, input.device, commodities |
+| [intuition_base.md](intuition_base.md) | IntuitionBase — library versioning, global state fields, ViewLord, LockIBase, function overview |
+| [screens.md](screens.md) | Screens — Copper mechanics, display modes (OCS/ECS/AGA/RTG), dragging, resolution tables |
+| [windows.md](windows.md) | Windows — WA_ tags, refresh modes, window types, coordinate system, lifecycle |
+| [gadgets.md](gadgets.md) | Gadgets — GadTools creation, raw struct Gadget, prop/string gadgets, runtime updates |
+| [menus.md](menus.md) | Menus — GadTools NewMenu, event handling, multi-select, checkmarks, keyboard shortcuts |
+| [requesters.md](requesters.md) | Requesters — EasyRequest, ASL file/font/screenmode dialogs, non-blocking pattern |
+| [idcmp.md](idcmp.md) | IDCMP — event architecture, class reference, shared ports, antipatterns, use-case cookbook |
+| [boopsi.md](boopsi.md) | BOOPSI — OOP dispatcher model, ICA interconnection, custom class tutorial, class hierarchy |
+| [input_events.md](input_events.md) | Input Events — handler chain, QoS/priority, Commodities, latency analysis, game input |
 | **[frameworks/](frameworks/)** | **GUI Frameworks: MUI, ReAction, BGUI** |
 
 ---
