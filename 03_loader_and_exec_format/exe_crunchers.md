@@ -12,6 +12,13 @@ This was essential in the floppy era: a 200 KB program crunched to 120 KB loads 
 
 ## Architecture
 
+### Two-Phase Execution Model
+
+A crunched executable goes through **two loading phases**:
+
+1. **Phase 1 — OS loads the wrapper** (`LoadSeg` handles the crunched HUNK file normally)
+2. **Phase 2 — Stub rebuilds the original program** (acting as a mini-`LoadSeg` inside the running process)
+
 ```mermaid
 graph LR
     subgraph "Original Executable"
@@ -32,9 +39,145 @@ graph LR
     style CD fill:#e8f4fd,stroke:#2196f3,color:#333
 ```
 
-### Key Insight
+### Phase 1: What the OS Loader Sees
 
-A crunched executable is **itself a valid HUNK file**. The OS loader handles it normally — `LoadSeg()` allocates memory, loads hunks, applies relocations. The "magic" is that hunk 0 contains a decrunch stub instead of the original code, and the data hunk contains the compressed original program.
+The crunched file is a perfectly valid HUNK executable. `LoadSeg()` processes it like any other program:
+- Reads `HUNK_HEADER`, allocates 2–3 segments (stub code, compressed data, BSS workspace)
+- Applies the wrapper's own `HUNK_RELOC32` entries (minimal — just the stub's internal references)
+- Links the segments into a BPTR chain and returns the segment list
+- `CreateProc()` sets up a task and jumps to hunk 0 offset 0 — the decrunch stub
+
+At this point the OS is done. It thinks it loaded a normal program. The original executable's structure, memory types, relocations — all of that is **inside the compressed payload** and invisible to the OS.
+
+### Phase 2: What the Stub Must Reconstruct
+
+The decrunch stub must rebuild everything `LoadSeg` would have done for the original executable:
+
+```mermaid
+flowchart TD
+    A["Entry: stub begins executing"] --> B["1. Read metadata block"]
+    B --> C["2. AllocMem for each original hunk<br/>(CHIP/FAST as specified)"]
+    C --> D["3. Decompress payload into<br/>allocated hunk buffers"]
+    D --> E["4. Apply relocations:<br/>patch absolute addresses"]
+    E --> F["5. Build BPTR segment chain"]
+    F --> G["6. Free stub + compressed data"]
+    G --> H["7. JMP to original entry point"]
+
+    style B fill:#e8f4fd,stroke:#2196f3,color:#333
+    style C fill:#fff3e0,stroke:#ff9800,color:#333
+    style E fill:#fce4ec,stroke:#e91e63,color:#333
+    style F fill:#e8f5e9,stroke:#4caf50,color:#333
+```
+
+#### Step 1: Metadata — Preserving the Original Structure
+
+The compressed payload includes a **metadata block** that captures the original executable's structure. This is stored either at a fixed offset in the compressed data or appended after it:
+
+```c
+/* What the cruncher preserves in the metadata: */
+struct CrunchMetadata {
+    ULONG num_hunks;         /* original hunk count */
+    ULONG hunk_sizes[];      /* size of each original hunk (bytes) */
+    ULONG hunk_memflags[];   /* MEMF_CHIP, MEMF_FAST, MEMF_ANY per hunk */
+    ULONG hunk_types[];      /* HUNK_CODE, HUNK_DATA, HUNK_BSS */
+    /* Relocation data follows (format varies by cruncher) */
+};
+```
+
+Without this metadata, the stub cannot allocate memory correctly — a bitmap hunk that needs Chip RAM would end up in Fast RAM and be invisible to the custom chip DMA.
+
+#### Step 2: Memory Allocation — Chip vs Fast Separation
+
+This is the critical step most people miss. The original executable might have had:
+
+```
+Hunk 0: HUNK_CODE  → MEMF_FAST (68000 code — any memory)
+Hunk 1: HUNK_DATA  → MEMF_CHIP (bitmaps, audio samples — MUST be DMA-reachable)
+Hunk 2: HUNK_BSS   → MEMF_ANY  (zero-filled workspace)
+```
+
+The stub must call `AllocMem()` **individually** for each original hunk with the correct memory type flags:
+
+```asm
+; Stub allocates each original hunk separately:
+    MOVEA.L 4.W, A6               ; SysBase
+    ; Hunk 0: code — any memory is fine
+    MOVE.L  code_size, D0
+    MOVE.L  #MEMF_PUBLIC, D1
+    JSR     -198(A6)               ; AllocMem
+    MOVE.L  D0, hunk_bases+0       ; save base address
+
+    ; Hunk 1: data — MUST be Chip RAM for DMA
+    MOVE.L  data_size, D0
+    MOVE.L  #MEMF_CHIP|MEMF_PUBLIC, D1
+    JSR     -198(A6)               ; AllocMem
+    MOVE.L  D0, hunk_bases+4       ; save base address
+
+    ; Hunk 2: BSS — just clear memory
+    MOVE.L  bss_size, D0
+    MOVE.L  #MEMF_PUBLIC|MEMF_CLEAR, D1
+    JSR     -198(A6)               ; AllocMem
+    MOVE.L  D0, hunk_bases+8
+```
+
+> [!IMPORTANT]
+> If a cruncher loses the CHIP/FAST distinction (merging everything into one hunk), programs with bitmap/audio data in data hunks will **silently fail** — the DMA hardware can only access Chip RAM. Symptoms: garbled graphics, no audio, or Guru Meditation on access.
+
+#### Step 3: Decompress — Fill the Allocated Hunks
+
+The decompressor reads from the compressed payload (in the wrapper's data hunk) and writes to the freshly allocated original hunks. For programs with multiple hunks, the decompressor either:
+- Decompresses into a flat temp buffer, then copies to individual hunks (Method 1)
+- Decompresses directly to each hunk in sequence, using stored boundaries (Method 2)
+
+#### Step 4: Apply Relocations
+
+The original HUNK_RELOC32 tables are **embedded in the compressed data** — they were part of the original file. After decompression, the stub must patch all absolute addresses to reflect the actual allocation addresses. See the [Relocation Handling](#relocation-handling) section below for the three strategies.
+
+#### Step 5: Build the Segment Chain
+
+AmigaDOS tracks loaded programs as a BPTR-linked segment list. The stub must construct this chain so `UnLoadSeg()` can free the memory later:
+
+```c
+/* Each segment has a 4-byte BPTR link at offset -4: */
+/*   [alloc_size][-4]  [BPTR→next][0]  [hunk data...][4+] */
+
+/* Stub builds the chain: */
+for (int i = 0; i < num_hunks - 1; i++)
+{
+    BPTR *link = (BPTR *)(hunk_bases[i]);  /* offset 0 = BPTR to next */
+    *link = MKBADDR(hunk_bases[i + 1]);     /* point to next segment */
+}
+/* Last segment's link = 0 (NULL) — end of chain */
+*(BPTR *)(hunk_bases[num_hunks - 1]) = 0;
+```
+
+> **Why this matters**: If the stub doesn't build a valid segment chain, `UnLoadSeg()` (called when the program exits) will crash or leak memory. Some simple crunchers skip this step entirely — the program runs fine but its memory is never freed.
+
+#### Step 6: Free the Wrapper, Jump to Original
+
+The stub frees the wrapper's own memory (compressed data, BSS workspace) and `JMP`s to the original entry point at hunk 0, offset 0 (after the BPTR link word):
+
+```asm
+    ; Free wrapper hunks
+    ; (some stubs skip this and accept the memory leak)
+
+    ; Restore registers to match what the OS originally passed
+    MOVEM.L (SP)+, D0-D7/A0-A6
+
+    ; Jump to original program entry
+    MOVEA.L hunk_bases+0, A0
+    ADDQ.L  #4, A0              ; skip BPTR link at offset 0
+    JMP     (A0)
+```
+
+### The Segment List Handoff Problem
+
+There's a subtle issue: the OS gave the process a segment list pointing to the **wrapper** hunks. But the actual program now lives in **newly allocated** hunks. When the program exits, `UnLoadSeg()` will try to free the wrapper's segment list, which the stub may have already freed — double-free crash.
+
+Sophisticated crunchers solve this by:
+1. **Patching the process's `pr_SegList`** to point to the new segment chain
+2. **Or** keeping the wrapper allocated and linking it into the chain
+3. **Or** replacing the wrapper's content in-place (overwriting stub+compressed with decompressed code)
 
 ---
 
