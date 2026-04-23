@@ -141,19 +141,20 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 06 — Exec Kernel (OS 3.1/3.2)
 | File | Topic |
 |---|---|
-| [exec_base.md](06_exec_os/exec_base.md) | ExecBase structure |
-| [library_system.md](06_exec_os/library_system.md) | Library lifecycle |
-| [library_vectors.md](06_exec_os/library_vectors.md) | JMP table, SetFunction |
-| [tasks_processes.md](06_exec_os/tasks_processes.md) | Multitasking |
-| [interrupts.md](06_exec_os/interrupts.md) | Interrupt levels, INTENA |
-| [exceptions_traps.md](06_exec_os/exceptions_traps.md) | Exception vectors, TRAP instructions, Guru codes |
-| [memory_management.md](06_exec_os/memory_management.md) | AllocMem, MEMF flags |
-| [message_ports.md](06_exec_os/message_ports.md) | PutMsg/GetMsg/WaitPort |
-| [signals.md](06_exec_os/signals.md) | AllocSignal, Wait |
-| [semaphores.md](06_exec_os/semaphores.md) | ObtainSemaphore |
-| [io_requests.md](06_exec_os/io_requests.md) | IORequest, DoIO/SendIO |
-| [lists_nodes.md](06_exec_os/lists_nodes.md) | MinList, Node, Enqueue |
-| [resident_modules.md](06_exec_os/resident_modules.md) | RomTag, RTF_AUTOINIT |
+| [exec_base.md](06_exec_os/exec_base.md) | ExecBase — absolute address $4, system lists, hardware detection, structure layout |
+| [**multitasking.md**](06_exec_os/multitasking.md) | **Multitasking deep-dive — scheduler, context switching, IPC, memory safety, real-world scenarios** |
+| [tasks_processes.md](06_exec_os/tasks_processes.md) | Task/Process structs, state machine, creation, cleanup, priority guidelines |
+| [library_system.md](06_exec_os/library_system.md) | Library node, OpenLibrary lifecycle, expunge mechanics, version management |
+| [library_vectors.md](06_exec_os/library_vectors.md) | JMP table, LVO offsets, MakeFunctions, SetFunction patching |
+| [interrupts.md](06_exec_os/interrupts.md) | Interrupt levels 1–6, INTENA/INTREQ, server chains, CIA interrupts, software interrupts |
+| [exceptions_traps.md](06_exec_os/exceptions_traps.md) | M68k exception vectors, TRAP handlers, Guru Meditation decoder, Line-F emulation |
+| [memory_management.md](06_exec_os/memory_management.md) | AllocMem/AllocVec, MEMF flags, pools, fragmentation, MemHeader internals |
+| [message_ports.md](06_exec_os/message_ports.md) | MsgPort, PutMsg, GetMsg, WaitPort, ownership rules, request-reply pattern |
+| [signals.md](06_exec_os/signals.md) | AllocSignal, Signal, Wait, SetSignal, multi-source event loop patterns |
+| [semaphores.md](06_exec_os/semaphores.md) | SignalSemaphore, shared/exclusive locking, deadlock avoidance, decision guide |
+| [io_requests.md](06_exec_os/io_requests.md) | IORequest, DoIO, SendIO, CheckIO, AbortIO, IOF_QUICK, timer device example |
+| [lists_nodes.md](06_exec_os/lists_nodes.md) | MinList/List/Node traversal, sentinel design, Enqueue, safe iteration |
+| [resident_modules.md](06_exec_os/resident_modules.md) | RomTag, RTF_AUTOINIT, boot priority, ROM scan, disk-resident loading |
 
 ### 07 — AmigaDOS
 | File | Topic |
