@@ -38,4 +38,4 @@
 ## References
 
 - NDK39: `devices/input.h`
-- `09_intuition/input_events.md` — handler installation example
+- [input_events.md](../09_intuition/input_events.md) — handler installation example

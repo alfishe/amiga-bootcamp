@@ -126,7 +126,7 @@ In IDA, this appears as `jsr ($fffffffe2,a6)` with displacement `-30` (`$FFFFFFE
 
 ## Common Library Bases and LVO Tables
 
-See [`../../../04_linking_and_libraries/lvo_table.md`](../../../04_linking_and_libraries/lvo_table.md) for complete LVO offset tables for:
+See [`../../../[lvo_table.md](../../04_linking_and_libraries/lvo_table.md)](../../../04_linking_and_libraries/lvo_table.md) for complete LVO offset tables for:
 - `exec.library`
 - `dos.library`
 - `graphics.library`
@@ -137,6 +137,6 @@ See [`../../../04_linking_and_libraries/lvo_table.md`](../../../04_linking_and_l
 ## References
 
 - NDK39: `fd/` directory — all library `.fd` files
-- `04_linking_and_libraries/lvo_table.md`
+- [lvo_table.md](../../04_linking_and_libraries/lvo_table.md)
 - ADCD 2.1: `Libraries_Manual_guide/`
 - IDA Pro scripting: `idc.py` reference

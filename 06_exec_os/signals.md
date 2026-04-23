@@ -128,5 +128,5 @@ DeleteMsgPort(port);
 
 - NDK39: `exec/tasks.h`, `exec/execbase.h`
 - ADCD 2.1: `AllocSignal`, `FreeSignal`, `Signal`, `Wait`, `SetSignal`
-- `06_exec_os/tasks_processes.md` — tc_SigAlloc, tc_SigRecvd fields
+- [tasks_processes.md](tasks_processes.md) — tc_SigAlloc, tc_SigRecvd fields
 - *Amiga ROM Kernel Reference Manual: Exec* — signals chapter

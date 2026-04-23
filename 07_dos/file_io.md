@@ -103,5 +103,5 @@ LONG err = IoErr();   /* LVO −66 — returns last DOS error code */
 ## References
 
 - NDK39: `dos/dos.h`, `dos/dosextens.h`
-- `07_dos/error_handling.md` — full error code list
+- [error_handling.md](error_handling.md) — full error code list
 - ADCD 2.1: `Open`, `Close`, `Read`, `Write`, `Seek`

@@ -80,4 +80,4 @@ extern struct ExecBase *SysBase;
 ## References
 
 - NDK39: `pragmas/`, `inline/`, `proto/` directories
-- `13_toolchain/fd_files.md` — FD file format
+- [fd_files.md](fd_files.md) — FD file format

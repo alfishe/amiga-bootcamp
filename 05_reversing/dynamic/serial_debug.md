@@ -114,5 +114,5 @@ MiSTer FPGA: the UART bridge is exposed on the MiSTer IO board or via the DE10-N
 ## References
 
 - NDK39: `exec/execbase.h` — `RawDoFmt`, `RawPutChar` LVOs
-- `01_hardware/ocs_a500/paula_serial.md` — SERPER, SERDATR, SERDATW register details
+- [paula_serial.md](../../01_hardware/ocs_a500/paula_serial.md) — SERPER, SERDATR, SERDATW register details
 - Aminet: `debug/misc/dprintf.lha`

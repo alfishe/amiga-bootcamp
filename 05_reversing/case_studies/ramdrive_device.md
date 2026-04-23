@@ -124,6 +124,6 @@ After loading Kickstart ROM in IDA with M68k + HUNK/ROM loader:
 ## References
 
 - NDK39: `exec/devices.h`, `exec/io.h`, `devices/trackdisk.h`
-- `06_exec_os/io_requests.md` — IORequest structure and dispatch
+- [io_requests.md](../../06_exec_os/io_requests.md) — IORequest structure and dispatch
 - `10_devices/trackdisk_device.md` — TD_* command codes
 - Kickstart 3.1 ROM dump (required for disassembly)

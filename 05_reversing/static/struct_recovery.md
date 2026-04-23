@@ -132,6 +132,6 @@ MOVEA.L  (lh_Head,A0), A1    ; first lib node
 ## References
 
 - NDK39: `exec/execbase.h`, `exec/tasks.h`, `exec/nodes.h`, `exec/io.h`
-- `06_exec_os/exec_base.md` — full ExecBase field listing
-- `06_exec_os/lists_nodes.md` — MinList/List traversal
+- [exec_base.md](../../06_exec_os/exec_base.md) — full ExecBase field listing
+- [lists_nodes.md](../../06_exec_os/lists_nodes.md) — MinList/List traversal
 - IDA Pro: Structure subview, Local Types, T hotkey for struct offset

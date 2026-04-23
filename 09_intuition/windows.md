@@ -94,4 +94,4 @@ CloseWindow(win);
 
 - NDK39: `intuition/intuition.h`
 - ADCD 2.1: `OpenWindowTagList`, `CloseWindow`
-- `09_intuition/idcmp.md` — IDCMP message classes
+- [idcmp.md](idcmp.md) — IDCMP message classes

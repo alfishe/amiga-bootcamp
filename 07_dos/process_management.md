@@ -86,4 +86,4 @@ Child processes are independent tasks. To synchronize:
 
 - NDK39: `dos/dostags.h`, `dos/dosextens.h`
 - ADCD 2.1: `CreateNewProc`, `SystemTagList`, `Execute`
-- `06_exec_os/tasks_processes.md` — Task/Process structures
+- [tasks_processes.md](../06_exec_os/tasks_processes.md) — Task/Process structures

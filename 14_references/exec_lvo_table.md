@@ -139,4 +139,4 @@
 ## References
 
 - NDK39: `fd/exec_lib.fd`
-- Use `parse_fd.py` from `13_toolchain/fd_files.md` to regenerate
+- Use `parse_fd.py` from [fd_files.md](../13_toolchain/fd_files.md) to regenerate

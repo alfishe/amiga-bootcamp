@@ -6,7 +6,7 @@
 
 ### FMODE — $DFF1FC (AGA only)
 
-DMA fetch mode — see `chipset_aga.md` for full description.
+DMA fetch mode — see [chipset_aga.md](chipset_aga.md) for full description.
 
 ### BPLCON4 — $DFF10C (AGA only)
 
@@ -63,7 +63,7 @@ bit 3:    BRDSPRT — sprites visible in border
 
 ## AGA-Specific BPLCON0 Bits
 
-See `chipset_aga.md` — bit 4 is the MSB of the bitplane count for 7/8-plane modes.
+See [chipset_aga.md](chipset_aga.md) — bit 4 is the MSB of the bitplane count for 7/8-plane modes.
 
 ## Colour Register Access — Low Nibble Protocol
 

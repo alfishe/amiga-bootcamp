@@ -253,5 +253,5 @@ DisownBlitter(); /* release */
 ## References
 
 - HRM: *Blitter* chapter — complete register descriptions
-- `01_hardware/ocs_a500/blitter.md` — hardware reference
-- `08_graphics/blitter.md` — graphics.library BltBitMap API
+- [blitter.md](../01_hardware/ocs_a500/blitter.md) — hardware reference
+- [blitter.md](blitter.md) — graphics.library BltBitMap API

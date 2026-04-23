@@ -90,4 +90,4 @@ CloseSocket(sock);
 
 - NDK39: `libraries/bsdsocket.h` (stack-specific)
 - Roadshow SDK documentation
-- `12_networking/sana2.md` — network device driver layer
+- [sana2.md](sana2.md) — network device driver layer

@@ -44,11 +44,11 @@ move.w  #$0A00, $DFF1DC    ; VARBEAMEN + VARVSYEN (31 kHz VGA-like)
 
 ### BPLCON3 — $DFF106 (ECS Denise only)
 
-New bitplane/sprite control register — see `chipset_ecs.md` for full bit definition.
+New bitplane/sprite control register — see [chipset_ecs.md](chipset_ecs.md) for full bit definition.
 
 ### DENISEID — $DFF07C (read only, ECS+)
 
-Chip identification — see `chipset_ecs.md`.
+Chip identification — see [chipset_ecs.md](chipset_ecs.md).
 
 ## Changed / Extended Registers
 

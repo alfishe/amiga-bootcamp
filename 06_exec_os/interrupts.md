@@ -122,5 +122,5 @@ CIA interrupts are serviced via AddIntServer on `INTB_PORTS` (level 2, CIA-A) or
 
 - NDK39: `hardware/intbits.h`, `hardware/cia.h`
 - ADCD 2.1: `AddIntServer`, `RemIntServer`, `SetIntVector`, `Disable`, `Forbid`
-- `01_hardware/common/cia_chips.md` — CIA timer and ICR details
-- `01_hardware/ocs_a500/custom_registers.md` — INTENA/INTREQ register listing
+- [cia_chips.md](../01_hardware/common/cia_chips.md) — CIA timer and ICR details
+- [custom_registers.md](../01_hardware/ocs_a500/custom_registers.md) — INTENA/INTREQ register listing

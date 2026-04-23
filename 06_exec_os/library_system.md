@@ -94,4 +94,4 @@ if (lib) printf("Found v%d\n", lib->lib_Version);
 
 - NDK39: `exec/libraries.h`
 - ADCD 2.1: `OpenLibrary`, `CloseLibrary`, `FindName`
-- `04_linking_and_libraries/shared_libraries_runtime.md` — expunge lifecycle
+- [shared_libraries_runtime.md](../04_linking_and_libraries/shared_libraries_runtime.md) — expunge lifecycle

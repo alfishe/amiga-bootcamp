@@ -93,5 +93,5 @@ myapp: main.o fastblit.o
 
 ## References
 
-- `13_toolchain/gcc_amiga.md` — GCC setup
-- `13_toolchain/vasm_vlink.md` — vasm/vlink setup
+- [gcc_amiga.md](gcc_amiga.md) — GCC setup
+- [vasm_vlink.md](vasm_vlink.md) — vasm/vlink setup

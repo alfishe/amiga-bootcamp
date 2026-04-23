@@ -200,4 +200,4 @@ Then in IDA: File → Script command → Run `all_lvos.py`
 ## References
 
 - NDK39: `fd/` directory
-- `05_reversing/static/api_call_identification.md` — using LVOs in RE
+- [api_call_identification.md](../05_reversing/static/api_call_identification.md) — using LVOs in RE

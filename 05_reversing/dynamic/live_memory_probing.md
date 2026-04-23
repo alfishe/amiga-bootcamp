@@ -127,6 +127,6 @@ Permit();
 ## References
 
 - NDK39: `exec/execbase.h`, `exec/memory.h`, `exec/tasks.h`
-- `06_exec_os/exec_base.md` — full ExecBase offset table
-- `06_exec_os/memory_management.md` — MemHeader structure
-- `05_reversing/dynamic/setfunction_patching.md` — Forbid/Permit patterns
+- [exec_base.md](../../06_exec_os/exec_base.md) — full ExecBase offset table
+- [memory_management.md](../../06_exec_os/memory_management.md) — MemHeader structure
+- [setfunction_patching.md](setfunction_patching.md) — Forbid/Permit patterns

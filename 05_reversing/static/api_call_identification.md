@@ -231,7 +231,7 @@ So immediately before the JSR:
 | −552 | 552 | `OpenLibrary` | A1=name, D0=ver | D0=base |
 | −558 | 558 | `CloseLibrary` | A1=lib | — |
 
-Full tables: [`04_linking_and_libraries/lvo_table.md`](../../../04_linking_and_libraries/lvo_table.md)
+Full tables: [[lvo_table.md](../../04_linking_and_libraries/lvo_table.md)](../../../04_linking_and_libraries/lvo_table.md)
 
 ---
 
@@ -290,7 +290,7 @@ If you encounter `JSR (-N,A6)` and don't know which library A6 holds:
 ## References
 
 - NDK39: `fd/` directory — all library `.fd` files (plain text, open in any editor)
-- `04_linking_and_libraries/lvo_table.md` — formatted LVO tables
+- [lvo_table.md](../../04_linking_and_libraries/lvo_table.md) — formatted LVO tables
 - `static/library_jmp_table.md` — JMP table layout and IDA scripting
-- `04_linking_and_libraries/fd_files.md` — `.fd` file format specification
+- [fd_files.md](../../04_linking_and_libraries/fd_files.md) — `.fd` file format specification
 - ADCD 2.1 Autodocs online: http://amigadev.elowar.com/read/ADCD_2.1/

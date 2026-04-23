@@ -126,5 +126,5 @@ atexit(remove_hook);
 
 - NDK39: `exec/execbase.h`
 - ADCD 2.1: `SetFunction` autodoc
-- `05_reversing/dynamic/live_memory_probing.md` — SysBase structure access
+- [live_memory_probing.md](live_memory_probing.md) — SysBase structure access
 - *Amiga ROM Kernel Reference Manual: Libraries* — SetFunction chapter

@@ -63,5 +63,5 @@ For MiSTer/FPGA cores with custom SANA-II drivers, DHCP is handled automatically
 
 ## References
 
-- `12_networking/bsdsocket.md` — socket API reference
-- `12_networking/tcp_ip_stacks.md` — stack configuration
+- [bsdsocket.md](bsdsocket.md) — socket API reference
+- [tcp_ip_stacks.md](tcp_ip_stacks.md) — stack configuration

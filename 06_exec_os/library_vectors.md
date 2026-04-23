@@ -91,7 +91,7 @@ APTR SetFunction(struct Library *library, LONG funcOffset, APTR newFunction);
 old_write = SetFunction((struct Library *)DOSBase, -48, my_write_hook);
 ```
 
-See `05_reversing/dynamic/setfunction_patching.md` for trampoline patterns.
+See [setfunction_patching.md](../05_reversing/dynamic/setfunction_patching.md) for trampoline patterns.
 
 ---
 
@@ -121,5 +121,5 @@ If `LIBF_SUMUSED` is set, exec verifies the checksum at `CloseLibrary` time. Pat
 
 - NDK39: `exec/execbase.h`, `exec/libraries.h`
 - ADCD 2.1: `MakeFunctions`, `MakeLibrary`, `SetFunction`, `SumLibrary`
-- `05_reversing/static/library_jmp_table.md` — reconstruction workflow
-- `04_linking_and_libraries/lvo_table.md` — complete LVO reference tables
+- [library_jmp_table.md](../05_reversing/static/library_jmp_table.md) — reconstruction workflow
+- [lvo_table.md](../04_linking_and_libraries/lvo_table.md) — complete LVO reference tables

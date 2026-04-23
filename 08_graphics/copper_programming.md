@@ -315,5 +315,5 @@ Reposition sprites mid-frame to display more than 8 sprites:
 ## References
 
 - HRM: *Copper* chapter — complete instruction encoding
-- `01_hardware/ocs_a500/copper.md` — register-level reference
-- `08_graphics/copper.md` — graphics.library UCopList API
+- [copper.md](../01_hardware/ocs_a500/copper.md) — register-level reference
+- [copper.md](copper.md) — graphics.library UCopList API

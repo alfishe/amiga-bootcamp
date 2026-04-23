@@ -147,5 +147,5 @@ DeletePool(pool);                   /* LVO -714 */
 
 - NDK39: `exec/memory.h`, `exec/execbase.h`
 - ADCD 2.1: `AllocMem`, `FreeMem`, `AllocVec`, `FreeVec`, `CreatePool`
-- `01_hardware/common/address_space.md` — full address map
+- [address_space.md](../01_hardware/common/address_space.md) — full address map
 - *Amiga ROM Kernel Reference Manual: Exec* — memory management chapter
