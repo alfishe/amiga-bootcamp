@@ -15,13 +15,13 @@ This section covers the complete lifecycle of an AmigaOS executable:
 
 | File | Topic |
 |---|---|
-| [hunk_format.md](hunk_format.md) | Complete HUNK binary specification |
-| [hunk_ext_deep_dive.md](hunk_ext_deep_dive.md) | HUNK_EXT: exports, imports, commons |
-| [hunk_relocation.md](hunk_relocation.md) | HUNK_RELOC32/16/8 mechanics |
-| [hunk_debug_info.md](hunk_debug_info.md) | HUNK_SYMBOL, HUNK_DEBUG (stabs) |
-| [exe_load_pipeline.md](exe_load_pipeline.md) | LoadSeg → Process creation |
-| [object_file_format.md](object_file_format.md) | Compiler object files (HUNK_UNIT) |
-| [overlay_system.md](overlay_system.md) | HUNK_OVERLAY memory segmentation |
+| [hunk_format.md](hunk_format.md) | Complete HUNK binary specification — all 22 hunk type codes with wire format, memory flags, advisory bits |
+| [hunk_ext_deep_dive.md](hunk_ext_deep_dive.md) | HUNK_EXT: exports (EXT_DEF), imports (EXT_REF32), commons, linker resolution |
+| [hunk_relocation.md](hunk_relocation.md) | Relocation mechanics: visual before/after, patching algorithm, RELOC32/SHORT/DREL32, PC-relative impact |
+| [hunk_debug_info.md](hunk_debug_info.md) | HUNK_SYMBOL and HUNK_DEBUG: stabs format (SAS/C, GCC), debugger consumption, stripping |
+| [exe_load_pipeline.md](exe_load_pipeline.md) | LoadSeg → AllocMem → relocation → segment chain → CreateProc → entry point |
+| [object_file_format.md](object_file_format.md) | Compiler object files (HUNK_UNIT), multi-section layout, HUNK_LIB archives, linker operation |
+| [overlay_system.md](overlay_system.md) | HUNK_OVERLAY: tree architecture, runtime overlay manager, worked binary example, modern alternatives |
 
 ## Why HUNK?
 

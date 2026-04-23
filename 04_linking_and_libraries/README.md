@@ -10,12 +10,16 @@ This section documents how AmigaOS shared libraries work at the binary level —
 
 | File | Topic |
 |---|---|
-| [library_structure.md](library_structure.md) | Library node, LVO table, OpenLibrary mechanics |
-| [fd_files.md](fd_files.md) | Function Definition files — the library ABI source |
-| [lvo_table.md](lvo_table.md) | JMP table layout and reconstruction |
-| [compiler_stubs.md](compiler_stubs.md) | How SAS/C, GCC, VBCC call libraries |
-| [setfunction.md](setfunction.md) | Runtime function patching with SetFunction |
-| [startup_code.md](startup_code.md) | c.o / gcrt0.S — startup and exit sequences |
+| [library_structure.md](library_structure.md) | Library memory layout, JMP table encoding, MakeLibrary construction, complete library creation example |
+| [shared_libraries_runtime.md](shared_libraries_runtime.md) | OpenLibrary resolution path, ramlib disk loader, version negotiation, expunge mechanics |
+| [register_conventions.md](register_conventions.md) | Register ABI: integer, FPU, varargs/TagItem, small-data model, __saveds, inter-library calls |
+| [fd_files.md](fd_files.md) | Function Definition files — the library ABI source of truth, LVO calculation |
+| [lvo_table.md](lvo_table.md) | JMP table layout, complete exec.library LVO table, IDA reconstruction script |
+| [compiler_stubs.md](compiler_stubs.md) | How SAS/C, GCC, VBCC call libraries — compiler signature identification |
+| [inline_stubs.md](inline_stubs.md) | Compiler inline stubs: pragma (SAS/C), inline asm (GCC), __reg (VBCC), stub generation tools |
+| [link_libraries.md](link_libraries.md) | Static linking: amiga.lib, sc.lib, libnix, auto.lib, WBStartup glue, stack cookie |
+| [startup_code.md](startup_code.md) | c.o / gcrt0.S: entry contract, CLI vs WB detection, argument parsing, WBStartup message |
+| [setfunction.md](setfunction.md) | Runtime function patching: canonical pattern, chaining, removal, RE detection heuristics |
 
 ## The Library ABI Model
 
@@ -23,10 +27,13 @@ Every AmigaOS shared library exposes its functions through a **negative-offset J
 
 ```
 Library base:  LIB+0    → Library node (struct Library)
-               LIB-6    → JMP _funcN   (last function)
-               LIB-12   → JMP _funcN-1
+               LIB-6    → JMP _Open        (mandatory)
+               LIB-12   → JMP _Close       (mandatory)
+               LIB-18   → JMP _Expunge     (mandatory)
+               LIB-24   → JMP _Reserved    (mandatory)
+               LIB-30   → JMP _func1       (first user function)
+               LIB-36   → JMP _func2
                ...
-               LIB-6    → JMP _func1   (first user function)
 ```
 
 A C call like `OpenLibrary("graphics.library", 0)` compiles to:

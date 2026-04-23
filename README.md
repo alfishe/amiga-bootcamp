@@ -91,27 +91,27 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 03 — Executable Loader & HUNK Format
 | File | Topic |
 |---|---|
-| [hunk_format.md](03_loader_and_exec_format/hunk_format.md) | Complete HUNK binary specification |
-| [hunk_ext_deep_dive.md](03_loader_and_exec_format/hunk_ext_deep_dive.md) | Exports, imports, commons |
-| [hunk_relocation.md](03_loader_and_exec_format/hunk_relocation.md) | Relocation mechanics |
-| [hunk_debug_info.md](03_loader_and_exec_format/hunk_debug_info.md) | Debug symbols, stabs |
-| [exe_load_pipeline.md](03_loader_and_exec_format/exe_load_pipeline.md) | LoadSeg → Process creation |
-| [object_file_format.md](03_loader_and_exec_format/object_file_format.md) | Compiler object files |
-| [overlay_system.md](03_loader_and_exec_format/overlay_system.md) | HUNK_OVERLAY mechanism |
+| [hunk_format.md](03_loader_and_exec_format/hunk_format.md) | Complete HUNK specification — all 22 type codes, wire format, memory flags, advisory bits |
+| [hunk_ext_deep_dive.md](03_loader_and_exec_format/hunk_ext_deep_dive.md) | HUNK_EXT: exports (EXT_DEF), imports (EXT_REF32), commons, linker resolution |
+| [hunk_relocation.md](03_loader_and_exec_format/hunk_relocation.md) | Relocation mechanics: visual before/after, RELOC32/SHORT/DREL32, PC-relative impact |
+| [hunk_debug_info.md](03_loader_and_exec_format/hunk_debug_info.md) | HUNK_SYMBOL and HUNK_DEBUG: stabs format, debugger consumption, stripping |
+| [exe_load_pipeline.md](03_loader_and_exec_format/exe_load_pipeline.md) | LoadSeg → AllocMem → relocation → segment chain → CreateProc → entry point |
+| [object_file_format.md](03_loader_and_exec_format/object_file_format.md) | HUNK_UNIT object files, multi-section layout, HUNK_LIB archives, linker operation |
+| [overlay_system.md](03_loader_and_exec_format/overlay_system.md) | HUNK_OVERLAY: tree architecture, runtime overlay manager, modern alternatives |
 
 ### 04 — Linking & Library Integration
 | File | Topic |
 |---|---|
-| [fd_files.md](04_linking_and_libraries/fd_files.md) | .fd descriptor format, fd2pragma |
-| [lvo_table.md](04_linking_and_libraries/lvo_table.md) | Library vector offsets |
-| [library_structure.md](04_linking_and_libraries/library_structure.md) | struct Library, JMP table layout |
-| [inline_stubs.md](04_linking_and_libraries/inline_stubs.md) | SAS/C, GCC, VBCC inline stubs |
-| [compiler_stubs.md](04_linking_and_libraries/compiler_stubs.md) | Compiler-generated stub code |
-| [link_libraries.md](04_linking_and_libraries/link_libraries.md) | amiga.lib, startup objects |
-| [shared_libraries_runtime.md](04_linking_and_libraries/shared_libraries_runtime.md) | OpenLibrary lifecycle |
-| [register_conventions.md](04_linking_and_libraries/register_conventions.md) | M68k AmigaOS calling conventions |
-| [setfunction.md](04_linking_and_libraries/setfunction.md) | SetFunction patching mechanism |
-| [startup_code.md](04_linking_and_libraries/startup_code.md) | Program startup and exit |
+| [library_structure.md](04_linking_and_libraries/library_structure.md) | Library memory layout, JMP table encoding, MakeLibrary, complete library creation example |
+| [shared_libraries_runtime.md](04_linking_and_libraries/shared_libraries_runtime.md) | OpenLibrary resolution, ramlib disk loader, version negotiation, expunge mechanics |
+| [register_conventions.md](04_linking_and_libraries/register_conventions.md) | Register ABI: integer, FPU, varargs/TagItem, small-data model, __saveds |
+| [fd_files.md](04_linking_and_libraries/fd_files.md) | .fd descriptor format, LVO calculation, proto/inline generation |
+| [lvo_table.md](04_linking_and_libraries/lvo_table.md) | Complete exec.library LVO table, IDA reconstruction script |
+| [compiler_stubs.md](04_linking_and_libraries/compiler_stubs.md) | SAS/C, GCC, VBCC call patterns — compiler signature identification |
+| [inline_stubs.md](04_linking_and_libraries/inline_stubs.md) | Pragma (SAS/C), inline asm (GCC), __reg (VBCC), stub generation tools |
+| [link_libraries.md](04_linking_and_libraries/link_libraries.md) | amiga.lib, sc.lib, libnix, auto.lib, WBStartup glue, stack cookie |
+| [startup_code.md](04_linking_and_libraries/startup_code.md) | c.o / gcrt0.S: entry contract, CLI vs WB detection, argument parsing |
+| [setfunction.md](04_linking_and_libraries/setfunction.md) | Runtime function patching: canonical pattern, chaining, RE detection |
 
 ### 05 — Reverse Engineering
 | File | Topic |
