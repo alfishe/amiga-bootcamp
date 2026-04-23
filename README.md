@@ -1,6 +1,6 @@
 # 🔧 Amiga OS 3.1/3.2 — The Developer's Source of Truth
 
-**174 files · 17 sections · From cold boot to driver authoring**
+**From cold boot to driver authoring**
 
 > *Everything Commodore never published in one place.*
 >
