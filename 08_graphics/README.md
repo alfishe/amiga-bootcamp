@@ -20,4 +20,4 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [rastport.md](rastport.md) | RastPort drawing context: draw modes, patterns, layer clipping, text pipeline, blitter minterms |
 | [views.md](views.md) | View, ViewPort, MakeVPort, display construction |
 | [text_fonts.md](text_fonts.md) | TextFont bitmap layout, baseline rendering, algorithmic styles, AvailFonts enumeration |
-| [animation.md](animation.md) | AnimOb, BOB, VSprite, GEL system |
+| [animation.md](animation.md) | GEL system deep dive: BOBs, VSprites, AnimObs, hardware foundation (Blitter/Copper/Sprite interaction), collision detection, double buffering, performance tuning |
