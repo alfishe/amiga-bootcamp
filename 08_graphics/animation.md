@@ -45,7 +45,7 @@ The Amiga was the only home computer where the OS itself provided:
 - **Integrated collision detection** across all object types
 - **A physics-aware animation sequencer** (AnimOb with velocity and acceleration)
 
-This was essentially a **scene graph with a compositor** — a concept that wouldn't become mainstream until GPU-accelerated window managers appeared 20 years later (Quartz Compositor 2001, Aero 2006).
+This was essentially a **scene graph with a composer** — a concept that wouldn't become mainstream until GPU-accelerated window managers appeared 20 years later ([Quartz Composer](https://developer.apple.com/documentation/quartz/quartz-composer), Aero 2006).
 
 > [!NOTE]
 > The arcade world had more sophisticated sprite hardware (Namco System 16, Sega System 16 — 128+ sprites with scaling and rotation), but these were fixed-function ASICs with no OS, no API, and no concept of resource sharing between applications. The Amiga's innovation was the **software architecture** layered on top of capable-but-limited hardware.
