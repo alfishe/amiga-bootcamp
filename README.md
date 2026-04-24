@@ -245,11 +245,12 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [vasm_vlink.md](13_toolchain/vasm_vlink.md) | vasm assembler, vlink linker |
 | [gcc_amiga.md](13_toolchain/gcc_amiga.md) | m68k-amigaos-gcc (bebbo fork, Codeberg) |
 | [sasc.md](13_toolchain/sasc.md) | SAS/C 6.x compiler |
+| [stormc.md](13_toolchain/stormc.md) | StormC native IDE and C/C++ compiler |
 | [fd_files.md](13_toolchain/fd_files.md) | FD/SFD file format, Python parser |
 | [pragmas.md](13_toolchain/pragmas.md) | Compiler pragmas, inline stubs |
 | [ndk.md](13_toolchain/ndk.md) | NDK versions, contents, downloads |
 | [makefiles.md](13_toolchain/makefiles.md) | Cross-compilation Makefile patterns |
-| [debugging.md](13_toolchain/debugging.md) | Enforcer, GDB remote, BareFoot |
+| [debugging.md](13_toolchain/debugging.md) | Enforcer, SnoopDOS, GDB remote, kprintf |
 
 ### 14 — References
 | File | Topic |
