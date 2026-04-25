@@ -371,5 +371,6 @@ void MyTask(void)
 - NDK39: `exec/memory.h`, `exec/execbase.h`
 - ADCD 2.1: `AllocMem`, `FreeMem`, `AllocVec`, `FreeVec`, `CreatePool`, `AllocPooled`, `AvailMem`
 - [address_space.md](../01_hardware/common/address_space.md) — full address map
+- [memory_types.md](../01_hardware/common/memory_types.md) — hardware-level Chip/Fast/Slow RAM comparison, DMA accessibility matrix, per-model configurations
 - See also: [Multitasking](multitasking.md) — memory safety in multi-task environments
 - *Amiga ROM Kernel Reference Manual: Exec* — memory management chapter

@@ -16,7 +16,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 
 | Layer | Coverage |
 |---|---|
-| **⚙️ Hardware** | Custom chip registers (OCS/ECS/AGA), Copper & Blitter programming with worked examples, CIA, Zorro bus, CPU feature matrix |
+| **⚙️ Hardware** | Custom chip registers (OCS/ECS/AGA), Copper & Blitter programming with worked examples, memory architecture (Chip/Fast/Slow RAM), CIA, Zorro bus, CPU feature matrix |
 | **🔌 Boot & Init** | Cold boot sequence, ROM checksum, resident module scan, Kickstart init, startup-sequence |
 | **📦 Binary Format** | HUNK executable format (every record type), relocation, debug info, overlays |
 | **🔗 Linking & ABI** | .fd files, LVO tables, register calling conventions, compiler stubs, SetFunction |
@@ -38,7 +38,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 |---|---|
 | **New to Amiga** | [History & chipsets](00_overview/history.md) → [Boot sequence](02_boot_sequence/cold_boot.md) → [Exec kernel](06_exec_os/exec_base.md) |
 | **Writing code** | [Toolchain setup](13_toolchain/gcc_amiga.md) → [Calling conventions](04_linking_and_libraries/register_conventions.md) → [.fd files](04_linking_and_libraries/fd_files.md) |
-| **Doing hardware** | [Address space](01_hardware/common/address_space.md) → [Custom registers](01_hardware/ocs_a500/custom_registers.md) → [Copper programming](08_graphics/copper_programming.md) |
+| **Doing hardware** | [Address space](01_hardware/common/address_space.md) → [Memory types](01_hardware/common/memory_types.md) → [Custom registers](01_hardware/ocs_a500/custom_registers.md) → [Copper programming](08_graphics/copper_programming.md) |
 | **Reverse engineering** | [RE methodology](05_reversing/methodology.md) → [IDA/Ghidra setup](05_reversing/ida_setup.md) → [API call identification](05_reversing/static/api_call_identification.md) |
 | **Building an FPGA core** | [Hardware models](00_overview/hardware_models.md) → [AGA chipset](01_hardware/aga_a1200_a4000/chipset_aga.md) → [68040/060 libs](15_cpu_and_mmu/68040_68060_libraries.md) |
 
@@ -74,7 +74,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 01 — Hardware (by chipset generation)
 | Folder | Coverage |
 |---|---|
-| [common/](01_hardware/common/) | M68k CPU, address space, CIA chips, Zorro bus |
+| [common/](01_hardware/common/) | M68k CPU, address space, **memory types (Chip/Fast/Slow RAM)**, CIA chips, Zorro bus |
 | [ocs_a500/](01_hardware/ocs_a500/) | OCS chipset: custom registers, copper, blitter, sprites, Paula |
 | [ecs_a600_a3000/](01_hardware/ecs_a600_a3000/) | ECS chipset: Super Agnus, productivity modes, Gary, Gayle |
 | [aga_a1200_a4000/](01_hardware/aga_a1200_a4000/) | AGA chipset: Alice, Lisa, copper, blitter (64-bit), palette, Gayle IDE |

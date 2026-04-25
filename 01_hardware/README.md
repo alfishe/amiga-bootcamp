@@ -43,7 +43,7 @@ See [custom_registers_full.md](../references/custom_registers_full.md) for the c
 
 | Subfolder | Content |
 |---|---|
-| [common/](common/) | M68k CPU, address space layout, CIA chips, Zorro bus |
+| [common/](common/) | M68k CPU, address space layout, **memory types (Chip/Fast/Slow)**, CIA chips, Zorro bus |
 | [ocs_a500/](ocs_a500/) | OCS chipset — A500, A1000, A2000 |
 | [ecs_a600_a3000/](ecs_a600_a3000/) | ECS chipset — A600, A3000, A500+ |
 | [aga_a1200_a4000/](aga_a1200_a4000/) | AGA chipset — A1200, A4000, CD32 |

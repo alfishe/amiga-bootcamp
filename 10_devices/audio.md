@@ -276,3 +276,4 @@ Games and demos often bypass `audio.device` entirely:
 - HRM: *Amiga Hardware Reference Manual* — Audio DMA chapter
 - ADCD 2.1: `audio.device` autodocs
 - See also: [interrupts.md](../06_exec_os/interrupts.md) — interrupt server chain
+- See also: [memory_types.md](../01_hardware/common/memory_types.md) — audio sample buffers must reside in Chip RAM (Paula DMA)

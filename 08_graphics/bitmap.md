@@ -115,3 +115,4 @@ struct BitMap *bm = AllocBitMap(320, 256, 8, BMF_CLEAR | BMF_DISPLAYABLE, NULL);
 - NDK39: `graphics/gfx.h`
 - ADCD 2.1: `AllocBitMap`, `FreeBitMap`, `InitBitMap`
 - HRM: *Amiga Hardware Reference Manual* — bitplane DMA chapter
+- See also: [memory_types.md](../01_hardware/common/memory_types.md) — why bitmaps must be in Chip RAM (DMA accessibility)

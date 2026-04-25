@@ -800,4 +800,5 @@ myVS.PlaneOnOff = 0x00;      /* planes 1-3 get 0 (transparent) */
 - See also: [sprites.md](sprites.md) — Hardware sprite DMA, multiplexing, and priority
 - See also: [copper_programming.md](copper_programming.md) — Copper-driven sprite pointer management
 - See also: [rastport.md](rastport.md) — RastPort drawing context used by GELs
+- See also: [memory_types.md](../01_hardware/common/memory_types.md) — BOB/VSprite data must reside in Chip RAM
 

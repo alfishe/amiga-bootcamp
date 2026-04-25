@@ -74,3 +74,4 @@ Software should not assume 2 MB Chip RAM — always use `AvailMem()` to determin
 - AmigaMail Vol. 2 — Chip RAM expansion articles
 - NDK39: `exec/memory.h` — MEMF flags
 - ADCD 2.1 Hardware Manual — memory map section
+- See also: [memory_types.md](../common/memory_types.md) — comprehensive Chip/Fast/Slow RAM comparison, per-model configurations

@@ -107,3 +107,5 @@ block-beta
 - NDK39: `exec/memory.h` — MEMF_ flag definitions
 - ADCD 2.1 Hardware Manual: memory map chapter
 - Commodore A1200/A4000 Technical Reference Manuals (local archive)
+- See also: [memory_types.md](memory_types.md) — Chip RAM vs Fast RAM vs Slow RAM, DMA accessibility, per-model configurations
+- See also: [chip_ram_expansion.md](../ecs_a600_a3000/chip_ram_expansion.md) — 2 MB Chip RAM with Super Agnus

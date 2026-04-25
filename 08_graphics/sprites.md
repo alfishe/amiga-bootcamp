@@ -303,3 +303,4 @@ ClearPointer(window);
 - ADCD 2.1: `GetSprite`, `MoveSprite`, `ChangeSprite`, `FreeSprite`
 - See also: [copper_programming.md](copper_programming.md) — Copper-driven sprite multiplexing
 - See also: [rastport.md](rastport.md) — BOBs (software sprites via Blitter)
+- See also: [memory_types.md](../01_hardware/common/memory_types.md) — sprite data must reside in Chip RAM (sprite DMA)
