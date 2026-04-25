@@ -21,7 +21,8 @@ The **Enhanced Chip Set** (ECS) is a significant revision of OCS, shipping from 
 | [chipset_ecs.md](chipset_ecs.md) | Super Agnus and ECS Denise internals |
 | [ecs_registers_delta.md](ecs_registers_delta.md) | New/changed registers vs OCS |
 | [productivity_modes.md](productivity_modes.md) | Multiscan/productivity display modes |
-| [gary_gayle.md](gary_gayle.md) | Gary (A3000) and Gayle (A600) chips: IDE, PCMCIA |
+| [gary_system_controller.md](gary_system_controller.md) | Gary — A3000 bus controller, DMA arbitration, SCSI glue |
+| [Gayle IDE & PCMCIA](../common/gayle_ide_pcmcia.md) | A600 Gayle: IDE and PCMCIA (shared with A1200) |
 | [chip_ram_expansion.md](chip_ram_expansion.md) | 2 MB Chip RAM with Super Agnus |
 
 ## ECS vs OCS — Key Differences

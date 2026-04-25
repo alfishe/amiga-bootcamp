@@ -15,7 +15,7 @@
 | Sprites | 8 × 16px | 8 × 16px | 8 × 64px, 256 colours |
 | Blitter bus | 16-bit | 16-bit | 64-bit (FMODE) |
 | Display modes | NTSC/PAL | +Productivity, VGA | +Doublescan, 31kHz |
-| Machines | A500/A1000/A2000 | A600/A3000/A500+ | A1200/A4000/CD32 |
+| Machines | A500/A1000/A2000/**CDTV** | A600/A3000/A500+ | A1200/A4000/A4000T/**CD32** |
 
 ---
 
@@ -43,10 +43,10 @@ See [custom_registers_full.md](../references/custom_registers_full.md) for the c
 
 | Subfolder | Content |
 |---|---|
-| [common/](common/) | M68k CPU, address space layout, **memory types (Chip/Fast/Slow)**, CIA chips, Zorro bus |
-| [ocs_a500/](ocs_a500/) | OCS chipset — A500, A1000, A2000 |
-| [ecs_a600_a3000/](ecs_a600_a3000/) | ECS chipset — A600, A3000, A500+ |
-| [aga_a1200_a4000/](aga_a1200_a4000/) | AGA chipset — A1200, A4000, CD32 |
+| [common/](common/) | M68k CPU, address space layout, **memory types (Chip/Fast/Slow)**, CIA chips, Zorro bus, **Gayle IDE/PCMCIA** |
+| [ocs_a500/](ocs_a500/) | OCS chipset — A500, **A1000 (WCS)**, **A2000 (Zorro II)**, **CDTV (CD-ROM, NVRAM, IR)** |
+| [ecs_a600_a3000/](ecs_a600_a3000/) | ECS chipset — A600, A3000 (**Gary** system controller), A500+ |
+| [aga_a1200_a4000/](aga_a1200_a4000/) | AGA chipset — A1200, A4000, **A4000T (SCSI)**, **CD32 (Akiko C2P, CD-ROM, NVRAM)** |
 
 ---
 

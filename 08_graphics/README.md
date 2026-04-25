@@ -21,3 +21,4 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [views.md](views.md) | View, ViewPort, MakeVPort, display construction |
 | [text_fonts.md](text_fonts.md) | TextFont bitmap layout, baseline rendering, algorithmic styles, AvailFonts enumeration |
 | [animation.md](animation.md) | GEL system deep dive: BOBs, VSprites, AnimObs, hardware foundation (Blitter/Copper/Sprite interaction), collision detection, double buffering, performance tuning |
+| [pixel_conversion.md](pixel_conversion.md) | Chunky↔Planar conversion: butterfly algorithm, Akiko C2P, Blitter-assisted, RTG bypass; SoA/AoS parallels to GPU/SIMD |

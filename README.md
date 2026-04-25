@@ -16,7 +16,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 
 | Layer | Coverage |
 |---|---|
-| **⚙️ Hardware** | Custom chip registers (OCS/ECS/AGA), Copper & Blitter programming with worked examples, memory architecture (Chip/Fast/Slow RAM), CIA, Zorro bus, CPU feature matrix |
+| **⚙️ Hardware** | Custom chip registers (OCS/ECS/AGA), Copper & Blitter programming, memory architecture (Chip/Fast/Slow RAM), CIA, Zorro bus, CPU feature matrix, **per-model hardware (A1000 WCS, A2000 Zorro II, CDTV DMAC/CD-ROM, CD32 Akiko C2P)** |
 | **🔌 Boot & Init** | Cold boot sequence, ROM checksum, resident module scan, Kickstart init, startup-sequence |
 | **📦 Binary Format** | HUNK executable format (every record type), relocation, debug info, overlays |
 | **🔗 Linking & ABI** | .fd files, LVO tables, register calling conventions, compiler stubs, SetFunction |
@@ -74,10 +74,10 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 01 — Hardware (by chipset generation)
 | Folder | Coverage |
 |---|---|
-| [common/](01_hardware/common/) | M68k CPU, address space, **memory types (Chip/Fast/Slow RAM)**, CIA chips, Zorro bus |
-| [ocs_a500/](01_hardware/ocs_a500/) | OCS chipset: custom registers, copper, blitter, sprites, Paula |
-| [ecs_a600_a3000/](01_hardware/ecs_a600_a3000/) | ECS chipset: Super Agnus, productivity modes, Gary, Gayle |
-| [aga_a1200_a4000/](01_hardware/aga_a1200_a4000/) | AGA chipset: Alice, Lisa, copper, blitter (64-bit), palette, Gayle IDE |
+| [common/](01_hardware/common/) | M68k CPU, address space, **memory types (Chip/Fast/Slow RAM)**, CIA chips, Zorro bus, **Gayle IDE/PCMCIA** |
+| [ocs_a500/](01_hardware/ocs_a500/) | OCS chipset: custom registers, copper, blitter, sprites, Paula, **A1000 WCS**, **A2000 Zorro II**, **CDTV hardware** |
+| [ecs_a600_a3000/](01_hardware/ecs_a600_a3000/) | ECS chipset: Super Agnus, productivity modes, **Gary** system controller |
+| [aga_a1200_a4000/](01_hardware/aga_a1200_a4000/) | AGA chipset: Alice, Lisa, copper, blitter (64-bit), palette, **CD32 Akiko**, **A4000T SCSI** |
 
 ### 02 — Boot Sequence
 | File | Topic |

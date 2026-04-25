@@ -122,6 +122,8 @@ This is why adding Fast RAM instantly speeds up the system — Workbench, librar
 | **A3000** | 1990 | 68030 @ 25 MHz | 1–2 MB | 2 MB | 4–16 MB Fast (on-board) | 4× Zorro III + CPU slot | 32-bit bus, first Zorro III |
 | **A1200** | 1992 | 68EC020 @ 14 MHz | 2 MB | 2 MB | None stock | Trapdoor 150-pin + PCMCIA | AGA chipset |
 | **A4000** | 1992 | 68030 @ 25 MHz or 68040 @ 25 MHz | 2 MB | 2 MB | 4–16 MB Fast (on-board) | 5× Zorro III + CPU slot | AGA, big-box |
+| **CDTV** | 1991 | 68000 @ 7.09 MHz | 1 MB | 2 MB (Super Agnus mod) | None stock | None (A2000-compatible internal) | OCS, CD-ROM, IR remote, NVRAM |
+| **CD32** | 1993 | 68EC020 @ 14 MHz | 2 MB | 2 MB | None stock | FMV slot only (SX-1/SX-32 add-on) | AGA, Akiko C2P, 2× CD-ROM |
 
 ### Expansion Capabilities
 
@@ -135,6 +137,8 @@ This is why adding Fast RAM instantly speeds up the system — Workbench, librar
 | **A3000** | Fixed 2 MB | On-board (Ramsey), Zorro III cards | 256 MB (Zorro III) |
 | **A1200** | Fixed 2 MB | Trapdoor accelerator, PCMCIA (4 MB) | 256 MB (accelerator) |
 | **A4000** | Fixed 2 MB | On-board (Ramsey), Zorro III, CPU slot | 256 MB+ (accelerator + Zorro III) |
+| **CDTV** | To 2 MB (Super Agnus mod) | None standard; internal A2000-compatible bus | ~2 MB (rare 3rd-party via internal expansion) |
+| **CD32** | Fixed 2 MB | SX-1/SX-32 add-on provides trapdoor-style slot | 128 MB (SX-32 + accelerator) |
 
 ---
 

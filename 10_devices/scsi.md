@@ -22,7 +22,7 @@ SCSI and IDE hard disks on the Amiga are accessed through `scsi.device` or compa
 | A4000 | IDE (40-pin) | **A4000 IDE** | `scsi.device` | ~2 MB/s (PIO) |
 | A4000T | SCSI (50-pin) + IDE | **NCR 53C710** + IDE | `2nd.scsi.device` / `scsi.device` | ~10 MB/s (SCSI DMA) |
 | CD32 | IDE (internal CD) | **Akiko** | `scsi.device` | ~1.5 MB/s |
-| CDTV | SCSI (internal CD) | Custom | `scsi.device` | Slow |
+| CDTV | SCSI (internal CD) | **DMAC + WD33C93** | `scsi.device` | ~150 KB/s (1× CD) |
 
 ### Why Native Bandwidth Is Limited
 
@@ -281,3 +281,7 @@ DoIO((struct IORequest *)diskReq);
 - ADCD 2.1: scsi.device autodocs
 - SCSI-2 standard: ANSI X3.131-1994
 - See also: [trackdisk.md](trackdisk.md) — floppy I/O (shares the same API model)
+- See also: [CDTV Hardware](../01_hardware/ocs_a500/cdtv_hardware.md) — DMAC/WD33C93 SCSI CD-ROM controller
+- See also: [Akiko — CD32](../01_hardware/aga_a1200_a4000/akiko_cd32.md) — CD32 CD-ROM controller (Akiko PIO, not SCSI)
+- See also: [Gayle IDE & PCMCIA](../01_hardware/common/gayle_ide_pcmcia.md) — A600/A1200 IDE controller
+- See also: [Gary — A3000](../01_hardware/ecs_a600_a3000/gary_system_controller.md) — A3000 SDMAC/WD33C93 SCSI integration

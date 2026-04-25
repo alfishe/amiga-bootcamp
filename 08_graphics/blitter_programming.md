@@ -977,4 +977,4 @@ The Blitter is one of the most complex subsystems to reproduce accurately in an 
 - See also: [copper.md](copper.md) — Copper coprocessor (often co-programmed with the Blitter)
 - See also: [rastport.md](rastport.md) — RastPort drawing context (uses Blitter for all draw operations)
 - See also: [display_modes.md](display_modes.md) — DMA slot budget (Blitter competes for bus bandwidth)
-
+- See also: [Akiko — CD32 C2P](../01_hardware/aga_a1200_a4000/akiko_cd32.md) — hardware Chunky-to-Planar conversion (CD32 alternative to CPU/Blitter C2P)

@@ -144,9 +144,75 @@ Direct CIA programming should be done with `ciaa`/`ciab` resource claims via `Op
 /* ciaa.ciapra, ciaa.ciaprb, ciaa.ciaicr, ciaa.ciacra, ... */
 ```
 
+## Per-Model CIA Wiring Variations
+
+While CIA-A and CIA-B register layouts are identical across all Amigas, the **physical wiring** of their port pins varies by model:
+
+### CIA-A Port A Differences
+
+| Bit | Standard (A500/A2000/A1200/A4000) | A1000 | CDTV | CD32 |
+|---|---|---|---|---|
+| 7 | `/FIR1` — joystick 1 fire | Same | Same | **CD32 pad button** (via shift register) |
+| 6 | `/FIR0` — joystick 0 fire | Same | Same | **CD32 pad button** (via shift register) |
+| 5 | `/RDY` — floppy ready | Same | No internal floppy | No floppy |
+| 4 | `/TK0` — track 0 sensor | Same | No internal floppy | No floppy |
+| 3 | `/WPRO` — write protect | Same | No internal floppy | No floppy |
+| 2 | `/CHNG` — disk change | Same | No internal floppy | No floppy |
+| 1 | `/LED` — power LED | Same | Front panel LED | Front panel LED |
+| 0 | `/OVL` — Chip RAM overlay | Same | Same | Same |
+
+### CIA-A `/FLG` Pin
+
+| Model | `/FLG` Source |
+|---|---|
+| A500/A2000/A3000 | Directly accessible for parallel port `BUSY` or expansion |
+| A600/A1200 | **Gayle interrupt routing** — IDE and PCMCIA interrupts arrive here |
+| CDTV | **IR remote receiver** — IR data packets trigger `/FLG` |
+| CD32 | **Akiko interrupt routing** — CD-ROM and NVRAM events |
+
+### CIA-B Port A (Floppy Drive Selection)
+
+| Bit | Standard | CDTV | CD32 |
+|---|---|---|---|
+| 7 | `/MTR` — motor | N/A (no internal floppy) | N/A |
+| 6–3 | `/SEL3`–`/SEL0` — drive select | External floppy only (`/SEL0`) | N/A |
+| 2 | `/SIDE` — head side | N/A | N/A |
+| 1 | `/DIR` — step direction | N/A | N/A |
+| 0 | `/STEP` — step pulse | N/A | N/A |
+
+> [!NOTE]
+> On CDTV and CD32, the CIA-B floppy control bits are electrically disconnected from any drive hardware. Writing to them has no effect. If an external floppy is connected (CDTV with external drive, or CD32 with SX-1), only `/SEL0` and related signals are active.
+
+### CD32 Gamepad — CIA Shift Register Protocol
+
+The CD32 gamepad uses CIA-A's **Serial Data Register (SDR)** for button reads. The controller contains a shift register that is clocked via the joystick port pin 5:
+
+```asm
+; Read CD32 gamepad buttons
+; Returns 7 button bits in d0
+
+    move.b  #$FF, $BFE301       ; CIA-A DDRA: all outputs (temporarily)
+    bset    #6, $BFE001         ; Pin 5 high (clock start)
+    bclr    #6, $BFE001         ; Pin 5 low → latch button state
+
+    ; Clock in 7 bits via pin toggling
+    moveq   #6, d1
+.read_pad:
+    bset    #6, $BFE001         ; clock pulse high
+    btst    #0, $BFE001         ; read data bit
+    bclr    #6, $BFE001         ; clock pulse low
+    roxl.b  #1, d0              ; shift into result
+    dbf     d1, .read_pad
+```
+
+Standard 2-button Atari joysticks ignore the clock signal and remain fully compatible.
+
+---
+
 ## References
 
 - MOS Technology 6526/8520 datasheet
 - ADCD 2.1 Hardware Manual — CIA chapter: http://amigadev.elowar.com/read/ADCD_2.1/Hardware_Manual_guide/
 - NDK39: `hardware/cia.h`, `resources/cia.h`
 - Autodocs: `cia` resource — http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_3._guide/node00C7.html
+

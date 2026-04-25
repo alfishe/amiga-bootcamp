@@ -118,3 +118,9 @@ move.w  #$9411, BPLCON0+custom  ; HIRES=1 (if needed), BPU=8 (BPU3=1, BPU2-0=000
 - NDK39: `hardware/custom.h` — struct Custom (with AGA extensions)
 - Commodore A1200 Technical Reference Manual — Alice/Lisa section
 - AmigaMail Vol. 2 — AGA programming articles
+
+## See Also
+
+- [Akiko — CD32 Custom Chip](akiko_cd32.md) — CD32-exclusive ASIC (C2P, CD-ROM, NVRAM) that sits alongside Alice/Lisa/Paula
+- [AGA Blitter](aga_blitter.md) — 64-bit FMODE blitter details
+- [AGA Palette](aga_palette.md) — 256-register 24-bit colour system
