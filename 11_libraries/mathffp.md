@@ -153,7 +153,7 @@ The math libraries are only half the story. The 68040 and 68060 **removed hardwa
 
 > **Without `68040.library` or `68060.library`, any transcendental FPU instruction (`FSIN`, `FCOS`, `FLOG`, etc.) causes an immediate Guru Meditation on 040/060 hardware.**
 
-See [68040_68060_libraries.md](../15_cpu_and_mmu/68040_68060_libraries.md) for the full instruction list and internals.
+See [68040_68060_libraries.md](../15_fpu_mmu_cache/68040_68060_libraries.md) for the full instruction list and internals.
 
 ### The Complete Math Execution Stack
 

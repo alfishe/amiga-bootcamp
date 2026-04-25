@@ -29,7 +29,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | **🌐 Networking** | bsdsocket.library API, SANA-II, TCP/IP stacks comparison |
 | **🛠️ Toolchain** | GCC (bebbo/Codeberg), vasm/vlink, SAS/C, NDK, Makefiles, debugging |
 | **🔍 Reverse Engineering** | IDA/Ghidra setup, compiler fingerprints, binary patching, 3 case studies |
-| **🧮 CPU & MMU** | 68040/060 Line-F emulation libs, PMMU page tables, cache management |
+| **🧮 FPU, MMU & Cache** | 68040/060 Line-F FPU emulation, PMMU page tables, cache coherency |
 | **🏗️ Driver Development** | exec.device framework, SANA-II network drivers, Picasso96/RTG, AHI audio |
 
 ### Quick Start
@@ -40,7 +40,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | **Writing code** | [Toolchain setup](13_toolchain/gcc_amiga.md) → [Calling conventions](04_linking_and_libraries/register_conventions.md) → [.fd files](04_linking_and_libraries/fd_files.md) |
 | **Doing hardware** | [Address space](01_hardware/common/address_space.md) → [Memory types](01_hardware/common/memory_types.md) → [Custom registers](01_hardware/ocs_a500/custom_registers.md) → [Copper programming](08_graphics/copper_programming.md) |
 | **Reverse engineering** | [RE methodology](05_reversing/methodology.md) → [IDA/Ghidra setup](05_reversing/ida_setup.md) → [API call identification](05_reversing/static/api_call_identification.md) |
-| **Building an FPGA core** | [Hardware models](00_overview/hardware_models.md) → [AGA chipset](01_hardware/aga_a1200_a4000/chipset_aga.md) → [68040/060 libs](15_cpu_and_mmu/68040_68060_libraries.md) |
+| **Building an FPGA core** | [Hardware models](00_overview/hardware_models.md) → [AGA chipset](01_hardware/aga_a1200_a4000/chipset_aga.md) → [68040/060 libs](15_fpu_mmu_cache/68040_68060_libraries.md) |
 
 ---
 
@@ -260,12 +260,12 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [dos_lvo_table.md](14_references/dos_lvo_table.md) | dos.library LVO table |
 | [error_codes.md](14_references/error_codes.md) | DOS error code reference |
 
-### 15 — CPU & MMU
+### 15 — FPU, MMU & Cache
 | File | Topic |
 |---|---|
-| [68040_68060_libraries.md](15_cpu_and_mmu/68040_68060_libraries.md) | 68040/060 instruction emulation libraries |
-| [mmu_management.md](15_cpu_and_mmu/mmu_management.md) | MMU page tables, mmu.library, Enforcer, VMM |
-| [cache_management.md](15_cpu_and_mmu/cache_management.md) | CacheClearU, CACR, DMA coherency |
+| [68040_68060_libraries.md](15_fpu_mmu_cache/68040_68060_libraries.md) | 68040/060 FPU and instruction emulation libraries |
+| [mmu_management.md](15_fpu_mmu_cache/mmu_management.md) | MMU page tables, mmu.library, Enforcer, VMM |
+| [cache_management.md](15_fpu_mmu_cache/cache_management.md) | CacheClearU, CACR, DMA coherency |
 
 ### 16 — Driver Development
 | File | Topic |
