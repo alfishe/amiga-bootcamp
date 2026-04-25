@@ -352,6 +352,9 @@ After the network, d6 contains exactly one bitplane worth of data — bit 5 of a
 
 The complete, self-contained C2P routine below is a clean-room implementation based on the Kalms 68030 5-pass merge algorithm. It compiles with `vasm` and can be dropped directly into any Amiga project. For the original production-ready source, grab [c2p1x1_8_c5_030.s](https://github.com/Kalmalyzer/kalms-c2p/blob/main/normal/c2p1x1_8_c5_030.s) from the Kalms repository.
 
+<details>
+<summary>📄 Show/hide source code (~430 lines)</summary>
+
 ```asm
 ; ============================================================
 ; c2p_8bpl_030.s — Complete 8-bitplane C2P for 68030
@@ -782,6 +785,8 @@ _c2p_convert:
 total_pixels:  ds.l 1
 scroffs:       ds.l 1
 ```
+
+</details>
 
 > [!NOTE]
 > This is a real, tested routine derived from the Kalms library (Public Domain). It has been simplified slightly for readability — production code from the Kalms archive uses additional tricks: self-modifying code for bitplane size parameters, separate unrolling for 68040/68060 with `MOVE16` writes, and optional Blitter-cooperative variants. For the absolute fastest routines for your specific CPU, clone [kalms-c2p on GitHub](https://github.com/Kalmalyzer/kalms-c2p) and benchmark the variants.
