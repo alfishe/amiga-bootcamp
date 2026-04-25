@@ -71,14 +71,14 @@ The downside only became critical as rendering algorithms evolved past 2D sprite
 C2P is a **bit matrix transposition**. Given 32 chunky pixels (each 8 bits wide), you have a 32×8 bit matrix (32 rows × 8 columns). C2P transposes this to an 8×32 matrix (8 bitplanes × 32 bits each):
 
 ```
-Input (chunky):                    Output (planar):
-  32 pixels × 8 bits               8 bitplanes × 32 bits
-  ┌─────────────────┐              ┌──────────────────────────────┐
-  │ P0:  b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 0: p0.b0 p1.b0 p2.b0 ... p31.b0 │
-  │ P1:  b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 1: p0.b1 p1.b1 p2.b1 ... p31.b1 │
-  │ ...                           │  │ ...                                      │
-  │ P31: b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 7: p0.b7 p1.b7 p2.b7 ... p31.b7 │
-  └─────────────────┘              └──────────────────────────────┘
+  Input (chunky):                    Output (planar):
+    32 pixels × 8 bits                 8 bitplanes × 32 bits
+  ┌──────────────────────────────┐  ┌────────────────────────────────────────┐
+  │ P0:  b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 0: p0.b0 p1.b0 p2.b0 ... p31.b0  │
+  │ P1:  b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 1: p0.b1 p1.b1 p2.b1 ... p31.b1  │
+  │ ...                          │  │ ...                                    │
+  │ P31: b7 b6 b5 b4 b3 b2 b1 b0 │  │ Plane 7: p0.b7 p1.b7 p2.b7 ... p31.b7  │
+  └──────────────────────────────┘  └────────────────────────────────────────┘
 ```
 
 This is equivalent to a 90° bit rotation. On a modern CPU with SIMD, this is trivial. On a 68020 with 8 data registers and no bit-parallel instructions, it is an algorithmic challenge that consumed thousands of programmer-hours across the demoscene.
