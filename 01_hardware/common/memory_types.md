@@ -23,6 +23,8 @@ Understanding this distinction is not optional. It determines where screen buffe
 | **Slow RAM** | Pseudo-Fast / Ranger / "Trapdoor" RAM | CPU only — but on the Chip RAM bus | ~3.5 MHz effective (still contended) | ✗ No (not used by DMA) | `$C00000`–`$C7FFFF` (512 KB) |
 | **Fast RAM** | True Fast / Zorro / Accelerator RAM | CPU only — on a separate bus | Full CPU speed (7–50+ MHz, no contention) | ✗ No | `$200000`+ (Zorro II) or `$01000000`+ (Zorro III) |
 
+> These address ranges are excerpts — for the complete 24-bit and 32-bit memory maps showing how Chip, Slow, Fast RAM, CIAs, custom chips, ROM, and Autoconfig space interleave, see [address_space.md](address_space.md).
+
 ### Why "Slow RAM" Exists
 
 The A500's internal 512 KB expansion (the "trapdoor" board) and the A500 external side-expansion both map to `$C00000`–`$C7FFFF`. This RAM is **on the same bus as Chip RAM**, so it suffers the same DMA contention — the CPU waits whenever the custom chips are using the bus. However, the custom chips **do not** fetch DMA data from this range. It's the worst of both worlds: too slow for CPU work (bus contention), but invisible to DMA (can't be used for screen buffers or audio).
