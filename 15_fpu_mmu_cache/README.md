@@ -8,6 +8,7 @@ The Motorola 68040 and 68060 processors introduced new complexity for Amiga deve
 
 | File | Description |
 |---|---|
+| [fpu_architecture.md](fpu_architecture.md) | **FPU architecture & history: why floating point matters, die budget constraints across 68k generations (transistor counts), 68881/68882 coprocessor internals (8×80-bit registers, microcode ROM), coprocessor interface protocol, 68040/68060 FPU integration, FPU vs soft-float benchmarks (3–38× speedup), software requiring FPU (LightWave, Imagine, VistaPro, Real 3D, TFX), Amiga FPU accelerator landscape** |
 | [68040_68060_libraries.md](68040_68060_libraries.md) | 68040.library / 68060.library — Line-F trap handlers that emulate missing FPU and integer instructions removed from the 040/060 microcode; RomTag structure, installation, detection via AttnFlags, performance trade-offs |
 | [cache_management.md](cache_management.md) | Cache control deep dive: CacheClearU/CacheClearE/CacheControl API, CACR register bits, DMA coherency protocol (CachePreDMA/CachePostDMA), CopyBack vs WriteThrough modes, quantified cycle costs |
 | [mmu_management.md](mmu_management.md) | MMU architecture across 68030/040/060: page tables, address translation pipeline, transparent translation registers, MuLib API, Enforcer hit detection, VMM demand-paged virtual memory, direct MMU programming examples |

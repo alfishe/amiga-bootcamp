@@ -29,7 +29,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | **🌐 Networking** | bsdsocket.library API, SANA-II, TCP/IP stacks comparison |
 | **🛠️ Toolchain** | GCC (bebbo/Codeberg), vasm/vlink, SAS/C, NDK, Makefiles, debugging |
 | **🔍 Reverse Engineering** | IDA/Ghidra setup, compiler fingerprints, binary patching, 3 case studies |
-| **🧮 FPU, MMU & Cache** | 68040/060 Line-F FPU emulation, PMMU page tables, cache coherency |
+| **🧮 FPU, MMU & Cache** | 68881/68882 FPU architecture, 68040/060 Line-F FPU emulation, PMMU page tables, cache coherency |
 | **🏗️ Driver Development** | exec.device framework, SANA-II network drivers, Picasso96/RTG, AHI audio |
 
 ### Quick Start
@@ -268,6 +268,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 15 — FPU, MMU & Cache
 | File | Topic |
 |---|---|
+| [fpu_architecture.md](15_fpu_mmu_cache/fpu_architecture.md) | FPU architecture & history: 68881/68882, 68040/060 FPU, die budget, transistor counts, coprocessor interface, FPU vs soft-float benchmarks, Amiga FPU accelerator landscape |
 | [68040_68060_libraries.md](15_fpu_mmu_cache/68040_68060_libraries.md) | 68040/060 FPU and instruction emulation libraries |
 | [mmu_management.md](15_fpu_mmu_cache/mmu_management.md) | MMU page tables, mmu.library, Enforcer, VMM |
 | [cache_management.md](15_fpu_mmu_cache/cache_management.md) | CacheClearU, CACR, DMA coherency |

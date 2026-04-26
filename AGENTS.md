@@ -50,17 +50,62 @@ Use a single `#` heading. Include the subject and a subtitle with key subtopics:
 
 ### 3. Overview
 
-The first section after the title. Must answer in **one dense paragraph**:
-- **What** is this subsystem/API/feature?
-- **Where** does it live in the system? (which library, which chip, which layer)
-- **Why** does it exist? What problem does it solve?
-- **Key constraints** the reader must internalize immediately
+The first section after the title. Two distinct styles depending on article type — choose before you write.
 
-Good example:
-> The Blitter (Block Image Transfer) is a DMA engine that performs raster operations on rectangular blocks of memory. It operates on up to 4 channels (A, B, C → D) using programmable minterm logic and can work independently of the CPU.
+---
 
-Bad example:
-> This document describes the Blitter. The Blitter is used for graphics.
+#### Type A: Concept Articles (history, chipset, OS subsystem, architectural deep-dives)
+
+These articles answer *why* something exists and *what changed because of it*. The overview should be **scannable and alive** — a reader understands scope in under 10 seconds *and wants to keep reading*.
+
+**Planning checklist** (answer these, then write prose that embeds the answers naturally):
+
+| Question | What it means |
+|---|---|
+| **What is it?** | Define the thing, its scope, and where it lives. |
+| **What was the problem?** | Why does this exist? Concrete pain, not abstract need. |
+| **How does it work / how did it evolve?** | Core mechanism or historical arc. |
+| **Why does it matter?** | What changed? Numbers, not adjectives. |
+
+**Voice:**
+
+- **Open with a hook.** A contradiction, a surprise, a concrete image. "The Amiga had the best graphics chipset in the world — and a CPU that couldn't do math." Not "Floating-point arithmetic is the computational foundation of..."
+- **Write like you're explaining to a smart colleague at a bar.** Short sentences. Concrete nouns (chips, scanlines, frames, hours). No filler.
+- **Bold vivid details, not section labels.** Bold `**two and a half video scanlines**`, not `**The problem.**`.
+- **Paragraphs tell a story.** Hook → problem → solution arc → punchline. 2–5 sentences each.
+- **Every paragraph gets a blank line after it.** Never a monolithic block. If you have 6 sentences about four CPU generations, split them into 2–3 paragraphs — one per phase or per idea. The blank lines are not optional; they are how the reader breathes.
+
+Bad (form-filling):
+> **What it is.** Floating-point arithmetic is the computational foundation of 3D rendering...
+> **The problem.** The 68000 CPU was integer-only...
+> **The solution.** First, Motorola shipped the MC68881...
+
+Good (alive prose — FPU article):
+> In 1985, the Amiga had the best graphics chipset in the world — and a CPU that couldn't do math. The 68000 was an integer-only processor: brilliant at moving pixels, helpless at trigonometry. Ask it to compute `sin(0.7)` and it would freeze for **two and a half video scanlines**...
+>
+> That was the problem the FPU solved. Motorola shipped four generations between 1984 and 1994, each designed under the same brutal constraint: floating-point circuits are **30× more complex** than integer circuits...
+
+---
+
+#### Type B: Reference Articles (register catalogs, file format specs, LVO tables, API listings, error code tables)
+
+These articles exist to be **looked up**, not read cover-to-cover. The overview must be minimal: state what the thing is, where it lives, and get out of the way.
+
+**Template (one paragraph, 2–4 sentences):**
+
+> [Thing] is [definition — one sentence]. It lives in [library / chip / NDK header path / file]. See [cross-link] for the broader context.
+
+**Rules:**
+- No hook. No drama. No story arc. The reader came here to look up a register or a flag — don't waste their time.
+- State the library name, NDK header, or file extension so the reader knows they're in the right place.
+- One paragraph only. No blank-line separation.
+- Never stretch to fill space — if 2 sentences cover it, stop.
+
+Good (custom chip registers reference):
+> The OCS/ECS custom chip registers occupy the address range `$DFF000–$DFF1FF` and are mapped to the Agnus, Denise, and Paula chips. This article catalogs every register with its address, R/W capability, and bit-field assignments. See the [Copper](copper.md) and [Blitter](blitter.md) articles for programming context.
+
+Good (error codes reference):
+> AmigaOS error codes are returned in `D0` by Exec and DOS library calls on failure. Negative values indicate warnings (operation completed with caveats); positive values indicate errors (operation failed). This table lists every defined error code from `exec/errors.h` (NDK 3.9). See [Error Handling](../07_dos/error_handling.md) for how to interpret and respond to errors.
 
 ### 4. Architecture / How It Works
 
