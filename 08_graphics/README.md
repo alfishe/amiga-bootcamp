@@ -18,7 +18,7 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [blitter_programming.md](blitter_programming.md) | Blitter deep dive: minterms, cookie-cut masking, line draw, fill mode |
 | [sprites.md](sprites.md) | Hardware sprites: DMA engine, data format, attached 15-color sprites, multiplexing, AGA enhancements, priority control |
 | [rastport.md](rastport.md) | RastPort drawing context: draw modes, patterns, layer clipping, text pipeline, blitter minterms |
-| [views.md](views.md) | View, ViewPort, MakeVPort, display construction |
+| [views.md](views.md) | View + ViewPort pipeline: 3-stage Mermaid diagram, ViewPort chaining (split screens), ColorMap/LoadRGB4, named antipatterns, Copper vs Views decision flowchart, modern GPU analogies |
 | [text_fonts.md](text_fonts.md) | TextFont bitmap layout, baseline rendering, algorithmic styles, AvailFonts enumeration |
 | [pixel_conversion.md](pixel_conversion.md) | Chunky ↔ Planar conversion deep dive: naive, merge/butterfly (Kalms), Copper Chunky, Akiko hardware, Blitter-assisted, RTG bypass, SoA/AoS theory, GPU swizzle modern parallels |
 | [animation.md](animation.md) | GEL system deep dive: BOBs, VSprites, AnimObs, hardware foundation (Blitter/Copper/Sprite interaction), collision detection, double buffering, performance tuning |
