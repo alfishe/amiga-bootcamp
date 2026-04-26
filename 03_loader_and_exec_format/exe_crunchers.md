@@ -4,7 +4,7 @@
 
 ## Overview
 
-**Executable crunchers** (packers) compress AmigaOS executables while keeping them directly runnable. The crunched file is a valid HUNK executable — when launched, a tiny **decrunch stub** runs first, decompresses the original program in memory, then jumps to its real entry point. The user sees a brief colour-cycling delay (the "decrunch colours"), then the program runs normally.
+**Executable crunchers** (packers) compress AmigaOS executables while keeping them directly runnable. The crunched file is a valid HUNK executable — when launched, a tiny **decrunch stub** runs first, decompresses the original program in memory, then jumps to its real entry point. The user sees a brief color-cycling delay (the "decrunch colors"), then the program runs normally.
 
 This was essential in the floppy era: a 200 KB program crunched to 120 KB loads significantly faster from a slow 880 KB floppy *and* frees disk space on capacity-constrained media.
 
@@ -192,7 +192,7 @@ Sophisticated crunchers solve this by:
 | **Titanics Cruncher** (ATN!) | 1991–1993 | LZ77 | ~350 bytes | 55–65% | Fast decrunch |
 | **CrunchMania** (CrM!) | 1992–1995 | LZ + range coding | ~500 bytes | 40–50% | Many registered/customised versions — format variants |
 | **Shrinkler** | 2014+ | Context-model + range coder | ~250 bytes | 30–40% | Modern; best ratio; used in 4K/64K demo intros |
-| **PackFire** | 2016+ | Shrinkler derivative | ~200 bytes | 30–40% | Optimised for size-limited compos |
+| **PackFire** | 2016+ | Shrinkler derivative | ~200 bytes | 30–40% | Optimized for size-limited compos |
 | **XPK** | 1992+ | Framework (multiple sub-packers) | varies | varies | Library-based; supports NUKE, SMPL, SQSH, etc. |
 
 ---
@@ -266,13 +266,13 @@ The 4-byte efficiency table controls how many bits are used for offset/length en
 
 The decompressor reads these 4 bytes to initialize its internal offset/length bit-allocation tables before starting the main decompression loop.
 
-### Decrunch Colours
+### Decrunch Colors
 
-The PowerPacker decrunch stub famously modifies custom chip colour registers during decompression to provide visual feedback — the background colour cycles through shades of grey or colour gradients, signalling that decrunching is in progress. This is the characteristic "decrunch effect" visible on real hardware:
+The PowerPacker decrunch stub famously modifies custom chip color registers during decompression to provide visual feedback — the background color cycles through shades of gray or color gradients, signalling that decrunching is in progress. This is the characteristic "decrunch effect" visible on real hardware:
 
 ```asm
 ; Visual feedback during decrunch:
-    MOVE.W  D0, $DFF180        ; COLOR00 — background colour
+    MOVE.W  D0, $DFF180        ; COLOR00 — background color
     ; D0 increments with each decompressed block
 ```
 
@@ -507,7 +507,7 @@ AFTER (stub jumps to original entry):
 1. **Tiny code hunk + large data hunk** — unusual ratio signals packing
 2. **AllocMem + decompression loop** at entry point — not the normal `c.o` startup pattern
 3. **No `MOVE.L 4.W,A6` / `OpenLibrary` sequence** — stub goes straight to decompression
-4. **Custom chip register writes** (`$DFF180` colour changes) — decrunch colour feedback
+4. **Custom chip register writes** (`$DFF180` color changes) — decrunch color feedback
 5. **Magic bytes** in the data hunk — scan for known signatures
 6. **Self-modifying code** — stub may overwrite its own memory during in-place decompression
 
@@ -605,21 +605,6 @@ For unknown or custom crunchers, the most reliable method is to load the executa
 ; When breakpoint hits, the decrunched program is in memory
 > sm $dest $dest+size "decrunched.bin"  ; save memory
 ```
-
----
-
-## Impact on FPGA / Emulation
-
-| Concern | Detail |
-|---|---|
-| **Timing-sensitive stubs** | Imploder has tight loops that may fail on accelerated CPUs; some stubs poll `$DFF006` (VHPOSR) for timing |
-| **Memory allocation** | Stub requires working `exec.library AllocMem` — must have a functional memory list |
-| **Chip RAM specificity** | If original hunks need CHIP RAM, stub must request `MEMF_CHIP` — DMA-accessible memory required for graphics/audio |
-| **Self-modifying code** | In-place decompression writes over instruction bytes — 68020+ instruction cache must be invalidated (`CacheClearU`) |
-| **Custom chip access** | Decrunch colour writes to `$DFF180` require a working Denise/colour register |
-| **Boot-block crunchers** | Trackloaders (game boot blocks) use custom crunchers without HUNK format — completely different mechanism, no OS involvement |
-
----
 
 ## References
 

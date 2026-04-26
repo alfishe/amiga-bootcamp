@@ -98,7 +98,7 @@ void rd_Read(struct IOStdReq *io) {
 
 ## Memory Allocation Strategy
 
-On initialisation, `ramdrive.device` uses `AllocMem`:
+On initialization, `ramdrive.device` uses `AllocMem`:
 
 ```c
 rdbase->rd_RAMStart = AllocMem(rdbase->rd_RAMSize,

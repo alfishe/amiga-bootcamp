@@ -13,9 +13,9 @@ The OCS/ECS chipset provides **8 hardware sprites**, each 16 pixels wide and arb
 | Count | 8 sprites |
 | Width | 16 pixels fixed |
 | Height | Programmable (any number of lines) |
-| Colours | 3 (+1 transparent) per sprite |
-| Colour source | Sprite colour registers (COLOR16–COLOR31) |
-| Attach mode | Pairs 0/1, 2/3, 4/5, 6/7 → 15 colours |
+| Colors | 3 (+1 transparent) per sprite |
+| Color source | Sprite color registers (COLOR16–COLOR31) |
+| Attach mode | Pairs 0/1, 2/3, 4/5, 6/7 → 15 colors |
 
 ## Sprite Registers
 
@@ -60,14 +60,14 @@ Each line of the sprite consists of two 16-bit words (DATA and DATB) fetched fro
 
 ```
 For each scanline of sprite:
-  Word 1 (DATA): bit 15..0 → pixel bit 1 (colour bit 1)
-  Word 2 (DATB): bit 15..0 → pixel bit 0 (colour bit 0)
+  Word 1 (DATA): bit 15..0 → pixel bit 1 (color bit 1)
+  Word 2 (DATB): bit 15..0 → pixel bit 0 (color bit 0)
 
-Pixel colour:
+Pixel color:
   DATA[bit] = 0, DATB[bit] = 0  → transparent
-  DATA[bit] = 0, DATB[bit] = 1  → colour 1 (COLOR17 for sprite 0)
-  DATA[bit] = 1, DATB[bit] = 0  → colour 2 (COLOR18)
-  DATA[bit] = 1, DATB[bit] = 1  → colour 3 (COLOR19)
+  DATA[bit] = 0, DATB[bit] = 1  → color 1 (COLOR17 for sprite 0)
+  DATA[bit] = 1, DATB[bit] = 0  → color 2 (COLOR18)
+  DATA[bit] = 1, DATB[bit] = 1  → color 3 (COLOR19)
 ```
 
 ## Sprite Data in Memory
@@ -85,29 +85,29 @@ Agnus DMA reads the sprite from a memory block structured as:
   Word: $0000   (SPRnCTL = 0)
 ```
 
-## Colour Mapping
+## Color Mapping
 
-Sprites share colour registers with bitplanes:
+Sprites share color registers with bitplanes:
 
-| Sprites | Colour Registers |
+| Sprites | Color Registers |
 |---|---|
 | 0 and 1 | COLOR16–COLOR19 |
 | 2 and 3 | COLOR20–COLOR23 |
 | 4 and 5 | COLOR24–COLOR27 |
 | 6 and 7 | COLOR28–COLOR31 |
 
-COLOR16 (the first colour of sprite pair 0/1) is always transparent — the sprite background. Only COLOR17–COLOR19 are visible for sprites 0/1.
+COLOR16 (the first color of sprite pair 0/1) is always transparent — the sprite background. Only COLOR17–COLOR19 are visible for sprites 0/1.
 
-## Attached Sprites (15 Colours)
+## Attached Sprites (15 Colors)
 
-Pairing two sprites (`ATT` bit in SPRnCTL of the even sprite) combines their DATA/DATB bits to produce a 4-bit colour index (16 colours, one transparent):
+Pairing two sprites (`ATT` bit in SPRnCTL of the even sprite) combines their DATA/DATB bits to produce a 4-bit color index (16 colors, one transparent):
 
 ```
-4-bit colour = {SPR_even.DATA[bit], SPR_even.DATB[bit],
+4-bit color = {SPR_even.DATA[bit], SPR_even.DATB[bit],
                 SPR_odd.DATA[bit],  SPR_odd.DATB[bit]}
 ```
 
-This gives 15 visible colours per pair, using COLOR16–COLOR31 for pair 0/1.
+This gives 15 visible colors per pair, using COLOR16–COLOR31 for pair 0/1.
 
 ## BPLCON2 — Sprite Priority
 
@@ -122,7 +122,7 @@ Default: sprites appear in front of all bitplanes.
 
 ## OS Mouse Pointer
 
-AmigaOS's Intuition uses sprite 0 (and 1 in attached mode for colour pointer) for the mouse pointer. Intuition calls `SetPointer()` / `ClearPointer()` on a Window to install custom pointer sprites.
+AmigaOS's Intuition uses sprite 0 (and 1 in attached mode for color pointer) for the mouse pointer. Intuition calls `SetPointer()` / `ClearPointer()` on a Window to install custom pointer sprites.
 
 ```c
 SetPointer(window, pointer_data, height, width, x_offset, y_offset);

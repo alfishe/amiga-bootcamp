@@ -4,13 +4,13 @@
 
 ## What Is the Copper?
 
-The **Copper** (Co-Processor) is one of the most distinctive pieces of hardware in any computer ever built. It is a tiny, ultra-simple programmable DMA engine that executes a program — called a **copper list** — in perfect synchronisation with the video beam as it sweeps across the screen.
+The **Copper** (Co-Processor) is one of the most distinctive pieces of hardware in any computer ever built. It is a tiny, ultra-simple programmable DMA engine that executes a program — called a **copper list** — in perfect synchronization with the video beam as it sweeps across the screen.
 
 The Copper watches the beam position and can **write any value to any custom chip register at any specific screen position**. This single capability enables an astonishing range of visual effects.
 
 ### Why Does It Matter?
 
-On a conventional computer, changing display parameters (colours, scroll positions, resolutions) requires the CPU to execute code at precisely the right moment. This is fragile, wastes CPU time, and is limited by interrupt latency.
+On a conventional computer, changing display parameters (colors, scroll positions, resolutions) requires the CPU to execute code at precisely the right moment. This is fragile, wastes CPU time, and is limited by interrupt latency.
 
 The Copper does this **automatically, for free, with perfect timing** — every single frame, without any CPU involvement at all.
 
@@ -50,20 +50,20 @@ The Copper does this **automatically, for free, with perfect timing** — every 
 │        │                  │                        │                │
 │  ┌─────┴──────────────────┴────────────────────────┴─────────┐      │
 │  │              BEAM COUNTER (V count, H count)              │      │
-│  │    Increments every colour clock, resets each frame       │      │
+│  │    Increments every color clock, resets each frame        │      │
 │  │    PAL: 312 lines × 227 clocks   NTSC: 262 × 227          │      │
 │  └───────────────────────────────────────────────────────────┘      │
-└──────────┬─────────────────────────────────────────────────────────┘
+└──────────┬──────────────────────────────────────────────────────────┘
            │ register writes ($DFF000–$DFF1FE)
            ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    DENISE / LISA  (Video Encoder)                   │
 │                                                                     │
-│  Receives bitplane data + sprite data + colour register values      │
+│  Receives bitplane data + sprite data + color register values       │
 │  Composites them into a final pixel stream:                         │
 │                                                                     │
 │  ┌────────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐   │
-│  │ Bitplane   │  │ Sprite   │  │ Colour   │  │ Playfield        │   │
+│  │ Bitplane   │  │ Sprite   │  │ Color    │  │ Playfield        │   │
 │  │ Decode     │→ │ Priority │→ │ Palette  │→ │ Priority &       │   │
 │  │ (planar→   │  │ Merge    │  │ Lookup   │  │ Genlock Control  │   │
 │  │  index)    │  │          │  │ (32/256) │  │                  │   │
@@ -90,10 +90,10 @@ The Copper does this **automatically, for free, with perfect timing** — every 
 ### Component Interactions
 
 **Copper ↔ Chip RAM:**
-The Copper fetches its program (the copper list) from Chip RAM via DMA. It reads one instruction (2 words = 4 bytes) every 4 colour clocks. The copper list **must** reside in Chip RAM — it cannot be in Fast RAM because only Chip RAM is DMA-accessible.
+The Copper fetches its program (the copper list) from Chip RAM via DMA. It reads one instruction (2 words = 4 bytes) every 4 color clocks. The copper list **must** reside in Chip RAM — it cannot be in Fast RAM because only Chip RAM is DMA-accessible.
 
 **Copper ↔ Custom Registers:**
-When the Copper executes a MOVE instruction, it writes directly to a custom chip register (`$DFF000`–`$DFF1FE`). This is the exact same register space the CPU writes to. The Copper can set colours, bitplane pointers, sprite pointers, display window, scroll offsets, DMA control, and audio parameters.
+When the Copper executes a MOVE instruction, it writes directly to a custom chip register (`$DFF000`–`$DFF1FE`). This is the exact same register space the CPU writes to. The Copper can set colors, bitplane pointers, sprite pointers, display window, scroll offsets, DMA control, and audio parameters.
 
 **Copper ↔ Beam Counter:**
 The Copper continuously compares the current beam position (V count, H count) against WAIT instructions. When the beam reaches or passes the specified position, execution continues. This is a hardware comparator — no polling loop, no interrupt latency.
@@ -117,12 +117,12 @@ A WAIT instruction with bit 15 of the mask word cleared becomes a "blitter-finis
 
 | Effect | How | Used In |
 |---|---|---|
-| **Per-line colour changes** | WAIT for line, MOVE colour register | Gradient skies, rainbow bars |
+| **Per-line color changes** | WAIT for line, MOVE color register | Gradient skies, rainbow bars |
 | **Split screens** | Change bitplane pointers mid-frame | Status bar + scrolling playfield |
 | **Parallax scrolling** | Change BPLCON1 (scroll offset) at different lines | Multi-layer side-scrollers |
 | **Resolution changes** | Change BPLCON0 mid-frame | HiRes menu + LoRes game area |
 | **Sprite multiplexing** | Repoint sprite DMA pointers after sprite finishes | More than 8 sprites per frame |
-| **Palette animation** | Modify colour registers each frame | Cycling colours, water shimmer |
+| **Palette animation** | Modify color registers each frame | Cycling colors, water shimmer |
 | **Display window tricks** | Change DIWSTRT/DIWSTOP | Overscan, letterbox |
 | **Interlace tricks** | Toggle LOF bit | Custom interlace effects |
 
@@ -134,7 +134,7 @@ A WAIT instruction with bit 15 of the mask word cleared becomes a "blitter-finis
 | No memory read | Can only WRITE to registers, never read |
 | Write-only to custom regs | Cannot write to CPU memory, CIA, or Fast RAM |
 | Limited register set | Protected registers ($000–$03E) need `COPCON` unlock |
-| No sub-pixel timing | Horizontal resolution is 4 colour clocks (~8 low-res pixels) |
+| No sub-pixel timing | Horizontal resolution is 4 color clocks (~8 low-res pixels) |
 | Vertical wrapping | V counter wraps at 255; PAL lines 256+ need two WAITs |
 
 ---
@@ -191,7 +191,7 @@ Example: Skip next if beam is past line 200:
 
 ## Your First Copper List
 
-Here's the simplest possible copper list — it changes the background colour at line 128:
+Here's the simplest possible copper list — it changes the background color at line 128:
 
 ```asm
     SECTION copperlist,DATA_C    ; *** MUST be in Chip RAM! ***
@@ -220,7 +220,7 @@ To activate it:
 
 ---
 
-## Rainbow Gradient (Colour Per Scanline)
+## Rainbow Gradient (Color Per Scanline)
 
 ```asm
 RainbowCopper:
@@ -242,7 +242,7 @@ RainbowCopper:
     dc.w    $FFFF,$FFFE
 ```
 
-This produces a smooth colour gradient down the screen — **zero CPU cost**.
+This produces a smooth color gradient down the screen — **zero CPU cost**.
 
 ---
 
@@ -325,23 +325,23 @@ AGA (Alice chip) keeps the same 3-instruction Copper but gains access to the **e
 
 | AGA Feature | Copper Can Set |
 |---|---|
-| 256-colour palette | `COLOR00–COLOR255` via BPLCON3 bank select |
-| Extended sprites | 64-colour sprites via palette banks |
+| 256-color palette | `COLOR00–COLOR255` via BPLCON3 bank select |
+| Extended sprites | 64-color sprites via palette banks |
 | FMODE | DMA fetch width (but careful — affects in-progress DMA) |
 | BPLCON3/BPLCON4 | AGA-specific bitplane/sprite control |
 
 ### AGA Palette via Copper
 
-AGA has 256 colours but still only 32 colour registers visible at a time. To load all 256 colours, the Copper uses BPLCON3 to select palette banks:
+AGA has 256 colors but still only 32 color registers visible at a time. To load all 256 colors, the Copper uses BPLCON3 to select palette banks:
 
 ```asm
-    ; Load colours 0–31 (bank 0)
+    ; Load colors 0–31 (bank 0)
     dc.w    $0106,$0000         ; BPLCON3: bank 0
     dc.w    $0180,$0000         ; COLOR00
     dc.w    $0182,$0111         ; COLOR01
-    ; ... all 32 colours ...
-
-    ; Switch to bank 1 (colours 32–63)
+    ; ... all 32 colors ...
+    
+    ; Switch to bank 1 (colors 32–63)
     dc.w    $0106,$2000         ; BPLCON3: bank 1
     dc.w    $0180,$0222         ; COLOR32
     dc.w    $0182,$0333         ; COLOR33
@@ -354,9 +354,9 @@ AGA has 256 colours but still only 32 colour registers visible at a time. To loa
 
 | Parameter | Value |
 |---|---|
-| Instruction time | 4 colour clocks (= 8 lo-res pixels = ~1.12 µs) |
+| Instruction time | 4 color clocks (= 8 lo-res pixels = ~1.12 µs) |
 | Max instructions per line | ~112 (NTSC) / ~114 (PAL) |
-| Horizontal resolution | 4 colour clocks (~8 lo-res pixels) |
+| Horizontal resolution | 4 color clocks (~8 lo-res pixels) |
 | Vertical range | 0–255 (wraps; use double-WAIT for PAL lines 256+) |
 | PAL visible lines | 44–300 (256 visible) |
 | NTSC visible lines | 44–244 (200 visible) |

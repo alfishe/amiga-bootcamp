@@ -568,7 +568,7 @@ BltBitMap(srcBM, 0, 0,       /* source bitmap, x, y */
           NULL);             /* no temp buffer needed */
 
 /* Draw a filled rectangle (uses the Blitter internally): */
-SetAPen(rp, 3);              /* Set pen colour to index 3 */
+SetAPen(rp, 3);              /* Set pen color to index 3 */
 RectFill(rp, 10, 10, 100, 50); /* Filled rectangle */
 ```
 

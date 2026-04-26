@@ -141,7 +141,7 @@ The double-jump (JSR→JMP→function→RTS) costs approximately 12 extra cycles
 ```c
 struct Library *MakeLibrary(
     APTR   funcArray,     /* A0: function pointer array */
-    APTR   structInit,    /* A1: struct initialiser table (or NULL) */
+    APTR   structInit,    /* A1: struct initializer table (or NULL) */
     APTR   initFunc,      /* A2: init function (or NULL) */
     ULONG  dataSize,      /* D0: sizeof(MyLibBase) */
     BPTR   segList         /* D1: segment list (for UnLoadSeg on expunge) */
@@ -409,8 +409,8 @@ void SumLibrary(struct Library *lib)
 stateDiagram-v2
     [*] --> OnDisk : LIBS:my.library file
     OnDisk --> Loading : OpenLibrary("my.library", 1)
-    Loading --> Initialised : LoadSeg + MakeLibrary + LibInit
-    Initialised --> Added : AddLibrary → SysBase→LibList
+    Loading --> Initialized : LoadSeg + MakeLibrary + LibInit
+    Initialized --> Added : AddLibrary → SysBase→LibList
     Added --> Open : OpenLibrary → Open() LVO → lib_OpenCnt++
     Open --> Open : More OpenLibrary calls
     Open --> Closing : CloseLibrary → Close() LVO → lib_OpenCnt--

@@ -11,7 +11,7 @@ The **Original Chip Set** (OCS) ships in the Amiga 1000 (1985), A500 (1987), and
 | Chip | MOS Part | Primary Responsibilities |
 |---|---|---|
 | **Agnus** | 8361 (PAL), 8367 (NTSC) | DMA controller, Copper coprocessor, Blitter, address generation |
-| **Denise** | 8362 | Display: bitplane fetch decode, sprite decode, colour output |
+| **Denise** | 8362 | Display: bitplane fetch decode, sprite decode, color output |
 | **Paula** | 8364 | Audio DMA (4 channels), floppy disk I/O, serial port, interrupts |
 
 ## Contents
@@ -90,7 +90,7 @@ The CDTV is an A500-class OCS computer in a consumer set-top box form factor. Se
 - Max **512 KB Chip RAM** on A500 rev 5 and earlier (Agnus 8361/8367 addresses 512 KB only)
 - A500 rev 6+ allows 1 MB with Fat Agnus (part of later OCS run)
 - No productivity display modes (ECS adds BEAMCON0)
-- 32 colours max (or 64 EHB, or HAM 12-bit) in standard bitplane modes
+- 32 colors max (or 64 EHB, or HAM 12-bit) in standard bitplane modes
 - Blitter is 16-bit; no 64-bit fetch (AGA adds FMODE)
 - No ECS Denise border features
 

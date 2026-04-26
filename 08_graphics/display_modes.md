@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Amiga's display system evolved through three generations of custom chips: **OCS** (Original Chip Set, A1000/A500/A2000), **ECS** (Enhanced, A3000/A600), and **AGA** (Advanced Graphics Architecture, A1200/A4000). Each generation expanded resolution, colour depth, and display flexibility while maintaining backward compatibility.
+The Amiga's display system evolved through three generations of custom chips: **OCS** (Original Chip Set, A1000/A500/A2000), **ECS** (Enhanced, A3000/A600), and **AGA** (Advanced Graphics Architecture, A1200/A4000). Each generation expanded resolution, color depth, and display flexibility while maintaining backward compatibility.
 
 OS 3.0+ provides a **display database** that abstracts these capabilities. Applications query available modes by `ModeID` rather than hardcoding chipset-specific flags.
 
@@ -15,15 +15,15 @@ OS 3.0+ provides a **display database** that abstracts these capabilities. Appli
 | Feature | OCS (Agnus/Denise) | ECS (Fat Agnus/Super Denise) | AGA (Alice/Lisa) |
 |---|---|---|---|
 | **Max Chip RAM** | 512 KB (8372) / 1 MB (8372A) | 2 MB (8375) | 2 MB (8374) |
-| **Bitplanes** | 6 (32 colours, lowres) | 6 | 8 (256 colours) |
+| **Bitplanes** | 6 (32 colors, lowres) | 6 | 8 (256 colors) |
 | **Palette entries** | 32 (4096 total, 12-bit RGB) | 32 (4096) | 256 (16.7M, 24-bit RGB) |
 | **Max lowres** | 320×256 (PAL) | 320×256 | 320×256 |
 | **Max hires** | 640×256 | 640×256 | 640×256 |
 | **Super hires** | — | 1280×256 | 1280×256 |
 | **Scan-doubled** | — | — | 640×512 non-interlaced |
-| **HAM** | HAM6 (4096 colours) | HAM6 | HAM8 (262,144 colours) |
-| **EHB** | EHB (64 colours) | EHB | EHB (superseded by 8 planes) |
-| **Sprites** | 8 × 16px × 3 colours | 8 × 16px × 3 colours | 8 × 16/32/64px × 3/15 colours |
+| **HAM** | HAM6 (4096 colors) | HAM6 | HAM8 (262,144 colors) |
+| **EHB** | EHB (64 colors) | EHB | EHB (superseded by 8 planes) |
+| **Sprites** | 8 × 16px × 3 colors | 8 × 16px × 3 colors | 8 × 16/32/64px × 3/15 colors |
 | **Fetch modes** | 1× | 1× | 1×, 2×, 4× (wider data bus) |
 | **Bandwidth** | 3.58 MHz pixel clock | 3.58/7.16/14.32 MHz | Up to 28.64 MHz (4× fetch) |
 
@@ -40,8 +40,8 @@ Line frequency:     15,625 Hz
 Frame frequency:    50 Hz (25 Hz interlaced)
 Lines per frame:    312.5 (625 interlaced)
 Active lines:       ~256 (non-interlaced) / ~512 (interlaced)
-Colour clock:       3,546,895 Hz
-Pixel clock (lores): 7,093,790 Hz (1 pixel = 2 colour clocks)
+Color clock:       3,546,895 Hz
+Pixel clock (lores): 7,093,790 Hz (1 pixel = 2 color clocks)
 Pixel clock (hires): 14,187,580 Hz
 ```
 
@@ -52,7 +52,7 @@ Line frequency:     15,734 Hz
 Frame frequency:    60 Hz (30 Hz interlaced)
 Lines per frame:    262.5 (525 interlaced)
 Active lines:       ~200 (non-interlaced) / ~400 (interlaced)
-Colour clock:       3,579,545 Hz
+Color clock:       3,579,545 Hz
 Pixel clock (lores): 7,159,090 Hz
 Pixel clock (hires): 14,318,180 Hz
 ```
@@ -161,7 +161,7 @@ while ((modeID = NextDisplayInfo(modeID)) != INVALID_ID)
         GetDisplayInfoData(NULL, (UBYTE *)&mon, sizeof(mon),
                            DTAG_MNTR, modeID);
 
-        Printf("$%08lx: %ldx%ld, %ld colours, %s\n",
+        Printf("$%08lx: %ldx%ld, %ld colors, %s\n",
                 modeID,
                 dims.Nominal.MaxX - dims.Nominal.MinX + 1,
                 dims.Nominal.MaxY - dims.Nominal.MinY + 1,
@@ -203,7 +203,7 @@ The display system shares DMA bandwidth with other custom chips. Each scanline h
 | Blitter | Variable (steals from CPU) |
 | CPU | Whatever is left |
 
-> In high-resolution 4-plane mode, bitplane DMA alone consumes 80 words per line — nearly the entire available bandwidth. This is why OCS/ECS hires is limited to 4 planes (16 colours) and AGA needed wider fetch modes.
+> In high-resolution 4-plane mode, bitplane DMA alone consumes 80 words per line — nearly the entire available bandwidth. This is why OCS/ECS hires is limited to 4 planes (16 colors) and AGA needed wider fetch modes.
 
 ---
 

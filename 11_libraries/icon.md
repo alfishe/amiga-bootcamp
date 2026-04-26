@@ -6,7 +6,7 @@
 
 Every Workbench-visible file has a companion `.info` file containing its icon imagery, tool types (key=value metadata), default tool, stack size, and position. `icon.library` provides reading, writing, and manipulating these structures.
 
-The `.info` file format is binary, not text. icon.library handles all serialisation.
+The `.info` file format is binary, not text. icon.library handles all serialization.
 
 ```mermaid
 flowchart LR
@@ -52,7 +52,7 @@ struct DiskObject {
 
 ## Icon Types
 
-| Constant | Value | Description | Workbench Behaviour |
+| Constant | Value | Description | Workbench Behavior |
 |---|---|---|---|
 | `WBDISK` | 1 | Disk/volume icon | Opens drawer showing disk contents |
 | `WBDRAWER` | 2 | Drawer (directory) | Opens drawer window |
@@ -169,12 +169,12 @@ FreeDiskObject(newIcon);
 
 ## OS 3.5+ New-Style Icons
 
-AmigaOS 3.5 introduced **true-colour icons** (PNG-based) alongside the legacy planar format. The `icon.library` v46+ handles both transparently — `GetDiskObject` returns the best available format.
+AmigaOS 3.5 introduced **true-color icons** (PNG-based) alongside the legacy planar format. The `icon.library` v46+ handles both transparently — `GetDiskObject` returns the best available format.
 
 | Feature | Legacy (OS 1.x–3.1) | New-Style (OS 3.5+) |
 |---|---|---|
-| Format | Planar bitplane imagery | PNG/true-colour embedded |
-| Colours | 4–16 (Workbench palette) | 24-bit true colour |
+| Format | Planar bitplane imagery | PNG/true-color embedded |
+| Colors | 4–16 (Workbench palette) | 24-bit true color |
 | Size | Fixed (standard sizes) | Scalable |
 | Transparency | 1-bit mask | 8-bit alpha channel |
 | Storage | `do_Gadget.GadgetRender` | Extended chunks in `.info` |

@@ -42,14 +42,14 @@ flowchart LR
 | **16-bit bus** | Gayle connects via 16-bit data path even on 32-bit CPUs |
 | **PIO mode 0** | Stock Gayle supports only PIO mode 0 (~3.3 MB/s theoretical, ~1.5 MB/s actual) |
 | **CIA timing** | CIA chip access introduces wait states |
-| **CPU overhead** | 100% CPU utilisation during transfers — no multitasking during disk I/O |
+| **CPU overhead** | 100% CPU utilization during transfers — no multitasking during disk I/O |
 
 ### Community Solutions — Fast IDE
 
 | Solution | Method | Improvement |
 |---|---|---|
 | **FastATA** (E-Matrix/Elbox) | Zorro SCSI/IDE card with DMA | Up to ~10 MB/s, frees CPU |
-| **Buddha/Catweasel** | Clock port / Zorro IDE with optimised driver | ~2–3 MB/s, multiple IDE channels |
+| **Buddha/Catweasel** | Clock port / Zorro IDE with optimized driver | ~2–3 MB/s, multiple IDE channels |
 | **Blizzard SCSI** | Accelerator-integrated SCSI | Up to ~5 MB/s with DMA |
 | **GVP Series II** | Zorro II SCSI with custom DMA ASIC | ~3 MB/s, DMA frees CPU |
 | **A4091** | Zorro III SCSI (NCR 53C710) | **~10 MB/s** — fastest stock Amiga SCSI |

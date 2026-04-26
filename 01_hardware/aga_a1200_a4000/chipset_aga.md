@@ -12,10 +12,10 @@ Alice is the successor to Super Agnus and is the DMA controller and Copper/Blitt
 Alice can fetch 2 or 4 words per DMA cycle via the `FMODE` register ($DFF1FC). This dramatically increases the bandwidth available to the blitter and bitplane DMA.
 
 **Extended bitplane depth:**
-Alice supports up to **8 bitplanes** (256 colours), compared to OCS/ECS's 6-plane limit.
+Alice supports up to **8 bitplanes** (256 colors), compared to OCS/ECS's 6-plane limit.
 
 **BPLCON4:**
-Alice adds `BPLCON4` to control bitplane bank selection — which 64-entry block of the 256-entry colour table is used by the bitplanes.
+Alice adds `BPLCON4` to control bitplane bank selection — which 64-entry block of the 256-entry color table is used by the bitplanes.
 
 ### ALICE_ID
 
@@ -34,18 +34,18 @@ lsr.w   #8, d0
 
 ## Lisa (AGA Denise)
 
-Lisa is the display chip successor to ECS Denise, providing 8-bit colour output (256 colour registers) and extended sprite capabilities.
+Lisa is the display chip successor to ECS Denise, providing 8-bit color output (256 color registers) and extended sprite capabilities.
 
 ### Key Enhancements over ECS Denise
 
-**256 colour registers:**
+**256 color registers:**
 Lisa provides COLOR00–COLOR255, each 24-bit (32-bit register with low byte unused).
 
-**4 colour banks for bitplanes:**
-`BPLCON4` selects which 64-register bank (0–3) the bitplanes use for lookup. This allows dual-playfield each using a different 64-colour palette.
+**4 color banks for bitplanes:**
+`BPLCON4` selects which 64-register bank (0–3) the bitplanes use for lookup. This allows dual-playfield each using a different 64-color palette.
 
 **Sprite bank selection:**
-`BPLCON3` bits select which colour bank sprite pairs use.
+`BPLCON3` bits select which color bank sprite pairs use.
 
 **Extended sprite width:**
 Sprites can be 16 or 64 pixels wide in AGA mode.
@@ -105,7 +105,7 @@ bits 14-12: BPU2-0 — lower 3 bits of bitplane count
 bit   4:    BPU3   — MSB of bitplane count (AGA: allows 7, 8 planes)
 ```
 
-To use 8 bitplanes (256 colours):
+To use 8 bitplanes (256 colors):
 ```asm
 move.w  #$9411, BPLCON0+custom  ; HIRES=1 (if needed), BPU=8 (BPU3=1, BPU2-0=000), ECSENA=1
 ```
@@ -123,4 +123,4 @@ move.w  #$9411, BPLCON0+custom  ; HIRES=1 (if needed), BPU=8 (BPU3=1, BPU2-0=000
 
 - [Akiko — CD32 Custom Chip](akiko_cd32.md) — CD32-exclusive ASIC (C2P, CD-ROM, NVRAM) that sits alongside Alice/Lisa/Paula
 - [AGA Blitter](aga_blitter.md) — 64-bit FMODE blitter details
-- [AGA Palette](aga_palette.md) — 256-register 24-bit colour system
+- [AGA Palette](aga_palette.md) — 256-register 24-bit color system

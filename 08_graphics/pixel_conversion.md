@@ -111,7 +111,7 @@ A chunky buffer is the **natural intermediate format** for a GPU-style rendering
 
 ### Chunky (Packed Pixel)
 
-Every pixel's complete colour index is stored contiguously. For 8-bit (256 colour) pixels:
+Every pixel's complete color index is stored contiguously. For 8-bit (256 color) pixels:
 
 ```
 Address:  $0000  $0001  $0002  $0003  $0004  $0005  $0006  $0007
@@ -123,7 +123,7 @@ Each byte = one pixel. Linear, simple, cache-friendly for rendering. This is how
 
 ### Planar (Bitplane)
 
-Each pixel's colour index is **split across N separate memory regions** (bitplanes). For 8-bit pixels (8 bitplanes), each bitplane stores one bit of every pixel:
+Each pixel's color index is **split across N separate memory regions** (bitplanes). For 8-bit pixels (8 bitplanes), each bitplane stores one bit of every pixel:
 
 ```
 Bitplane 0: 1 0 1 1 0 0 1 0  ← bit 0 of pixels 0–7
@@ -136,7 +136,7 @@ Bitplane 6: 0 0 1 0 0 0 0 1  ← bit 6
 Bitplane 7: 0 0 0 0 1 0 1 0  ← bit 7
 ```
 
-To read pixel 0's colour: collect bit 0 from each of the 8 planes → `10101100` = `$AC`. The 8 planes are **not interleaved** in standard Amiga layout — each is a separate contiguous memory block.
+To read pixel 0's color: collect bit 0 from each of the 8 planes → `10101100` = `$AC`. The 8 planes are **not interleaved** in standard Amiga layout — each is a separate contiguous memory block.
 
 > [!WARNING]
 > The Amiga's planar format means memory addresses in bitplane memory don't correspond to pixel positions linearly. Plane 0 byte 0 contains bits for pixels 0–7. Plane 1 byte 0 contains bits for the same pixels 0–7. The byte offset for pixel N is `(N / 8)` in **every** plane. The bit position is `7 - (N mod 8)`. This is the fundamental indirection all planar-format API developers must internalize.
@@ -817,9 +817,14 @@ The CD32's Akiko chip implements C2P in dedicated silicon. The CPU feeds 8 longw
 | CPU load | 100% | 100% | ~50% (register I/O) | **2x CPU freed** |
 | 320x256x8bpl | ~1.1 s | ~35 ms | ~35 ms | **~31x** |
 
-Akiko's throughput is approximately the same as optimised software C2P on the 68020 because both are limited by the Chip RAM bus bandwidth (~3.5 MB/s shared). On faster CPUs (68040/060), software C2P **outperforms** Akiko because the CPU can process data faster than the register interface can shuttle it.
+Akiko's throughput is approximately the same as optimized software C2P on the 68020 because both are limited by the Chip RAM bus bandwidth (~3.5 MB/s shared). On faster CPUs (68040/060), software C2P **outperforms** Akiko because the CPU can process data faster than the register interface can shuttle it.
 
 Full Akiko protocol: [Akiko — CD32 C2P Hardware](../01_hardware/aga_a1200_a4000/akiko_cd32.md#chunky-to-planar-c2p-conversion)
+
+> [!NOTE]
+> **FPGA Implementation**: On MiSTer, Akiko C2P must be implemented as a state machine triggered by register writes to `$B80030`. The CPU writes 8 longwords to the same address; the state machine reads them sequentially, performs bit transposition in hardware, and presents the 8 planar longwords on subsequent reads from `$B80030`. Throughput is bounded by Chip RAM bus bandwidth (~3.5 MB/s shared), not by the state machine speed — a naive FGPA Akiko implementation that runs at bus speed is already cycle-accurate.
+>
+> **Reference**: MiSTer Minimig-AGA Akiko implementation — [`rtl/akiko.v`](https://github.com/MiSTer-devel/Minimig-AGA_MiSTer/blob/MiSTer/rtl/akiko.v) (Verilog)
 
 ---
 
@@ -911,6 +916,9 @@ Most games used a hybrid: 1-2 bitplanes for UI/HUD elements, reserving `COLOR00`
 
 > [!NOTE]
 > Copper Chunky and C2P are not mutually exclusive. Some demos use Copper Chunky for one screen region while simultaneously using C2P for another. The Copperlist can intermix WAIT/MOVE instructions with normal bitplane display controls.
+
+> [!WARNING]
+> **FPGA/Emulation Timing Sensitivity**: Copper Chunky is extremely sensitive to Copper timing accuracy. Each `WAIT` must compare against the exact beam counter value, and each `MOVE` to `COLOR00` must take effect at the correct pixel position. DMA contention between Copper and bitplane fetches shifts pixel placement, and emulators must model the Copper's 2-cycle instruction latency (WAIT=2 cycles, MOVE=2 cycles). A one-pixel offset produces visible image shearing. The Minimig-AGA core on MiSTer implements this, but early UAE versions did not — if your Copper Chunky output shows "striped" patterns under emulation, test on MiSTer or real hardware before debugging the algorithm.
 
 ---
 
@@ -1038,8 +1046,8 @@ The Amiga's planar format is **SoA**: each bitplane is an array of one field (on
 | **Amiga graphics** | Bitplanes (Agnus DMA) | Chunky pixel buffer (CPU render) | C2P algorithm |
 | **GPU compute shaders** | SoA buffer layouts (SSBO) | Vertex attributes (interleaved VBO) | Shader transpose |
 | **SIMD / AVX-512** | Separate float arrays (vectorisable) | Struct arrays (gather/scatter) | `_mm512_transpose` intrinsics |
-| **Database engines** | Columnar storage (Parquet, Arrow) | Row-oriented storage (MySQL) | Column↔row materialisation |
-| **Image compression** | Colour planes (JPEG YCbCr) | RGB pixels (BMP) | MCU block decomposition |
+| **Database engines** | Columnar storage (Parquet, Arrow) | Row-oriented storage (MySQL) | Column↔row materialization |
+| **Image compression** | Color planes (JPEG YCbCr) | RGB pixels (BMP) | MCU block decomposition |
 | **GPU texture memory** | Block-compressed (BC/ASTC) | Linear RGBA | Hardware texture unit decode |
 | **Neural network inference** | NCHW tensor layout (channels first) | NHWC (channels last) | Layout transposition kernel |
 
@@ -1047,10 +1055,10 @@ The Amiga's planar format is **SoA**: each bitplane is an array of one field (on
 
 | Layout | Optimal For | Reason |
 |---|---|---|
-| **SoA / Planar** | Streaming one field across many elements | Maximises cache line utilisation, enables SIMD vectorisation |
+| **SoA / Planar** | Streaming one field across many elements | Maximizes cache line utilization, enables SIMD vectorization |
 | **AoS / Chunky** | Random-access to complete elements | All fields of one element in one cache line |
 
-The Amiga's custom DMA engine streams bitplane data to the display sequentially — plane 0 for the whole line, then plane 1, etc. This is a **SoA access pattern**, perfectly matched by the planar layout. The CPU, which wants to set a single pixel's complete colour, has the opposite need — it wants **AoS**.
+The Amiga's custom DMA engine streams bitplane data to the display sequentially — plane 0 for the whole line, then plane 1, etc. This is a **SoA access pattern**, perfectly matched by the planar layout. The CPU, which wants to set a single pixel's complete color, has the opposite need — it wants **AoS**.
 
 ### Modern Hardware Parallels
 
@@ -1059,7 +1067,7 @@ The Amiga's custom DMA engine streams bitplane data to the display sequentially 
 | **Akiko C2P register** | GPU texture swizzle unit | Hardware layout transposition |
 | **Blitter + merge algorithm** | CUDA shared memory transpose kernel | CPU/coprocessor-assisted transpose |
 | **RTG (planar bypass)** | Unified chunky framebuffer (since VGA) | Eliminates the problem entirely |
-| **Copper palette cycling** | GPU palette shader / LUT texture | Colour manipulation without pixel writes |
+| **Copper palette cycling** | GPU palette shader / LUT texture | Color manipulation without pixel writes |
 | **FMODE (fetch width)** | GPU memory bus width (256/384/512-bit) | Wider bus = more data per DMA cycle |
 
 ### GPU Texture Swizzle — The Modern Akiko
@@ -1086,7 +1094,7 @@ When you call `glTexImage2D()` or `vkCmdCopyBufferToImage()`, the GPU driver per
 | A1200 (1992, 14 MHz 68020) | C2P 320×256×8bpp | ~1.5 MB/s | CPU merge, 8 planes |
 | CD32 (1993, 14 MHz + Akiko) | C2P 320×256×8bpp | ~1.5 MB/s | Akiko hardware |
 | 486 DX2/66 (1992) | No conversion needed | N/A | VGA Mode 13h = chunky |
-| Pentium MMX (1997) | Colour space (YUV→RGB) | ~200 MB/s | MMX SIMD |
+| Pentium MMX (1997) | Color space (YUV→RGB) | ~200 MB/s | MMX SIMD |
 | GTX 1080 (2016) | Texture swizzle (linear→tiled) | ~300 GB/s | Hardware TMU |
 | Apple M2 (2022) | SoA↔AoS for ML tensors | ~100 GB/s | Hardware AMX |
 
@@ -1100,9 +1108,9 @@ The throughput gap tells the story: what consumed 100% of a 68020's capability i
 |---|---|
 | 1985 | Amiga launches with planar display. C2P not needed — all software renders directly to bitplanes |
 | 1989 | First 3D demos appear (Juggler, etc.). Rendering in chunky buffers starts |
-| 1991 | Demoscene coders develop first optimised C2P routines for 68000 |
+| 1991 | Demoscene coders develop first optimized C2P routines for 68000 |
 | 1992 | AGA ships (A1200/A4000). 8 bitplanes = C2P problem gets 2× harder |
-| 1993 | CD32 ships with Akiko — first hardware C2P. Mikael Kalms publishes optimised CPU routines |
+| 1993 | CD32 ships with Akiko — first hardware C2P. Mikael Kalms publishes optimized CPU routines |
 | 1994 | Kalms C2P library becomes the de facto standard. Multiple variants for 020/030/040/060 |
 | 1995 | RTG cards (Picasso II, CyberVision 64) begin to make C2P irrelevant for productivity |
 | 1996 | CyberVision 64 ships with Roxxler P2C chip — the reverse problem, solved in hardware |
@@ -1432,41 +1440,6 @@ ULONG measure_c2p_time(void) {
 }
 ```
 
----
-
-## Impact on FPGA/Emulation — MiSTer & UAE Developers
-
-Since this knowledge base targets MiSTer FPGA core developers, here are implementation concerns specific to hardware reproduction:
-
-### C2P in FPGA Cores
-
-The Minimig-AGA core on MiSTer provides both:
-- **Native planar output** — matches real Amiga bitplane DMA timing
-- **RTG framebuffer via uaegfx** — chunky framebuffer in DDR memory, no C2P needed
-
-When running software that uses C2P on the MiSTer:
-1. The CPU merge algorithm runs on the emulated 68020 (TG68K or fx68k core)
-2. Memory timing must accurately model Chip RAM vs Fast RAM contention
-3. The Blitter must be cycle-accurate for Blitter-assisted C2P variants
-4. Akiko C2P must be implemented as a state machine triggered by register writes to `$B80030`
-
-### Copper Chunky Accuracy
-
-Copper Chunky is extremely sensitive to Copper timing:
-- Each WAIT must compare against the exact beam counter value
-- MOVE to COLOR00 must take effect at the correct pixel
-- DMA contention between Copper and bitplane fetches affects pixel placement
-- Emulators must model the Copper's 2-cycle instruction latency
-
-### 68040/060 Cache Coherency
-
-On FPGA cores implementing 68040+, the data cache must be coherent with DMA writes:
-- `MOVE16` writes should bypass or update the data cache
-- `CACR` flush instructions must invalidate cache lines matching DMA-visible addresses
-- Missed coherency bugs manifest as "shimmering" pixels in C2P output
-
----
-
 ## FAQ
 
 ### Why not just use the Blitter for C2P?
@@ -1479,7 +1452,7 @@ Bitplane modulo calculations on non-aligned rows force the display DMA controlle
 
 ### Can I use Akiko on non-CD32 hardware?
 
-No. Akiko is a custom ASIC that physically only exists in the CD32; it is integrated with the CD-ROM controller on the same die. There is no expansion card addressing `$B80000` on any other Amiga model. On MiSTer, Akiko can be implemented as a soft peripheral in the FPGA core.
+No. Akiko is a custom ASIC that physically only exists in the CD32; it is integrated with the CD-ROM controller on the same die. There is no expansion card addressing `$B80000` on any other Amiga model. On MiSTer, Akiko can be implemented as a soft peripheral in the FPGA core — see the FPGA implementation note in [Solution 3](#solution-3--akiko-hardware-c2p-cd32-only).
 
 ### Why doesn't C2P scale linearly with 68060 clock speed?
 

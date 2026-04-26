@@ -60,10 +60,10 @@ struct SignalSemaphore {
 
 ---
 
-## Initialising a Semaphore
+## Initializing a Semaphore
 
 ```c
-/* Stack or heap — always initialise before use: */
+/* Stack or heap — always initialize before use: */
 struct SignalSemaphore sem;
 InitSemaphore(&sem);   /* LVO -558 */
 

@@ -4,7 +4,7 @@
 
 ## Overview
 
-**RTG** (Retargetable Graphics) is the framework that allows AmigaOS to use external graphics cards instead of, or alongside, the native custom chipset (OCS/ECS/AGA). RTG was essential for the Amiga's evolution beyond the 15 kHz PAL/NTSC display limitations, enabling VGA-class resolutions (up to 1600×1200) and true-colour (16/24/32-bit) output.
+**RTG** (Retargetable Graphics) is the framework that allows AmigaOS to use external graphics cards instead of, or alongside, the native custom chipset (OCS/ECS/AGA). RTG was essential for the Amiga's evolution beyond the 15 kHz PAL/NTSC display limitations, enabling VGA-class resolutions (up to 1600×1200) and true-color (16/24/32-bit) output.
 
 The two major RTG systems are:
 - **Picasso96 (P96)** — the de facto standard, now maintained by Individual Computers
@@ -21,7 +21,7 @@ graph LR
     subgraph "Native Chipset (OCS/ECS/AGA)"
         direction TB
         NC_BW["Max: 1280×512 (AGA)"]
-        NC_CD["Max: 256 colours (8-bit)"]
+        NC_CD["Max: 256 colors (8-bit)"]
         NC_FM["Planar framebuffer"]
         NC_FR["15 kHz / 31 kHz PAL/NTSC"]
     end
@@ -29,7 +29,7 @@ graph LR
     subgraph "RTG Graphics Card"
         direction TB
         RTG_BW["Up to: 1600×1200"]
-        RTG_CD["16/24/32-bit True Colour"]
+        RTG_CD["16/24/32-bit True Color"]
         RTG_FM["Chunky (linear) framebuffer"]
         RTG_FR["31–100+ kHz VGA"]
     end
@@ -42,21 +42,21 @@ graph LR
 
 ### Planar vs Chunky — The Fundamental Difference
 
-The native Amiga chipset uses **planar** pixel storage — colour bits are spread across separate bitplanes. RTG cards use **chunky** (linear, packed) pixel storage:
+The native Amiga chipset uses **planar** pixel storage — color bits are spread across separate bitplanes. RTG cards use **chunky** (linear, packed) pixel storage:
 
 ```
-PLANAR (Native Amiga — 4 bitplanes = 16 colours):
-  Bitplane 0: 10110010...  ← bit 0 of each pixel's colour
+PLANAR (Native Amiga — 4 bitplanes = 16 colors):
+  Bitplane 0: 10110010...  ← bit 0 of each pixel's color
   Bitplane 1: 01100101...  ← bit 1
   Bitplane 2: 11010001...  ← bit 2
   Bitplane 3: 00101100...  ← bit 3
 
-  To read pixel 0's colour: read bit 0 from each plane → combine
+  To read pixel 0's color: read bit 0 from each plane → combine
 
 CHUNKY (RTG Card — 8-bit indexed):
   Pixel 0: $0D  Pixel 1: $05  Pixel 2: $1B  Pixel 3: $0A ...
 
-  Each pixel's colour stored contiguously — one byte per pixel (8-bit)
+  Each pixel's color stored contiguously — one byte per pixel (8-bit)
   Or: two bytes per pixel (16-bit), three (24-bit), four (32-bit)
 ```
 
@@ -116,15 +116,15 @@ flowchart LR
 |---|---|---|---|
 | `graphics.library` | `BltBitMap` (−30) | Programs the Blitter DMA to copy rectangular regions between planar bitmaps in Chip RAM. Uses hardware minterm logic for raster ops (AND/OR/XOR). | Checks source/dest bitmap memory addresses. If either is in card VRAM, calls `BoardInfo->BlitRect()` which programs the card's 2D engine to do a VRAM-to-VRAM rectangle copy. If both are Chip RAM, falls through to original Blitter path. Mixed (Chip↔VRAM) requires CPU-mediated copy across the bus. |
 | `graphics.library` | `BltBitMapRastPort` (−606) | Blits a bitmap into a RastPort (with clipping). Uses native Blitter with layer clip rectangles. | Same VRAM detection. For RTG RastPorts, iterates the ClipRect list and calls `BlitRect` for each visible clip rectangle individually, handling layer obscuring. |
-| `graphics.library` | `RectFill` (−306) | Programs native Blitter to fill a rectangular region with the RastPort's foreground pen using planar fill mode. | Calls `BoardInfo->FillRect()` which sends a solid-fill command to the card's 2D engine with the pen colour converted to the screen's `RGBFTYPE`. Single register write + blit trigger — extremely fast. |
+| `graphics.library` | `RectFill` (−306) | Programs native Blitter to fill a rectangular region with the RastPort's foreground pen using planar fill mode. | Calls `BoardInfo->FillRect()` which sends a solid-fill command to the card's 2D engine with the pen color converted to the screen's `RGBFTYPE`. Single register write + blit trigger — extremely fast. |
 | `graphics.library` | `Move`/`Draw` (−240/−246) | Uses the Blitter's line-draw mode (BLTCON1 bit 0) to draw a one-pixel-wide line between two points in planar memory. | Calls `BoardInfo->DrawLine()` which programs the card's hardware Bresenham line engine. If DrawLine is NULL, falls back to CPU-computed pixel-by-pixel `WritePixel` into VRAM. |
-| `graphics.library` | `WritePixel` (−324) | Computes bitplane offsets, sets/clears the appropriate bit in each plane for the pen colour. | Computes byte offset in chunky VRAM: `offset = y * BytesPerRow + x * BPP`. Writes the pen colour directly as 1/2/3/4 bytes depending on depth. No hardware assist needed — just a bus write. |
-| `graphics.library` | `ReadPixel` (−318) | Reads the corresponding bit from each bitplane, assembles the colour index. | Reads 1/2/3/4 bytes from VRAM at the pixel offset. **Very slow on Zorro II** — each read stalls the CPU for a full bus cycle (~1 µs). Avoid in loops. |
+| `graphics.library` | `WritePixel` (−324) | Computes bitplane offsets, sets/clears the appropriate bit in each plane for the pen color. | Computes byte offset in chunky VRAM: `offset = y * BytesPerRow + x * BPP`. Writes the pen color directly as 1/2/3/4 bytes depending on depth. No hardware assist needed — just a bus write. |
+| `graphics.library` | `ReadPixel` (−318) | Reads the corresponding bit from each bitplane, assembles the color index. | Reads 1/2/3/4 bytes from VRAM at the pixel offset. **Very slow on Zorro II** — each read stalls the CPU for a full bus cycle (~1 µs). Avoid in loops. |
 | `graphics.library` | `ScrollRaster` (−396) | Uses native Blitter to shift a rectangular region, then clears the exposed strip. | Calls `BlitRect` to shift the rectangle within VRAM, then `FillRect` to clear the newly exposed area. Alternatively, if the entire screen scrolls, uses `SetPanning()` to simply change the display start address — zero-copy scroll. |
 | `graphics.library` | `AllocBitMap` (−918) | Allocates a planar bitmap in Chip RAM (`MEMF_CHIP`). Creates N bitplane pointers, one per plane. | If the bitmap is for an RTG screen (friend bitmap is RTG), allocates a contiguous chunky buffer from card VRAM instead. Sets a private flag so all subsequent drawing ops route to the card. The bitmap struct's Planes[0] points to VRAM; Planes[1..7] are NULL (chunky = one plane). |
 | `graphics.library` | `FreeBitMap` (−924) | Frees planar bitplane memory back to Chip RAM pool. | If bitmap is in VRAM, frees it from the card's VRAM allocator (managed by `rtg.library`). Clears the RTG flag. |
-| `graphics.library` | `SetAPen`/`SetBPen` | Stores pen index in RastPort for subsequent draw calls. | Same — pen storage is RastPort-local. But for hi/true-colour RTG screens, P96 must also resolve the pen to an RGB value via the screen's colour table when the actual draw call happens. |
-| `graphics.library` | `LoadRGB32` (−882) | Programs the native colour palette registers ($DFF180–$DFF1BE for OCS, or AGA bank registers). | Calls `BoardInfo->SetColorArray()` which programs the card's RAMDAC palette registers. For 8-bit CLUT screens, this updates the hardware palette. For 16/24/32-bit screens, this updates a software lookup table only. |
+| `graphics.library` | `SetAPen`/`SetBPen` | Stores pen index in RastPort for subsequent draw calls. | Same — pen storage is RastPort-local. But for hi/true-color RTG screens, P96 must also resolve the pen to an RGB value via the screen's color table when the actual draw call happens. |
+| `graphics.library` | `LoadRGB32` (−882) | Programs the native color palette registers ($DFF180–$DFF1BE for OCS, or AGA bank registers). | Calls `BoardInfo->SetColorArray()` which programs the card's RAMDAC palette registers. For 8-bit CLUT screens, this updates the hardware palette. For 16/24/32-bit screens, this updates a software lookup table only. |
 | `intuition.library` | `OpenScreen` (−198) | Creates a ViewPort, allocates Chip RAM bitplanes, builds a Copper list for the display, and programs Denise/Lisa registers. | Intercepts the mode ID. If it's an RTG mode: allocates VRAM for the framebuffer, calls `SetGC()` to program the card's CRTC timing registers, calls `SetDAC()` for pixel format, and calls `SetSwitch(TRUE)` to route the monitor to the card's output. No Copper list is built. |
 | `intuition.library` | `CloseScreen` (−66) | Tears down ViewPort, frees Copper lists and Chip RAM bitplanes. | Frees VRAM allocations. If this was the last RTG screen, calls `SetSwitch(FALSE)` to return the monitor to native chipset output. |
 | `intuition.library` | `ScreenToFront` (−252) | Reorders the screen list and rebuilds the Copper list to display this screen on top. | If the new front screen is on different hardware than the current display (e.g., switching from native to RTG), calls `SetSwitch()` to toggle the monitor. If same hardware, just reorders the screen depth. |
@@ -319,7 +319,7 @@ RTG cards with a 2D engine can offload these operations from the CPU:
 
 | Operation | Function | Description | Speedup |
 |---|---|---|---|
-| **Rect Fill** | `FillRect()` | Fill rectangle with solid colour | 10–50× |
+| **Rect Fill** | `FillRect()` | Fill rectangle with solid color | 10–50× |
 | **Rect Blit** | `BlitRect()` | Copy rectangle (VRAM→VRAM) | 5–20× |
 | **Screen Scroll** | `BlitRect()` + `SetPanning()` | Scroll display contents | 5–20× |
 | **Pattern Fill** | `BlitTemplate()` | Fill with pattern/text glyph | 5–15× |
@@ -376,7 +376,7 @@ Planar Data (4 planes):           Chunky Output (8bpp):
 This is **extremely CPU-intensive**. The CyberVision 64 included a dedicated **Roxxler** chip for hardware C2P acceleration. Without hardware help, C2P runs at ~2–5 FPS for fullscreen games — which is why RTG was primarily for productivity, not gaming.
 
 > [!WARNING]
-> Old games that bang hardware registers directly (writing to `$DFF1xx` colour registers, custom chip DMA) will **never** work on RTG. They must be run on the native chipset display.
+> Old games that bang hardware registers directly (writing to `$DFF1xx` color registers, custom chip DMA) will **never** work on RTG. They must be run on the native chipset display.
 
 ---
 
@@ -522,7 +522,7 @@ The MiSTer Amiga core implements RTG as a virtual graphics card:
 | **Display output** | FPGA scaler renders RTG framebuffer to HDMI |
 | **Mode switching** | Software-controlled: OSD or automatic (screen drag) |
 | **Resolution** | Up to 1920×1080 (limited by scaler) |
-| **Colour depth** | 8/16/32-bit |
+| **Color depth** | 8/16/32-bit |
 
 ### Display Pipeline
 
@@ -568,7 +568,7 @@ C:AddMonitor DEVS:Monitors/PicassoIV
 
 ## RGB Pixel Formats
 
-RTG cards support multiple chunky pixel formats. The `RGBFTYPE` enum defines how colour channels are packed:
+RTG cards support multiple chunky pixel formats. The `RGBFTYPE` enum defines how color channels are packed:
 
 | Format | Constant | BPP | Layout | Byte Order |
 |---|---|---|---|---|
@@ -604,7 +604,7 @@ RTG cards support multiple chunky pixel formats. The `RGBFTYPE` enum defines how
 ### Picasso96API.library
 
 ```c
-/* Open a 16-bit true-colour screen: */
+/* Open a 16-bit true-color screen: */
 #include <libraries/Picasso96.h>
 
 struct Screen *scr = p96OpenScreenTags(
@@ -778,7 +778,7 @@ When the user drags a screen to reveal the one behind it:
 | PCI (Mediator) | 133 MB/s | ~80 MB/s | Full-speed modern RTG |
 | MiSTer (DDR) | 800+ MB/s | ~400 MB/s | No bottleneck |
 
-### Optimisation Patterns
+### Optimization Patterns
 
 | Pattern | Description |
 |---|---|
@@ -807,7 +807,7 @@ When the user drags a screen to reveal the one behind it:
 |---|---|---|
 | Black screen on mode switch | SetSwitch not toggling pass-through correctly | Check VGA cable; verify DAC enable/disable |
 | Corrupted display | CRTC timing wrong | Verify HTotal/VTotal/sync values in SetGC |
-| Garbled colours | Wrong RGBFTYPE (BGR vs RGB swap) | Match format to VGA controller's native order |
+| Garbled colors | Wrong RGBFTYPE (BGR vs RGB swap) | Match format to VGA controller's native order |
 | Slow scrolling | No BlitRect acceleration | Implement hardware blit; check VRAM alignment |
 | Cursor flickers | SoftSpriteWA=TRUE | Implement HW cursor (SetSprite*) |
 | Guru on screen close | Driver doesn't handle CloseScreen cleanup | Free VRAM allocations in board cleanup |
@@ -860,7 +860,7 @@ flowchart LR
 
 The Native driver's icon supports the `NOBLITTER` tooltype, which controls how native Amiga blitter operations are handled:
 
-| Setting | Behaviour | When to Use |
+| Setting | Behavior | When to Use |
 |---|---|---|
 | `NOBLITTER=YES` (default) | **All** blits go through CPU. Native Amiga Blitter is completely bypassed. | Default. Best for accelerated systems (68030+). Frees Chip RAM. |
 | `NOBLITTER=NO` | Native Blitter is used when **both** source and destination are in Chip RAM. Falls back to CPU only for Fast RAM bitmaps. | Use when you want hardware Blitter for DMA-visible operations (e.g., playfield scrolling) but CPU for off-screen work. |
@@ -898,13 +898,13 @@ RTG:
 
 | Category | Example | Root Cause | Fix |
 |---|---|---|---|
-| **Hardware banging** | Game writes directly to `$DFF180` colour registers | Bypasses OS entirely | Must run on native screen — unfixable for RTG |
+| **Hardware banging** | Game writes directly to `$DFF180` color registers | Bypasses OS entirely | Must run on native screen — unfixable for RTG |
 | **Direct bitplane access** | Demo reads `rp->BitMap->Planes[3]` | Assumes planar layout | Use `ReadPixelArray`/`WritePixelArray` |
-| **Copper effects** | Colour cycling via Copper list | Copper is native-chipset only | Must use `LoadRGB32` with timer |
-| **HAM mode** | HAM6/HAM8 encoding | HAM is a planar encoding trick | No RTG equivalent; must use true-colour |
+| **Copper effects** | Color cycling via Copper list | Copper is native-chipset only | Must use `LoadRGB32` with timer |
+| **HAM mode** | HAM6/HAM8 encoding | HAM is a planar encoding trick | No RTG equivalent; must use true-color |
 | **Sprite tricks** | Multiplexed sprites, sprite-field overlays | Hardware sprites are native only | RTG uses software cursor or HW sprite emulation |
 | **DMA-dependent timing** | Code waits for Blitter by polling `DMACONR` | RTG blits are CPU, not DMA | Use `WaitBlit()` or P96's `WaitBlitter` |
-| **Fixed palette assumptions** | Expects 4-colour Workbench pen mapping | RTG may have 256+ pens | Use `ObtainBestPen()` |
+| **Fixed palette assumptions** | Expects 4-color Workbench pen mapping | RTG may have 256+ pens | Use `ObtainBestPen()` |
 
 ### The FBlit Conflict
 
@@ -993,7 +993,7 @@ else
 |---|---|---|
 | Black screen on mode switch | SetSwitch not toggling pass-through correctly | Check VGA cable; verify DAC enable/disable |
 | Corrupted display | CRTC timing wrong | Verify HTotal/VTotal/sync values in SetGC |
-| Garbled colours | Wrong RGBFTYPE (BGR vs RGB swap) | Match format to VGA controller's native order |
+| Garbled colors | Wrong RGBFTYPE (BGR vs RGB swap) | Match format to VGA controller's native order |
 | Slow scrolling | No BlitRect acceleration | Implement hardware blit; check VRAM alignment |
 | Cursor flickers | SoftSpriteWA=TRUE | Implement HW cursor (SetSprite*) |
 | Guru on screen close | Driver doesn't handle CloseScreen cleanup | Free VRAM allocations in board cleanup |

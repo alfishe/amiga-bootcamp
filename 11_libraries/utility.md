@@ -142,7 +142,7 @@ ULONG __saveds __asm MyHookFunc(
     return 0;
 }
 
-/* Initialise the hook: */
+/* Initialize the hook: */
 struct Hook myHook;
 myHook.h_Entry    = (HOOKFUNC)HookEntry;  /* utility.library glue */
 myHook.h_SubEntry = (HOOKFUNC)MyHookFunc;

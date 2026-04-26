@@ -1,6 +1,6 @@
 [← Home](../README.md) · [Boot Sequence](README.md)
 
-# Kickstart Initialisation — ExecBase, ROM Scan, Resident Modules
+# Kickstart Initialization — ExecBase, ROM Scan, Resident Modules
 
 ## Overview
 
@@ -290,7 +290,7 @@ Priority -120: ramlib / strap     ← Last
 
 ---
 
-## Initialisation Phases
+## Initialization Phases
 
 ### Phase 1: RTF_SINGLETASK
 

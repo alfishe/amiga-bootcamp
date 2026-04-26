@@ -39,7 +39,7 @@ flowchart TD
 | **Per-process state** | fd table in kernel | Socket "library base" per opener |
 | **Protection** | Full memory protection | None — any process can corrupt stack state |
 | **Signal integration** | select/poll/epoll | WaitSelect + Exec signal bits |
-| **Performance** | Optimised kernel path | No syscall overhead, but no DMA offload |
+| **Performance** | Optimized kernel path | No syscall overhead, but no DMA offload |
 
 ### The Full Network Stack
 
@@ -183,7 +183,7 @@ flowchart LR
 ### PPP Connection Sequence
 
 ```
-1. Modem initialisation:
+1. Modem initialization:
    → ATZ                    (reset modem)
    ← OK
    → AT&F1                  (factory defaults, hardware flow control)

@@ -2,7 +2,7 @@
 
 # Graphics Subsystem — Overview
 
-The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + Denise/Lisa) managed through `graphics.library`. It supports planar bitmaps, hardware sprites, a Copper display coprocessor, and a Blitter for fast 2D operations. Three chipset generations (OCS → ECS → AGA) expanded resolution, colour depth, and bandwidth.
+The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + Denise/Lisa) managed through `graphics.library`. It supports planar bitmaps, hardware sprites, a Copper display coprocessor, and a Blitter for fast 2D operations. Three chipset generations (OCS → ECS → AGA) expanded resolution, color depth, and bandwidth.
 
 ## Section Index
 
@@ -16,7 +16,7 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [copper_programming.md](copper_programming.md) | Copper deep dive: architecture, copper list construction, gradient and raster effects |
 | [blitter.md](blitter.md) | Blitter DMA engine, minterms, BltBitMap |
 | [blitter_programming.md](blitter_programming.md) | Blitter deep dive: minterms, cookie-cut masking, line draw, fill mode |
-| [sprites.md](sprites.md) | Hardware sprites: DMA engine, data format, attached 15-colour sprites, multiplexing, AGA enhancements, priority control |
+| [sprites.md](sprites.md) | Hardware sprites: DMA engine, data format, attached 15-color sprites, multiplexing, AGA enhancements, priority control |
 | [rastport.md](rastport.md) | RastPort drawing context: draw modes, patterns, layer clipping, text pipeline, blitter minterms |
 | [views.md](views.md) | View, ViewPort, MakeVPort, display construction |
 | [text_fonts.md](text_fonts.md) | TextFont bitmap layout, baseline rendering, algorithmic styles, AvailFonts enumeration |

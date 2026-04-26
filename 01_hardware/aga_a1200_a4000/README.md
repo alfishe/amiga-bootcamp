@@ -4,14 +4,14 @@
 
 ## Overview
 
-The **Advanced Graphics Architecture** (AGA) is the final custom chipset developed by Commodore, shipping from 1992. It dramatically expands colour depth, palette size, sprite capabilities, and blitter bandwidth while retaining full OCS/ECS backward compatibility.
+The **Advanced Graphics Architecture** (AGA) is the final custom chipset developed by Commodore, shipping from 1992. It dramatically expands color depth, palette size, sprite capabilities, and blitter bandwidth while retaining full OCS/ECS backward compatibility.
 
 ## Chip Summary
 
 | Chip | Name | Changes from ECS |
 |---|---|---|
 | **Alice** | MOS 8374 | Super Agnus successor: 64-bit bus, FMODE register |
-| **Lisa** | (unnamed MOS) | ECS Denise successor: 8-bit palette, 256 colours |
+| **Lisa** | (unnamed MOS) | ECS Denise successor: 8-bit palette, 256 colors |
 | **Paula** | MOS 8364 | Unchanged from OCS/ECS |
 
 ## Contents
@@ -20,8 +20,8 @@ The **Advanced Graphics Architecture** (AGA) is the final custom chipset develop
 |---|---|
 | [chipset_aga.md](chipset_aga.md) | Alice and Lisa internals, AGA architecture |
 | [aga_registers_delta.md](aga_registers_delta.md) | New/changed registers vs ECS |
-| [aga_palette.md](aga_palette.md) | 24-bit colour system, 256 registers |
-| [aga_display_modes.md](aga_display_modes.md) | HAM8, 256-colour, doublescan, VGA |
+| [aga_palette.md](aga_palette.md) | 24-bit color system, 256 registers |
+| [aga_display_modes.md](aga_display_modes.md) | HAM8, 256-color, doublescan, VGA |
 | [aga_blitter.md](aga_blitter.md) | 64-bit blitter bus, FMODE |
 | [aga_copper.md](aga_copper.md) | AGA Copper programming guide |
 | [cpu_030_040.md](cpu_030_040.md) | 68030/040 on A3000/A4000: cache, MMU, FPU |
@@ -32,11 +32,11 @@ The **Advanced Graphics Architecture** (AGA) is the final custom chipset develop
 
 | Feature | ECS | AGA |
 |---|---|---|
-| Colour registers | 32 (12-bit) | **256 (24-bit)** |
-| Max simultaneous colours | 64 EHB / HAM | **256** (or HAM8: 262,144) |
+| Color registers | 32 (12-bit) | **256 (24-bit)** |
+| Max simultaneous colors | 64 EHB / HAM | **256** (or HAM8: 262,144) |
 | Blitter bus | 16-bit | **64-bit** (FMODE) |
 | Sprite width | 16 px | **64 px** |
-| Sprite colours | 3+transparent | **15+transparent** (64-colour attached) |
+| Sprite colors | 3+transparent | **15+transparent** (64-color attached) |
 | Bitplane depth | 6 planes max | **8 planes** |
 | Palette select | 1 bank | **4 bitplane banks, 4 sprite banks** |
 

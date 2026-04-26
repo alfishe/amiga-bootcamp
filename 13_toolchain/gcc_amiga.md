@@ -40,8 +40,8 @@ m68k-amigaos-gcc -noixemul -o hello hello.c
 #   -m68040          — target 68040
 #   -m68060          — target 68060
 #   -m68881          — use 68881/68882 FPU
-#   -Os              — optimise for size
-#   -O2              — optimise for speed
+#   -Os              — optimize for size
+#   -O2              — optimize for speed
 #   -fomit-frame-pointer — free up A5
 #   -fbaserel        — base-relative addressing (small data model)
 #   -resident        — generate resident-capable code

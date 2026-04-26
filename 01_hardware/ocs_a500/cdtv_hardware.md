@@ -128,8 +128,8 @@ The Extended ROM is **not present** on standard A500/A2000 machines. Software th
 ### Boot Sequence
 
 1. Kickstart 1.3 loads from ROM (`$F80000`)
-2. Extended ROM at `$E00000` is detected and initialised
-3. `scsi.device` from Extended ROM initialises DMAC + WD33C93
+2. Extended ROM at `$E00000` is detected and initialized
+3. `scsi.device` from Extended ROM initializes DMAC + WD33C93
 4. CD-ROM drive is probed for a bootable disc
 5. If a valid Amiga boot block is found on the CD → boot from CD
 6. If no CD → fall through to standard floppy boot (if external floppy present)

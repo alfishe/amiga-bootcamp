@@ -55,7 +55,7 @@ extern struct DosLibrary *DOSBase;
 extern struct ExecBase    *SysBase;
 ```
 
-These are initialised in `c.o` (the startup stub):
+These are initialized in `c.o` (the startup stub):
 ```asm
 _c_start:
     MOVE.L  4.W, A6             ; SysBase from exception vector

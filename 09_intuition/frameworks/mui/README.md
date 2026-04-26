@@ -456,7 +456,7 @@ MUIA_Window_ID, MAKE_ID('M','A','I','N'),
 |---|---|
 | **External dependency** | `muimaster.library` must be installed (not in ROM) — ~300 KB |
 | **Memory overhead** | MUI objects consume more RAM than raw GadTools gadgets (~2–5× per widget) |
-| **Startup time** | Loading and initialising the MUI class tree adds noticeable delay on 68000 |
+| **Startup time** | Loading and initializing the MUI class tree adds noticeable delay on 68000 |
 | **Learning curve** | OOP concepts in C (dispatchers, TagItems, method IDs) are unfamiliar to many |
 | **Complex debugging** | Object tree issues (wrong parent, missing End) cause cryptic crashes |
 | **Shareware stigma** | Early MUI was shareware with nag screens — some users avoided it |
@@ -693,7 +693,7 @@ End,
 
 ### Group Types
 
-| Type | Macro | Behaviour |
+| Type | Macro | Behavior |
 |---|---|---|
 | Vertical | `VGroup` | Stack children top-to-bottom |
 | Horizontal | `HGroup` | Arrange children left-to-right |
@@ -859,7 +859,7 @@ IPTR MySlider_Dispatcher(struct IClass *cl, Object *obj, Msg msg)
     switch (msg->MethodID) {
         case OM_NEW:
         {
-            /* Initialise object */
+            /* Initialize object */
             obj = (Object *)DoSuperMethodA(cl, obj, msg);
             if (obj) {
                 struct MySliderData *data = INST_DATA(cl, obj);

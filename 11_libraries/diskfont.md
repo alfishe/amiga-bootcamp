@@ -123,23 +123,23 @@ FreeMem(buf, bufSize);
 | `AFF_DISK` | Available on `FONTS:` | Requires disk access to load |
 | `AFF_SCALED` | Algorithmically scaled from another size | Lower quality; avoid when native size exists |
 | `AFF_BITMAP` | Bitmap (pixel) font | Standard Amiga font format |
-| `AFF_TAGGED` | Tagged (OS 3.0+ extended) font | Supports colour fonts, outlined fonts |
+| `AFF_TAGGED` | Tagged (OS 3.0+ extended) font | Supports color fonts, outlined fonts |
 
 ---
 
-## Colour Fonts (OS 3.0+)
+## Color Fonts (OS 3.0+)
 
-OS 3.0 introduced **colour bitmap fonts** — each glyph can have multiple bitplanes:
+OS 3.0 introduced **color bitmap fonts** — each glyph can have multiple bitplanes:
 
 ```c
-/* Colour fonts use ColorTextFont — an extension of TextFont: */
+/* Color fonts use ColorTextFont — an extension of TextFont: */
 struct ColorTextFont {
     struct TextFont ctf_TF;          /* standard TextFont */
     UWORD  ctf_Flags;               /* CT_COLORFONT etc. */
     UBYTE  ctf_Depth;               /* number of bitplanes */
     UBYTE  ctf_FgColor;             /* default foreground pen */
-    UBYTE  ctf_Low;                 /* lowest colour used */
-    UBYTE  ctf_High;                /* highest colour used */
+    UBYTE  ctf_Low;                 /* lowest color used */
+    UBYTE  ctf_High;                /* highest color used */
     APTR   ctf_PlanePick;           /* plane selection */
     APTR   ctf_PlaneOnOff;          /* plane on/off defaults */
     struct ColorFontColors *ctf_ColorTable;

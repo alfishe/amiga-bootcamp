@@ -4,7 +4,7 @@
 
 ## Overview
 
-The **Copper** is a simple coprocessor in the Amiga custom chips that executes a list of instructions synchronised to the video beam. It can write to any custom chip register at any beam position, enabling per-scanline colour changes, split screens, and hardware-level display effects without CPU intervention.
+The **Copper** is a simple coprocessor in the Amiga custom chips that executes a list of instructions synchronized to the video beam. It can write to any custom chip register at any beam position, enabling per-scanline color changes, split screens, and hardware-level display effects without CPU intervention.
 
 ---
 
@@ -45,7 +45,7 @@ If the beam has already passed the specified position, skip the next instruction
 
 ## Standard Copper Patterns
 
-### Per-Scanline Colour Change (Rainbow)
+### Per-Scanline Color Change (Rainbow)
 
 ```
 WAIT   $2C01,$FFFE    ; wait for line $2C (44)
@@ -75,7 +75,7 @@ The OS manages copper lists through `GfxBase`:
 
 | Pointer | Description |
 |---|---|
-| `GfxBase->copinit` | System initialisation copper list |
+| `GfxBase->copinit` | System initialization copper list |
 | `GfxBase->LOFlist` | Long-frame copper list (even fields) |
 | `GfxBase->SHFlist` | Short-frame copper list (odd fields, interlace) |
 

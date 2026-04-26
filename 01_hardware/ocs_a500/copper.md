@@ -6,7 +6,7 @@
 
 The **Copper** (co-processor) is built into Agnus. It executes a simple instruction list (the **copperlist**) in sync with the video beam, allowing precise per-scanline changes to any writable custom register — without CPU intervention.
 
-The Copper can only write to custom registers (it cannot access Chip RAM directly), but it can change bitplane pointers, colours, BPLCON0, sprite pointers, and any other `$DFF0xx` register on a cycle-accurate basis.
+The Copper can only write to custom registers (it cannot access Chip RAM directly), but it can change bitplane pointers, colors, BPLCON0, sprite pointers, and any other `$DFF0xx` register on a cycle-accurate basis.
 
 ## Copper Instruction Set
 
@@ -59,7 +59,7 @@ A copperlist is an array of 32-bit instruction pairs in **Chip RAM**, terminated
 DC.W  $FFFF, $FFFE
 ```
 
-Example — colour cycle on vertical blank:
+Example — color cycle on vertical blank:
 ```asm
 Copperlist:
     DC.W  $0180, $0000   ; COLOR00 = black
@@ -110,7 +110,7 @@ Common copper techniques:
 
 **BPLCON0 mid-screen:** Switch between `HIRES` and `LORES`, or between 6-plane and 4-plane modes, on different lines.
 
-**Raster bars:** Write a different colour to COLOR00 on every scanline using sequential WAIT+MOVE pairs.
+**Raster bars:** Write a different color to COLOR00 on every scanline using sequential WAIT+MOVE pairs.
 
 ## Graphics Library vs Direct Copper
 

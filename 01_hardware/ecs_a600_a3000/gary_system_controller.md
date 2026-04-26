@@ -12,7 +12,7 @@
 - **SCSI interface glue**: Works with the A3000's built-in WD33C93 SCSI controller
 - **ROM decode**: Maps Kickstart ROM into the address space
 
-Gary is not directly programmable by user software; its configuration is set by hardware strapping and the ROM initialisation sequence.
+Gary is not directly programmable by user software; its configuration is set by hardware strapping and the ROM initialization sequence.
 
 ## Bus Arbitration
 
@@ -53,7 +53,7 @@ The A4000 does **not** use Gary — it uses a different system controller chip c
 
 - Commodore A3000 Technical Reference Manual
 - ADCD 2.1 — Hardware Manual, A3000 chapter
-- NDK39: hardware headers (community-documented Gary behaviour)
+- NDK39: hardware headers (community-documented Gary behavior)
 
 ## See Also
 

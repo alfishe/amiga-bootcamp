@@ -13,7 +13,7 @@
 | Version | Year | Key Features |
 |---|---|---|
 | StormC 1.0 | 1996 | Initial release, C compiler, basic IDE |
-| StormC 2.0 | 1997 | C++ support, improved optimiser |
+| StormC 2.0 | 1997 | C++ support, improved optimizer |
 | StormC 3.0 | 1998 | Full C++ with exceptions, STL, PowerPC support |
 | StormC 4.0 | 1999 | Final version, OS 3.5 integration |
 
@@ -60,7 +60,7 @@ stormc -O2 -m68020 -o myapp main.c util.c
 ;   -m68020      Target 68020+
 ;   -m68040      Target 68040
 ;   -m68060      Target 68060
-;   -O0 to -O3   Optimisation level
+;   -O0 to -O3   Optimization level
 ;   -g           Debug info
 ;   -c           Compile only (no link)
 ;   -I<path>     Include path
@@ -78,7 +78,7 @@ stormc -O2 -m68020 -o myapp main.c util.c
 | **IDE** | No (CLI + editor) | No (CLI + any editor) | **Yes (native GUI)** |
 | **Debugger** | External (CodeProbe) | GDB remote | **Integrated** |
 | **Cross-compile** | No (native only) | **Yes (Linux/macOS host)** | No (native only) |
-| **Optimiser quality** | Excellent | Good | Good |
+| **Optimizer quality** | Excellent | Good | Good |
 | **PowerPC** | No | No | Yes (v3+) |
 | **Availability** | Abandonware | Free / open source | Abandonware |
 | **Legacy code compat** | High (dominant compiler) | Moderate (GCC differences) | Moderate |

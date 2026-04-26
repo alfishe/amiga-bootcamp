@@ -104,7 +104,7 @@ SetVBuf(fh, NULL, BUF_NONE, 0);
 Flush(fh);
 ```
 
-| Buffer Type | Constant | Behaviour |
+| Buffer Type | Constant | Behavior |
 |---|---|---|
 | `BUF_FULL` | 1 | Flush when buffer fills |
 | `BUF_LINE` | 0 | Flush on newline or buffer full |

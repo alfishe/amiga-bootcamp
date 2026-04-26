@@ -4,7 +4,7 @@
 
 ## Overview
 
-AmigaOS ROM and disk-resident modules (libraries, devices, resources) identify themselves via a **RomTag** structure. At boot, exec scans the Kickstart ROM and any loaded segments for RomTags and initialises every module it finds. The RomTag system is how the kernel discovers and bootstraps itself — exec.library, graphics.library, dos.library, and all ROM-resident code use this mechanism.
+AmigaOS ROM and disk-resident modules (libraries, devices, resources) identify themselves via a **RomTag** structure. At boot, exec scans the Kickstart ROM and any loaded segments for RomTags and initializes every module it finds. The RomTag system is how the kernel discovers and bootstraps itself — exec.library, graphics.library, dos.library, and all ROM-resident code use this mechanism.
 
 ---
 
@@ -56,7 +56,7 @@ struct Resident {
     UBYTE  rt_Flags;        /* RTF_* flags */
     UBYTE  rt_Version;      /* module version number */
     UBYTE  rt_Type;         /* NT_LIBRARY, NT_DEVICE, NT_RESOURCE, ... */
-    BYTE   rt_Pri;          /* initialisation priority (higher = earlier) */
+    BYTE   rt_Pri;          /* initialization priority (higher = earlier) */
     char  *rt_Name;         /* module name string, e.g. "dos.library" */
     char  *rt_IdString;     /* human-readable ID, e.g. "dos.library 40.1" */
     APTR   rt_Init;         /* init function or InitTable pointer */
@@ -97,7 +97,7 @@ struct Resident {
 
 ---
 
-## RTF_AUTOINIT — Automatic Initialisation
+## RTF_AUTOINIT — Automatic Initialization
 
 When `RTF_AUTOINIT` is set, `rt_Init` points to an `InitTable`:
 
@@ -143,7 +143,7 @@ UWORD dataTable[] = {
 
 ## ROM Scan at Boot
 
-During exec initialisation:
+During exec initialization:
 
 1. Walk from Kickstart base (`$F80000` for 512K ROM, `$FC0000` for 256K) upward
 2. Search for the `$4AFC` magic word at even addresses

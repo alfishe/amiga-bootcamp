@@ -1,12 +1,12 @@
 [← Home](../../README.md) · [Hardware](../README.md) · [AGA](README.md)
 
-# AGA Palette & Colour System
+# AGA Palette & Color System
 
 ## Overview
 
-AGA provides **256 colour registers** (COLOR00–COLOR255), each **24-bit RGB** (8 bits per channel). This replaces OCS/ECS's 32 registers with 12-bit colour.
+AGA provides **256 color registers** (COLOR00–COLOR255), each **24-bit RGB** (8 bits per channel). This replaces OCS/ECS's 32 registers with 12-bit color.
 
-## Colour Register Layout
+## Color Register Layout
 
 ```
 ADDRESS:  $DFF180 + (n × 2)    for register n (0–255)
@@ -18,11 +18,11 @@ $DFF180–$DFF1BE  COLOR00–COLOR31   (same addresses as OCS/ECS)
 $DFF180–$DFF3BE  COLOR00–COLOR255  (full AGA range — needs BPLCON4 bank select)
 ```
 
-The 256 colour registers are accessed in 64-register **banks** selected by `BPLCON4`.
+The 256 color registers are accessed in 64-register **banks** selected by `BPLCON4`.
 
-## Writing 24-bit Colours
+## Writing 24-bit Colors
 
-Each colour register holds 12 bits directly (OCS/ECS compatible). The upper 12 bits (the "low nibble") are written via a second access with `LOCT` set in BPLCON3.
+Each color register holds 12 bits directly (OCS/ECS compatible). The upper 12 bits (the "low nibble") are written via a second access with `LOCT` set in BPLCON3.
 
 ### Manual 24-bit write sequence:
 
@@ -52,7 +52,7 @@ The preferred OS call:
 
 /* Table: count, index, then 0x00RRGGBB values, terminated by ~0 */
 ULONG table[] = {
-    4, 0,             /* 4 colours starting at index 0 */
+    4, 0,             /* 4 colors starting at index 0 */
     0x00FF0000,       /* COLOR00: red   */
     0x0000FF00,       /* COLOR01: green */
     0x000000FF,       /* COLOR02: blue  */
@@ -62,13 +62,13 @@ ULONG table[] = {
 LoadRGB32(viewport, table);
 ```
 
-`LoadRGB32()` (graphics.library LVO -$192) is the AGA-correct way to set colours. It handles the two-write LOCT protocol internally and is available from OS 3.0+.
+`LoadRGB32()` (graphics.library LVO -$192) is the AGA-correct way to set colors. It handles the two-write LOCT protocol internally and is available from OS 3.0+.
 
 ### Using LoadRGB4() — OCS/ECS compatible (12-bit)
 
 ```c
-UWORD colours[32] = { 0x000, 0xF00, 0x0F0, ... };
-LoadRGB4(viewport, colours, 32);  /* sets 32 colours from 12-bit table */
+UWORD colors[32] = { 0x000, 0xF00, 0x0F0, ... };
+LoadRGB4(viewport, colors, 32);  /* sets 32 colors from 12-bit table */
 ```
 
 `LoadRGB4()` is safe on all chipsets but only provides 12-bit precision on AGA.
@@ -82,9 +82,9 @@ HAM8 is the AGA extension of OCS's HAM6. It uses 8 bitplanes:
   - `01` = modify blue channel
   - `10` = modify red channel
   - `11` = modify green channel
-- **Bits 5-0**: 6-bit value for the selected channel (or 6-bit colour index)
+- **Bits 5-0**: 6-bit value for the selected channel (or 6-bit color index)
 
-Result: 2^18 = **262,144 simultaneous colours** from adjacent-pixel modification.
+Result: 2^18 = **262,144 simultaneous colors** from adjacent-pixel modification.
 
 Enabling HAM8:
 ```asm
@@ -92,19 +92,19 @@ Enabling HAM8:
 move.w  #$9811, BPLCON0+custom
 ```
 
-## Colour Modes Summary
+## Color Modes Summary
 
-| Mode | Planes | Colours | Method |
+| Mode | Planes | Colors | Method |
 |---|---|---|---|
 | Standard | 1–8 | 2–256 | Direct palette lookup |
 | EHB | 6 | 64 | Extra Half-Brite (OCS/ECS compat) |
 | HAM6 | 6 | 4096 | Hold-and-modify 4-bit channels |
 | HAM8 | 8 | 262,144 | Hold-and-modify 6-bit channels |
-| Dual Playfield | 3+3 | 8+8 | Two independent 8-colour layers |
+| Dual Playfield | 3+3 | 8+8 | Two independent 8-color layers |
 
-## Colour Bank Selection (BPLCON4)
+## Color Bank Selection (BPLCON4)
 
-The 256 colour registers are split into 4 banks of 64:
+The 256 color registers are split into 4 banks of 64:
 
 | BPLAM | Bank | Registers |
 |---|---|---|
@@ -113,15 +113,15 @@ The 256 colour registers are split into 4 banks of 64:
 | $80 | 2 | COLOR128–COLOR191 |
 | $C0 | 3 | COLOR192–COLOR255 |
 
-Dual playfield can use BPLCON4 to give each playfield a different 64-colour bank.
+Dual playfield can use BPLCON4 to give each playfield a different 64-color bank.
 
-## OS Colour Management
+## OS Color Management
 
 `graphics.library` manages palette via the `ColorMap` structure attached to a `ViewPort`:
 
 ```c
 struct ColorMap *cm = GetColorMap(256);     /* allocate 256-entry AGA map */
-SetRGB32(vp, n, r, g, b);                  /* set one colour (24-bit each) */
+SetRGB32(vp, n, r, g, b);                  /* set one color (24-bit each) */
 LoadRGB32(vp, table);                       /* bulk load */
 FreeColorMap(cm);
 ```
@@ -131,4 +131,4 @@ FreeColorMap(cm);
 - NDK39: `graphics/view.h` — ColorMap, LoadRGB32
 - ADCD 2.1 Autodocs: graphics — LoadRGB32, SetRGB32
 - http://amigadev.elowar.com/read/ADCD_2.1/Libraries_Manual_guide/node02B4.html
-- AmigaMail Vol. 2 — AGA colour system articles
+- AmigaMail Vol. 2 — AGA color system articles

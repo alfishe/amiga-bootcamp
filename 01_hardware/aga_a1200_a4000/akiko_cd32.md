@@ -98,7 +98,7 @@ Output: 8 longwords of planar data  (1 longword per bitplane × 8 planes)
     move.l  (a1), (a2)+         ; bitplane 7
 ```
 
-#### Optimised Loop (MOVEM)
+#### Optimized Loop (MOVEM)
 
 In practice, the entire 32-pixel conversion is done with two MOVEM instructions:
 
@@ -119,7 +119,7 @@ In practice, the entire 32-pixel conversion is done with two MOVEM instructions:
 
 #### Full-Screen Conversion Example
 
-For a 320×256 screen at 8 bitplanes (256 colours):
+For a 320×256 screen at 8 bitplanes (256 colors):
 
 ```asm
 ; Total pixels = 320 × 256 = 81,920
@@ -203,9 +203,9 @@ Communication with the drive is command/response based through the Akiko registe
 
 The CD32 boots exclusively from CD-ROM (no floppy drive). The boot sequence:
 
-1. Kickstart 3.1 initialises from ROM (`$F80000`)
+1. Kickstart 3.1 initializes from ROM (`$F80000`)
 2. Extended ROM at `$E00000` provides `cd.device` and the CD filesystem
-3. Akiko initialises the CD-ROM drive
+3. Akiko initializes the CD-ROM drive
 4. The system reads the TOC and looks for a boot block (Amiga executable format)
 5. If found, the boot executable is loaded and run — this is the game/application entry point
 

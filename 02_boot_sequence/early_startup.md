@@ -16,7 +16,7 @@ Hold **both mouse buttons** (left + right) immediately after power-on or during 
 
 | Kickstart | When to Hold | Visual Cue |
 |---|---|---|
-| 2.0–3.0 | During boot colour sequence | Before "Insert Disk" or disk activity |
+| 2.0–3.0 | During boot color sequence | Before "Insert Disk" or disk activity |
 | 3.1 | During the hand/checkmark animation | While the Amiga hand appears |
 | 3.1.4 / 3.2 | Same as 3.1 | Same timing window |
 
@@ -144,7 +144,7 @@ if (leftButton && rightButton)
 
 The ESC menu uses the lowest-level graphics possible:
 
-- Opens a 640×200 (or 640×256 PAL) 2-colour screen
+- Opens a 640×200 (or 640×256 PAL) 2-color screen
 - Uses the Topaz 8 ROM font (always available — no disk access needed)
 - Renders using direct `RastPort` calls — no windows, no layers
 - Mouse pointer uses hardware sprite 0

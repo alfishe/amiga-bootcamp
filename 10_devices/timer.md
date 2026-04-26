@@ -122,7 +122,7 @@ The **E-clock** is derived from the system clock ÷ 10:
 
 ### VBlank Timing
 
-UNIT_VBLANK is synchronised to the display's vertical blank interrupt:
+UNIT_VBLANK is synchronized to the display's vertical blank interrupt:
 
 | Standard | VBlank Rate | Period | Use |
 |---|---|---|---|
@@ -155,7 +155,7 @@ struct EClockVal {      /* OS 2.0+ */
 
 ---
 
-## Proper Initialisation and Shutdown
+## Proper Initialization and Shutdown
 
 timer.device uses the standard Exec I/O model: a **MsgPort** for signal delivery, an **IORequest** to describe the operation, and an explicit **open/close** lifecycle. Every step matters — skipping any one causes subtle or catastrophic failures.
 
@@ -191,8 +191,8 @@ struct Library *TimerBase = (struct Library *)tr->tr_node.io_Device;
 |---|---|
 | Skip `CreateMsgPort` | No signal bit allocated → `Wait()` will never wake up. Or worse: signal bit 0 (CTRL-C) gets reused, causing random task termination. |
 | Skip error check on `CreateIORequest` | NULL IORequest passed to `OpenDevice` → immediate crash (NULL pointer dereference in Exec). |
-| Skip `OpenDevice` error check | If device can't open (e.g. wrong unit), the IORequest is uninitialised — any subsequent `DoIO`/`SendIO` writes to random memory → Guru Meditation. |
-| Use `AllocMem` instead of `CreateIORequest` | IORequest fields (`io_Message.mn_ReplyPort`, `io_Message.mn_Length`) are not initialised → device replies to garbage address → memory corruption. |
+| Skip `OpenDevice` error check | If device can't open (e.g. wrong unit), the IORequest is uninitialized — any subsequent `DoIO`/`SendIO` writes to random memory → Guru Meditation. |
+| Use `AllocMem` instead of `CreateIORequest` | IORequest fields (`io_Message.mn_ReplyPort`, `io_Message.mn_Length`) are not initialized → device replies to garbage address → memory corruption. |
 | Not saving `TimerBase` | Can't call `AddTime`/`SubTime`/`CmpTime`/`ReadEClock` — they require the device's library base in A6. |
 
 ### Shutdown (The Right Way)
@@ -311,7 +311,7 @@ if (timerPending)
 ## Use Case 3: Game/Demo Frame Sync (Periodic Timer)
 
 ```c
-/* 50 Hz game loop synchronised to PAL frame rate: */
+/* 50 Hz game loop synchronized to PAL frame rate: */
 #define FRAME_USEC  20000  /* 1/50th second = 20ms */
 
 void GameLoop(void)

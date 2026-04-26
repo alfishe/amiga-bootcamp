@@ -209,11 +209,11 @@ while ((cd = FindConfigDev(cd, -1, -1)) != NULL)
 
 ## Step 5: ROM Self-Test and Diagnostic Indicators
 
-The Amiga has a multi-layered diagnostic system that uses screen colours, power LED patterns, and keyboard LED blink codes to communicate status. Understanding these signals is essential for FPGA core development and hardware debugging.
+The Amiga has a multi-layered diagnostic system that uses screen colors, power LED patterns, and keyboard LED blink codes to communicate status. Understanding these signals is essential for FPGA core development and hardware debugging.
 
-### Normal Boot Colour Sequence
+### Normal Boot Color Sequence
 
-A healthy boot cycles through these colours rapidly (total <1 second on 68000):
+A healthy boot cycles through these colors rapidly (total <1 second on 68000):
 
 ```
 ┌─────────┐    ┌──────────┐    ┌───────────┐    ┌───────────┐    ┌──────────┐    ┌─────────┐
@@ -223,16 +223,16 @@ A healthy boot cycles through these colours rapidly (total <1 second on 68000):
 └─────────┘    └──────────┘    └───────────┘    └───────────┘    └──────────┘    └─────────┘
 ```
 
-If the sequence **stops** at any colour, that colour identifies the failure point.
+If the sequence **stops** at any color, that color identifies the failure point.
 
-### Screen Colour Diagnostic Table
+### Screen Color Diagnostic Table
 
-| Colour | Hex | Phase | Indicates | What Failed |
+| Color | Hex | Phase | Indicates | What Failed |
 |---|---|---|---|---|
 | Black (stuck) | `$000` | Pre-init | CPU not executing | No clock, dead CPU, no ROM addressing |
-| Dark grey | `$444` | Post-checksum | ROM checksum passed | (Normal — transient) |
-| Medium grey | `$888` | Memory test | Chip RAM sized OK | (Normal — transient) |
-| Light grey | `$AAA` | Exec init | ExecBase created | (Normal — transient) |
+| Dark gray | `$444` | Post-checksum | ROM checksum passed | (Normal — transient) |
+| Medium gray | `$888` | Memory test | Chip RAM sized OK | (Normal — transient) |
+| Light gray | `$AAA` | Exec init | ExecBase created | (Normal — transient) |
 | White | `$FFF` | Resident scan | Modules initializing | (Normal — transient) |
 | Green flash | `$0F0` | DOS boot | dos.library starting | (Normal — transient) |
 | **Red** (stuck) | `$F00` | **Checksum** | **ROM checksum failed** | Bad ROM chip, wrong image, bit rot |
@@ -242,17 +242,17 @@ If the sequence **stops** at any colour, that colour identifies the failure poin
 | **Magenta** (stuck) | `$F0F` | **Exception** | **Hardware trap** | Unexpected interrupt or bus error |
 | **Cyan** (stuck) | `$0FF` | **Misc** | **CIA or clock** | Timer initialization failure |
 
-### How the ROM Sets Diagnostic Colours
+### How the ROM Sets Diagnostic Colors
 
 ```asm
 ; The boot code writes COLOR00 at each milestone:
 ; After ROM checksum passes:
-    MOVE.W  #$0444,$DFF180        ; Dark grey → "ROM OK"
+    MOVE.W  #$0444,$DFF180        ; Dark gray → "ROM OK"
 
 ; After Chip RAM test passes:
-    MOVE.W  #$0888,$DFF180        ; Medium grey → "RAM OK"
+    MOVE.W  #$0888,$DFF180        ; Medium gray → "RAM OK"
 
-; On failure — set error colour and halt:
+; On failure — set error color and halt:
 RomChecksumFailed:
     MOVE.W  #$0F00,$DFF180        ; Red screen
 .hang:
@@ -264,7 +264,7 @@ RamTestFailed:
     BRA.S   .hang
 ```
 
-### Power LED Behaviour
+### Power LED Behavior
 
 | Pattern | Meaning |
 |---|---|
@@ -290,15 +290,15 @@ The Amiga keyboard has its own 6500/1 microcontroller that performs a self-test 
 
 The keyboard communicates with the main system via a synchronous serial protocol through CIA-A. If the keyboard passes self-test, it sends a power-up key stream (`$FD` = initiate power-up, then `$FE` = terminate power-up).
 
-### Normal vs Abnormal Boot Behaviour
+### Normal vs Abnormal Boot Behavior
 
 **Normal boot** (A500/A1200 with Kickstart 3.1):
 
 ```
 0 ms:    Black screen
-~5 ms:   Dark grey (ROM checksum calculating)
-~600 ms: Medium grey (checksum done, RAM test running)
-~650 ms: Light grey (ExecBase init)
+~5 ms:   Dark gray (ROM checksum calculating)
+~600 ms: Medium gray (checksum done, RAM test running)
+~650 ms: Light gray (ExecBase init)
 ~700 ms: White (resident scan starting)
 ~900 ms: Colors flash rapidly (graphics.library init, display setup)
 ~1.2 s:  Kickstart hand/checkmark animation appears

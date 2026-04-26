@@ -73,7 +73,7 @@ void install_patch(void)
 
 ## Calling the Original (Chaining)
 
-The replacement function **must** call the original to maintain correct library behaviour. The old function address returned by `SetFunction` is a raw pointer to the original function body (not the JMP slot):
+The replacement function **must** call the original to maintain correct library behavior. The old function address returned by `SetFunction` is a raw pointer to the original function body (not the JMP slot):
 
 ```c
 /* Jump to original using register convention */

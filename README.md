@@ -25,7 +25,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | **🎨 Graphics** | Planar bitmaps, Copper deep dive, Blitter deep dive, HAM/EHB modes, sprites, display pipeline |
 | **🖥️ Intuition** | Screens, windows, IDCMP, GadTools, BOOPSI, menus |
 | **📟 Devices** | trackdisk, SCSI, serial, parallel, timer, audio, keyboard, console |
-| **📚 Libraries** | utility, expansion, IFFParse, locale, ARexx, math, layers, diskfont |
+| **📚 Libraries** | utility, expansion, IFFParse, locale, ARexx, math, layers, diskfont, DataTypes, AmigaGuide, translator (speech) |
 | **🌐 Networking** | bsdsocket.library API, SANA-II, TCP/IP stacks comparison |
 | **🛠️ Toolchain** | GCC (bebbo/Codeberg), vasm/vlink, SAS/C, NDK, Makefiles, debugging |
 | **🔍 Reverse Engineering** | IDA/Ghidra setup, compiler fingerprints, binary patching, 3 case studies |
@@ -201,6 +201,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [idcmp.md](09_intuition/idcmp.md) | IDCMP message classes, IntuiMessage |
 | [boopsi.md](09_intuition/boopsi.md) | BOOPSI object system, custom classes |
 | [input_events.md](09_intuition/input_events.md) | InputEvent, Commodities Exchange |
+| [commodities.md](09_intuition/commodities.md) | Commodities Exchange: hotkeys, screen blankers, CxObject API |
 
 ### 10 — Devices
 | File | Topic |
@@ -223,18 +224,21 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [expansion.md](11_libraries/expansion.md) | Zorro bus, AutoConfig |
 | [icon.md](11_libraries/icon.md) | Workbench icons, DiskObject |
 | [workbench.md](11_libraries/workbench.md) | WBStartup, AppWindow |
-| [iffparse.md](11_libraries/iffparse.md) | IFF file parsing, ILBM/8SVX |
-| [locale.md](11_libraries/locale.md) | Internationalisation, catalogs |
+| [iffparse.md](11_libraries/iffparse.md) | IFF file parsing: ILBM/8SVX/ANIM, nested chunks, ByteRun1, PBM deinterleaving, clipboard, decision guide vs DataTypes |
+| [locale.md](11_libraries/locale.md) | Internationalization, catalogs |
 | [keymap.md](11_libraries/keymap.md) | Keyboard mapping, MapRawKey |
 | [rexxsyslib.md](11_libraries/rexxsyslib.md) | ARexx interface |
 | [mathffp.md](11_libraries/mathffp.md) | Floating point libraries, FFP, IEEE |
 | [layers.md](11_libraries/layers.md) | Window clipping layers |
 | [diskfont.md](11_libraries/diskfont.md) | Disk-based font loading |
+| [datatypes.md](11_libraries/datatypes.md) | DataTypes system: object-oriented file loading for images, sound, text, animation |
+| [amigaguide.md](11_libraries/amigaguide.md) | AmigaGuide hypertext help system: database format, API, context-sensitive help |
+| [translator.md](11_libraries/translator.md) | translator.library: English-to-phonetic translation, narrator.device integration, ARPABET phonemes |
 
 ### 12 — Networking
 | File | Topic |
 |---|---|
-| [bsdsocket.md](12_networking/bsdsocket.md) | BSD socket API, WaitSelect |
+| [bsdsocket.md](12_networking/bsdsocket.md) | **BSD socket API deep dive: event-loop patterns, WaitSelect signal integration, non-blocking I/O, multi-socket design, performance** |
 | [sana2.md](12_networking/sana2.md) | SANA-II device driver interface |
 | [tcp_ip_stacks.md](12_networking/tcp_ip_stacks.md) | AmiTCP vs Miami vs Roadshow |
 | [protocols.md](12_networking/protocols.md) | DNS, HTTP, DHCP |
@@ -242,8 +246,9 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 13 — Toolchain
 | File | Topic |
 |---|---|
-| [vasm_vlink.md](13_toolchain/vasm_vlink.md) | vasm assembler, vlink linker |
+| [vasm_vlink.md](13_toolchain/vasm_vlink.md) | **vasm assembler & vlink linker: modular architecture, Devpac/PhxAss compatibility, optimization system, linker scripts, C↔asm interop, 30+ output formats** |
 | [gcc_amiga.md](13_toolchain/gcc_amiga.md) | m68k-amigaos-gcc (bebbo fork, Codeberg) |
+| [vbcc.md](13_toolchain/vbcc.md) | **VBCC cross-compiler: `__reg()` register control, AmigaOS/MorphOS/AROS, vlink, fast compile times** |
 | [sasc.md](13_toolchain/sasc.md) | SAS/C 6.x compiler |
 | [stormc.md](13_toolchain/stormc.md) | StormC native IDE and C/C++ compiler |
 | [fd_files.md](13_toolchain/fd_files.md) | FD/SFD file format, Python parser |

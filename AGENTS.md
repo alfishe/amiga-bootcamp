@@ -301,6 +301,7 @@ For any API that involves allocation, messaging, or shared resources, exemplary 
 ### 9. The "Impact on FPGA/Emulation" Section
 
 Since this repository targets MiSTer FPGA developers, the best articles note implementation concerns for hardware reproduction: timing-sensitive code, self-modifying code, custom chip register access patterns, cache coherency requirements.
+If article is related completely to the Amiga software and has no relationship with FPGA/Emulation - just omit it.
 
 ### What Mediocre Articles Are Missing
 

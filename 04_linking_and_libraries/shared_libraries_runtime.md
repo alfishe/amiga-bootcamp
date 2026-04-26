@@ -393,8 +393,8 @@ void TryFreeMemory(void)
 stateDiagram-v2
     [*] --> Unloaded : File on disk
     Unloaded --> Loading : OpenLibrary → ramlib
-    Loading --> Initialised : LoadSeg + InitResident
-    Initialised --> InLibList : AddLibrary → SysBase→LibList
+    Loading --> Initialized : LoadSeg + InitResident
+    Initialized --> InLibList : AddLibrary → SysBase→LibList
     InLibList --> Open : Open() LVO, lib_OpenCnt=1
     Open --> Open : OpenLibrary (lib_OpenCnt++)
     Open --> Closing : CloseLibrary (lib_OpenCnt--)

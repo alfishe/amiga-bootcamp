@@ -103,7 +103,7 @@ bit 15:    HIRES  (1 = 640 pixel wide)
 bit 14-12: BPU2-0 (number of bitplanes: 0–6)
 bit 11:    HAM    (1 = Hold-And-Modify mode)
 bit 10:    DPF    (dual playfield)
-bit  9:    COLOR  (0 = monochrome, 1 = colour)
+bit  9:    COLOR  (0 = monochrome, 1 = color)
 bit  8:    GAUD   (genlock audio)
 bit  7-4:  (various, OCS = 0)
 bit  1:    ERSY   (external sync)
@@ -165,16 +165,16 @@ bit  0:    ECSENA (ECS enable — must be 0 on OCS)
 | $09E | ADKCON | W | Audio / disk control (write) |
 | $07C | DSKSYNC | W | Disk sync word |
 
-## Colour Registers
+## Color Registers
 
 | Offset | Name | Dir | Description |
 |---|---|---|---|
-| $180 | COLOR00 | W | Background / colour 0 |
-| $182 | COLOR01 | W | Colour 1 |
+| $180 | COLOR00 | W | Background / color 0 |
+| $182 | COLOR01 | W | Color 1 |
 | ... | | | |
-| $1BE | COLOR31 | W | Colour 31 |
+| $1BE | COLOR31 | W | Color 31 |
 
-OCS colours: 12-bit RGB (4 bits per component, $0RGB format).
+OCS colors: 12-bit RGB (4 bits per component, $0RGB format).
 
 ## References
 

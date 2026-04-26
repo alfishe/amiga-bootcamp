@@ -201,11 +201,11 @@ graph TB
 | `68060.library` 40.1 | — | Phase5 | For Blizzard/CyberStorm accelerators |
 | `68060.library` 46.x | — | Motorola FPSP reference | Best precision and compatibility |
 | `Mu68040.library` | — | Thomas Richter (MMULib) | Enhanced, with MMU support |
-| `Mu68060.library` | — | Thomas Richter (MMULib) | Enhanced, with MMU + optimisations |
+| `Mu68060.library` | — | Thomas Richter (MMULib) | Enhanced, with MMU + optimizations |
 
 ### Three CPU Flavours
 
-| CPU | FPU | Math Behaviour |
+| CPU | FPU | Math Behavior |
 |---|---|---|
 | **68040** (full) | ✅ Built-in | Basic FPU ops in hardware. Transcendentals trapped → 68040.library |
 | **68LC040** | ❌ No FPU | ALL FPU ops trap → needs 68040.library + SoftIEEE or full emulation |
@@ -232,7 +232,7 @@ Performance-critical code should use lookup tables, CORDIC algorithms, or polyno
 
 ## Third-Party Replacement Libraries
 
-The Amiga's library system allows **drop-in replacements** — you simply copy an optimised `.library` to `LIBS:` and it supersedes the ROM version. Several third-party packages exploit this for dramatic speedups.
+The Amiga's library system allows **drop-in replacements** — you simply copy an optimized `.library` to `LIBS:` and it supersedes the ROM version. Several third-party packages exploit this for dramatic speedups.
 
 ### HSMathLibs (Matthias Henze)
 
@@ -261,7 +261,7 @@ The most comprehensive third-party math library replacement. Written entirely in
 
 ### Mu680x0Libs / MMULib (Thomas Richter)
 
-Part of the MMULib package, these provide optimised CPU-specific libraries including math support:
+Part of the MMULib package, these provide optimized CPU-specific libraries including math support:
 
 | Package | Aminet |
 |---|---|
@@ -312,8 +312,8 @@ graph TB
     LIBS -->|"LIBS: copy wins"| HS
     LIBS -->|"No LIBS: copy"| ROM
     ROM --> STD
-    HS -->|"040 version"| OPT040["68040-optimised code"]
-    HS -->|"060 version"| OPT060["68060-optimised code"]
+    HS -->|"040 version"| OPT040["68040-optimized code"]
+    HS -->|"060 version"| OPT060["68060-optimized code"]
     MU --> FPSP["FPSP: handles<br/>unimplemented FPU ops"]
 ```
 
@@ -453,7 +453,7 @@ vc +aos68k prog.c -lmieee                       # software IEEE
 
 4. **68LC040/060 crashes** — Code that works on full 68040 Gurus on LC variants. Install `SoftIEEE` or equivalent FPSP to trap Line-F exceptions from unimplemented FPU instructions.
 
-5. **HSMathLibs CPU mismatch** — Installing the 040-optimised libraries on a 060 (or vice versa) can cause incorrect results or reduced performance. The pipeline timings are architecturally different.
+5. **HSMathLibs CPU mismatch** — Installing the 040-optimized libraries on a 060 (or vice versa) can cause incorrect results or reduced performance. The pipeline timings are architecturally different.
 
 ---
 

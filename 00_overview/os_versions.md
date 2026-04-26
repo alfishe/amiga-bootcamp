@@ -38,9 +38,9 @@ This is the final OS release by Commodore before their 1994 bankruptcy. It ships
 **graphics.library (40.x):**
 - `AllocBitMap()` / `FreeBitMap()` — dynamic bitmap allocation
 - `GetBitMapAttr()` — bitmap attribute query
-- `ObtainBestPenA()` — closest-match colour allocation
+- `ObtainBestPenA()` — closest-match color allocation
 - `SetRPAttrsA()` / `GetRPAttrsA()` — RastPort attribute tags
-- AGA full colour support: `LoadRGB32()`, 256 colour tables
+- AGA full color support: `LoadRGB32()`, 256 color tables
 - RTG stubs present but not functional (RTG lives in 3.5+)
 
 **intuition.library (40.x):**
@@ -89,7 +89,7 @@ OS 3.2 is a Hyperion-developed modernisation of the 3.1 codebase, first released
 
 ### intuition.library (47.x)
 - New Intuition prefs (IPrefs 47.x)
-- Better pen sharing and colour management
+- Better pen sharing and color management
 - `intuition.library` opens before `graphics.library` in new boot sequence
 - Visual prefs: themes, scaled UI elements
 

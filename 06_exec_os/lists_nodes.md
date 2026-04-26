@@ -137,7 +137,7 @@ struct MinList {
 
 ---
 
-## Initialising a List
+## Initializing a List
 
 ```c
 struct List myList;

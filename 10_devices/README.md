@@ -17,4 +17,4 @@ Amiga devices are shared libraries with an exec I/O request interface. They prov
 | [keyboard.md](keyboard.md) | CIA-A serial handshake, raw key codes, key matrix, reset sequence, FPGA protocol notes |
 | [gameport.md](gameport.md) | Joystick/mouse port: quadrature decoding, XOR state, fire buttons, controller types |
 | [input.md](input.md) | Input handler chain: priority dispatch, event classes, key remapping, Commodities Exchange |
-| [console.md](console.md) | Text terminal I/O: ANSI escape sequences, cursor/colour control, raw key events, CON:/RAW: handlers |
+| [console.md](console.md) | Text terminal I/O: ANSI escape sequences, cursor/color control, raw key events, CON:/RAW: handlers |

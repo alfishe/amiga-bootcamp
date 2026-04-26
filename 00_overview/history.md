@@ -6,7 +6,7 @@
 
 The Amiga was designed by Jay Miner's team at Amiga Corporation (originally Hi-Toro), beginning in 1982 under the codename **Lorraine**. The primary design goal was a low-cost personal computer with dedicated custom silicon handling graphics, audio, and DMA — freeing the CPU for application code. Commodore Business Machines acquired Amiga Corporation in 1984, incorporating the technology into what would ship as the **Commodore Amiga 1000** in July 1985.
 
-The core insight was the **coprocessor paradigm**: three custom chips (Agnus, Denise, Paula) operate concurrently with the M68000, driven by a shared DMA bus arbitrated by Agnus. This allowed the Amiga to demonstrate colour animation, digitised speech, and multitasking simultaneously — capabilities competitors would not match for years.
+The core insight was the **coprocessor paradigm**: three custom chips (Agnus, Denise, Paula) operate concurrently with the M68000, driven by a shared DMA bus arbitrated by Agnus. This allowed the Amiga to demonstrate color animation, digitised speech, and multitasking simultaneously — capabilities competitors would not match for years.
 
 ---
 
@@ -17,12 +17,12 @@ The core insight was the **coprocessor paradigm**: three custom chips (Agnus, De
 | Component | Part Numbers | Role |
 |---|---|---|
 | **Agnus** | MOS 8361 (PAL), 8367 (NTSC) | DMA controller, Copper, Blitter, address gen |
-| **Denise** | MOS 8362 | Display: sprites, bitplanes, colour decode |
+| **Denise** | MOS 8362 | Display: sprites, bitplanes, color decode |
 | **Paula** | MOS 8364 | Audio DMA (4 channels), disk I/O, serial I/O |
 
 Key characteristics:
 - **1 MB Chip RAM** maximum (512 KB in early A1000/A500 configs)
-- 6 bitplanes → 64 colours (EHB mode) or 4096 (HAM)
+- 6 bitplanes → 64 colors (EHB mode) or 4096 (HAM)
 - 8 hardware sprites (16px wide, 2bpp)
 - Copper coprocessor: 2 registers, WAIT/SKIP/MOVE instructions
 - Blitter: 3 source channels + destination, minterm logic, line mode
@@ -67,9 +67,9 @@ Machines using ECS:
 | **Paula** | MOS 8364 (unchanged) | Same as OCS/ECS |
 
 Key enhancements over ECS:
-- **32-bit colour registers**: 24-bit palette (256 colours, HAM8)
-- **256 colour registers** (COLOR00–COLOR255)
-- HAM8 mode: 262,144 simultaneous colours
+- **32-bit color registers**: 24-bit palette (256 colors, HAM8)
+- **256 color registers** (COLOR00–COLOR255)
+- HAM8 mode: 262,144 simultaneous colors
 - **64-bit blitter bus** via `FMODE` register (1x/2x/4x word transfers)
 - **BPLCON3 / BPLCON4**: sprite palette bank, bitplane bank select
 - **DIWHIGH**: extended display window for overscan

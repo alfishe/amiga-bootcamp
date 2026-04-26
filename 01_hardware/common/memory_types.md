@@ -304,7 +304,7 @@ When no Fast RAM is available, everything competes for the same 512 KB–2 MB:
 ```c
 if (!hasFastRAM) {
     /* All memory is Chip RAM — conserve aggressively */
-    numBitplanes = 4;               /* Use 16 colours instead of 32 */
+    numBitplanes = 4;               /* Use 16 colors instead of 32 */
     useDoubleBuffer = FALSE;        /* Single buffer saves 40 KB per plane */
     maxBOBs = 8;                    /* Fewer sprites = less Blitter work */
     musicQuality = QUALITY_LOW;     /* 4-bit 11 kHz samples save Chip RAM */
@@ -312,7 +312,7 @@ if (!hasFastRAM) {
 }
 ```
 
-**Why**: On a Chip-only system, the CPU, Blitter, display, and audio all share one bus. Reducing display complexity (fewer bitplanes) frees DMA slots for the Blitter AND frees Chip RAM for audio/game data. This is why many A500 games use 4 bitplanes (16 colours) while the same game on an accelerated A1200 uses 5 or even 8.
+**Why**: On a Chip-only system, the CPU, Blitter, display, and audio all share one bus. Reducing display complexity (fewer bitplanes) frees DMA slots for the Blitter AND frees Chip RAM for audio/game data. This is why many A500 games use 4 bitplanes (16 colors) while the same game on an accelerated A1200 uses 5 or even 8.
 
 ### Strategy: Chip + Fast RAM Mode (Accelerated Systems)
 
@@ -321,7 +321,7 @@ When Fast RAM is available, the architecture unlocks true parallelism:
 ```c
 if (hasFastRAM) {
     /* CPU runs from Fast RAM at full speed; Chip RAM for DMA only */
-    numBitplanes = 5;                /* 32 colours — display looks better */
+    numBitplanes = 5;                /* 32 colors — display looks better */
     useDoubleBuffer = TRUE;          /* Flicker-free, worth the Chip RAM */
     maxBOBs = 24;                    /* More BOBs — CPU can compute while Blitter blits */
     musicQuality = QUALITY_HIGH;     /* 8-bit 22 kHz — Chip RAM freed by code in Fast RAM */

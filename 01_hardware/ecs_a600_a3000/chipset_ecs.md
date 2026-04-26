@@ -48,10 +48,10 @@ lsr.w   #8, d0              ; shift to get Agnus ID in low byte
 
 ECS Denise adds to OCS Denise (8362):
 
-1. **BPLCON3** — new control register for border colour, sprite bank
+1. **BPLCON3** — new control register for border color, sprite bank
 2. **Sub-pixel scrolling** — additional scroll control bits
 3. **Genlock extensions** — improved external sync handling
-4. **Border blank** — BPLCON3 can blank the border area to colour 0
+4. **Border blank** — BPLCON3 can blank the border area to color 0
 
 ### DENISEID — Revision Register
 
@@ -74,10 +74,10 @@ move.w  $DFF07C, d0   ; read DENISEID
 New register at `$DFF106` (ECS only, must not be written on OCS):
 
 ```
-bit 15-13: BANK2-0    — sprite colour bank (AGA: upper 4 bits of colour reg)
-bit 12-10: PF2OF2-0   — playfield 2 colour offset (for dual playfield)
-bit  9:    LOCT       — low colour enable (AGA HAM8 mode)
-bit  6:    BRDRBLNK   — border blank: forces border area to colour 0
+bit 15-13: BANK2-0    — sprite color bank (AGA: upper 4 bits of color reg)
+bit 12-10: PF2OF2-0   — playfield 2 color offset (for dual playfield)
+bit  9:    LOCT       — low color enable (AGA HAM8 mode)
+bit  6:    BRDRBLNK   — border blank: forces border area to color 0
 bit  5:    BRDNTRAN   — border not-transparent (disable border transparency)
 bit  4:    ZDCLKEN     — horizontal/vertical count display
 bit  3:    BRDSPRT    — sprites in border area enable

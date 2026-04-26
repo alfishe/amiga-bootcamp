@@ -4,7 +4,7 @@
 
 ## Overview
 
-The AmigaOS **startup code** is the first code that runs when an executable is launched. It bridges the OS loader (which jumps to hunk 0 offset 0) and the C `main()` function. Understanding it is critical for reverse engineering — it reveals the initialisation sequence, library opens, argument parsing, and the Workbench vs CLI detection path.
+The AmigaOS **startup code** is the first code that runs when an executable is launched. It bridges the OS loader (which jumps to hunk 0 offset 0) and the C `main()` function. Understanding it is critical for reverse engineering — it reveals the initialization sequence, library opens, argument parsing, and the Workbench vs CLI detection path.
 
 ---
 

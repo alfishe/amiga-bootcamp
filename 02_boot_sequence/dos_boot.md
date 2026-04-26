@@ -4,7 +4,7 @@
 
 ## Overview
 
-After the Kickstart ROM initialises the kernel and resident modules, the `strap` (bootstrap) module takes over. It enumerates bootable devices, reads and executes the boot block, mounts filesystems, and runs the user's startup scripts. This phase transitions the system from "kernel initialized" to "fully running desktop."
+After the Kickstart ROM initializes the kernel and resident modules, the `strap` (bootstrap) module takes over. It enumerates bootable devices, reads and executes the boot block, mounts filesystems, and runs the user's startup scripts. This phase transitions the system from "kernel initialized" to "fully running desktop."
 
 ---
 

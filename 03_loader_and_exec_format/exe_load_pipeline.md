@@ -137,7 +137,7 @@ struct Process *proc = CreateNewProcTags(
     TAG_DONE);
 ```
 
-Internally this calls `exec.library MakeNode()` and initialises:
+Internally this calls `exec.library MakeNode()` and initializes:
 - `Process->pr_SegList` — the segment list BPTR
 - Stack: allocated via `AllocMem(NP_StackSize, MEMF_PUBLIC)`, stored in `pr_Stack`
 - `tc_SPLower` / `tc_SPUpper` — stack bounds

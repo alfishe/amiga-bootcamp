@@ -26,7 +26,7 @@ struct ViewPort {
     struct ColorMap *ColorMap;   /* palette for this viewport */
     struct CopList  *DspIns;     /* display copper instructions */
     struct CopList  *SprIns;     /* sprite copper instructions */
-    struct CopList  *ClrIns;     /* colour copper instructions */
+    struct CopList  *ClrIns;     /* color copper instructions */
     struct CopList  *UCopIns;    /* user copper instructions */
     WORD            DWidth;      /* display width */
     WORD            DHeight;     /* display height */
@@ -54,8 +54,8 @@ struct RasInfo {
 /* graphics/view.h */
 #define HIRES       0x8000   /* 640 pixel mode */
 #define LACE        0x0004   /* interlaced */
-#define HAM         0x0800   /* Hold-And-Modify (4096 colours) */
-#define EXTRA_HALFBRITE 0x0080 /* Extra Half-Brite (64 colours) */
+#define HAM         0x0800   /* Hold-And-Modify (4096 colors) */
+#define EXTRA_HALFBRITE 0x0080 /* Extra Half-Brite (64 colors) */
 #define DUALPF      0x0400   /* dual playfield */
 #define PFBA        0x0040   /* playfield B has priority */
 #define SUPERHIRES  0x0020   /* 1280 pixel mode (ECS+) */
@@ -81,7 +81,7 @@ vp.DWidth = 320;
 vp.DHeight = 256;
 vp.Modes = 0;   /* lores */
 
-/* Build colour map: */
+/* Build color map: */
 vp.ColorMap = GetColorMap(32);
 
 /* Compile to copper: */

@@ -292,11 +292,11 @@ saveSize += sizeof(WORD) * bob->BobVSprite->Height * bob->BobVSprite->Depth;
 bob->SaveBuffer = AllocMem(saveSize, MEMF_CHIP | MEMF_CLEAR);
 ```
 
-## GEL System Initialisation and Render Loop
+## GEL System Initialization and Render Loop
 
-The GEL system requires explicit initialisation before use. The core lifecycle is: **init → add objects → sort → draw → sync → repeat → cleanup**.
+The GEL system requires explicit initialization before use. The core lifecycle is: **init → add objects → sort → draw → sync → repeat → cleanup**.
 
-### Initialisation
+### Initialization
 
 ```c
 #include <graphics/gels.h>
@@ -771,7 +771,7 @@ myVS.PlaneOnOff = 0x00;      /* planes 1-3 get 0 (transparent) */
 
 | Function | Description |
 |---|---|
-| `InitGels(head, tail, gi)` | Initialise GEL list with sentinel VSprites |
+| `InitGels(head, tail, gi)` | Initialize GEL list with sentinel VSprites |
 | `AddVSprite(vs, rp)` | Add a VSprite to the GEL list |
 | `AddBob(bob, rp)` | Add a BOB (and its backing VSprite) |
 | `AddAnimOb(ao, head, rp)` | Add an AnimOb and all its components |

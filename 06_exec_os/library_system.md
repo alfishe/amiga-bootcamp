@@ -117,9 +117,9 @@ if (!DOSBase)
 
 1. **Scan `SysBase→LibList`** for a node whose `ln_Name` matches
 2. **If not found**: search the resident module list (`FindResident`)
-3. **If not resident**: search `LIBS:` assign path, `LoadSeg` the file, find RomTag, initialise
+3. **If not resident**: search `LIBS:` assign path, `LoadSeg` the file, find RomTag, initialize
 4. **Check version**: `lib_Version >= requestedVersion`?
-5. **Call library's `Open()` vector** — library-specific initialisation, `lib_OpenCnt++`
+5. **Call library's `Open()` vector** — library-specific initialization, `lib_OpenCnt++`
 6. **Return** library base pointer (or NULL on failure)
 
 ### Closing

@@ -95,7 +95,7 @@ All Amiga custom chip registers are memory-mapped at base address `$DFF000`. Thi
 | `$110`–`$11E` | `BPL1DAT`–`BPL8DAT` | W | Bitplane data |
 | `$120`–`$13E` | `SPR0PTH`–`SPR7PTL` | W | Sprite pointers 0–7 |
 | `$140`–`$17E` | `SPR0POS`–`SPR7DATB` | W | Sprite position/control/data |
-| `$180`–`$1BE` | `COLOR00`–`COLOR31` | W | Colour palette registers |
+| `$180`–`$1BE` | `COLOR00`–`COLOR31` | W | Color palette registers |
 | `$1C0` | `HTOTAL` | W | H total (ECS) |
 | `$1C2` | `HSSTOP` | W | H sync stop (ECS) |
 | `$1C4` | `HBSTRT` | W | H blank start (ECS) |

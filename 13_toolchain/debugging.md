@@ -34,7 +34,7 @@ flowchart TD
 | Tool | Type | Requires | Best For |
 |---|---|---|---|
 | **Enforcer** | MMU memory watchdog | 68020+ with MMU | Catching NULL ptr, illegal reads/writes |
-| **MuForce** | MMU memory watchdog | 68040/060 | Same as Enforcer, optimised for 040/060 |
+| **MuForce** | MMU memory watchdog | 68040/060 | Same as Enforcer, optimized for 040/060 |
 | **MuGuardianAngel** | Stack overflow detector | 68040/060 | Catching stack overflow crashes |
 | **BareFoot** | Serial kernel debugger | Serial cable + terminal | Exec internals, boot crashes, system hangs |
 | **wack / SAD** | ROM-resident debugger | Guru Meditation (crash) | Post-crash analysis, ROM debugging |

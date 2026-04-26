@@ -15,7 +15,7 @@ bit 15: HARDDIS  — disable hard limits on display window
 bit 14: LPENDIS  — disable light pen latch
 bit 13: VARVBEN  — enable variable VBlank
 bit 12: LOLDIS   — disable long line sync
-bit 11: CSCBEN   — composite sync on colour burst
+bit 11: CSCBEN   — composite sync on color burst
 bit 10: VARVSYEN — variable vertical sync
 bit  9: VARHSYEN — variable horizontal sync
 bit  8: VARBEAMEN— variable beam enable
@@ -29,7 +29,7 @@ bit  1: HSYTRUE  — horizontal sync polarity
 bit  0: MONCSYEN — monochrome composite sync enable
 ```
 
-**Default OCS behaviour** is replicated by writing $0000 to BEAMCON0 on ECS.
+**Default OCS behavior** is replicated by writing $0000 to BEAMCON0 on ECS.
 
 **PAL/NTSC software switch:**
 ```asm

@@ -128,7 +128,7 @@ ULONG changeCount = diskReq->iotd_Req.io_Actual;
 diskReq->iotd_Req.io_Command = TD_ADDCHANGEINT;
 diskReq->iotd_Req.io_Data    = (APTR)&myInterrupt;
 SendIO((struct IORequest *)diskReq);
-/* myInterrupt is signalled on disk change */
+/* myInterrupt is signaled on disk change */
 ```
 
 ### Track Caching
@@ -141,7 +141,7 @@ Read sector 11 → new track → DMA reads track 1
 Read sector 5 → cache hit (still in track 0 buffer)
 ```
 
-> **FPGA implication**: the MiSTer core must emulate this whole-track DMA behaviour for correct timing. Games that measure seek+read latency will behave incorrectly if only single sectors are transferred.
+> **FPGA implication**: the MiSTer core must emulate this whole-track DMA behavior for correct timing. Games that measure seek+read latency will behave incorrectly if only single sectors are transferred.
 
 ---
 

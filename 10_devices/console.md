@@ -6,7 +6,7 @@
 
 `console.device` provides an ANSI-compatible text terminal within Intuition windows. It handles:
 - **Input**: translating raw keycodes from `input.device` into ASCII/ANSI characters
-- **Output**: rendering text, parsing escape sequences for cursor control, colour, and formatting
+- **Output**: rendering text, parsing escape sequences for cursor control, color, and formatting
 - **Clipboard**: cut/copy/paste integration
 
 Every CLI/Shell window is backed by a console.device unit. Applications can open their own console units in any Intuition window for text I/O without implementing their own keyboard translation or cursor rendering.
@@ -68,7 +68,7 @@ void ConPuts(struct IOStdReq *con, char *str)
 /* Usage: */
 ConPuts(con, "Hello, Amiga!\n");
 ConPuts(con, "\033[1mBold text\033[0m\n");        /* bold on/off */
-ConPuts(con, "\033[33mYellow text\033[0m\n");      /* colour */
+ConPuts(con, "\033[33mYellow text\033[0m\n");      /* color */
 ConPuts(con, "\033[10;20HText at row 10 col 20");  /* absolute position */
 ```
 
@@ -148,7 +148,7 @@ Console.device supports a rich subset of ANSI/VT100 escape sequences (CSI = `\03
 | `\033[23m` | Cancel italic |
 | `\033[24m` | Cancel underline |
 
-### Colours
+### Colors
 
 | Sequence | Foreground | Background |
 |---|---|---|
@@ -163,7 +163,7 @@ Console.device supports a rich subset of ANSI/VT100 escape sequences (CSI = `\03
 | `\033[39m` / `\033[49m` | Default | Default |
 
 > [!NOTE]
-> Colour indices map to the **Intuition pen palette** of the window's screen, not absolute colours. Pen 0 = background, pen 1 = foreground by default.
+> Color indices map to the **Intuition pen palette** of the window's screen, not absolute colors. Pen 0 = background, pen 1 = foreground by default.
 
 ### Amiga-Specific Extensions
 

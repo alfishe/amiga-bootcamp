@@ -18,7 +18,7 @@ graph LR
         Beam["Beam Counter"]
     end
     subgraph Denise/Lisa ["Denise / Lisa Chip"]
-        Palette["Colour Registers"]
+        Palette["Color Registers"]
         BPL["Bitplane Control"]
         SPR["Sprite Control"]
     end
@@ -37,14 +37,14 @@ graph LR
 **Key points:**
 - The Copper reads its program from **Chip RAM** via DMA — no CPU involvement
 - It writes directly to custom chip registers (the same `$DFF000–$DFF1FE` space)
-- It synchronises with the **beam counter** — it knows exactly where the electron beam is
+- It synchronizes with the **beam counter** — it knows exactly where the electron beam is
 - The CPU can modify the copper list in memory at any time; changes take effect next frame
 
 ### What the Copper Can Do
 
 | Capability | How | Typical Use |
 |---|---|---|
-| **Per-line colour changes** | WAIT for line → MOVE to COLORxx | Gradient skies, rainbow bars, water effects |
+| **Per-line color changes** | WAIT for line → MOVE to COLORxx | Gradient skies, rainbow bars, water effects |
 | **Split-screen displays** | Change bitplane pointers mid-frame | Status bar + scrolling game area |
 | **Parallax scrolling** | Change BPLCON1 scroll offset at different lines | Multi-layer side-scrollers |
 | **Resolution mixing** | Change BPLCON0 mid-frame | HiRes title bar + LoRes gameplay |
@@ -61,7 +61,7 @@ graph LR
 | No branching/loops | Executes linearly top-to-bottom; no jumps or calls |
 | No memory read | Can only WRITE to registers — cannot read anything |
 | No CPU memory access | Writes only to custom chip registers (`$DFF000`+), not RAM or CIA |
-| No sub-pixel timing | Horizontal resolution: 4 colour clocks (~8 low-res pixels) |
+| No sub-pixel timing | Horizontal resolution: 4 color clocks (~8 low-res pixels) |
 | V counter wraps at 255 | PAL lines 256–311 require a double-WAIT trick |
 | Chip RAM only | The copper list itself must reside in Chip RAM (DMA-accessible) |
 
@@ -69,9 +69,9 @@ graph LR
 
 **AmigaOS** — `graphics.library` builds the system copper list automatically when you call `MakeVPort()` / `LoadView()`. This list sets up bitplane pointers, sprite pointers, display window, and palette for every ViewPort. User code adds instructions via `UCopList`.
 
-**Games (system takeover)** — Disable the OS display system, point COP1LC to your own copper list, and have total control. The copper list typically sets up the display, changes colours per line, and handles sprite multiplexing.
+**Games (system takeover)** — Disable the OS display system, point COP1LC to your own copper list, and have total control. The copper list typically sets up the display, changes colors per line, and handles sprite multiplexing.
 
-**Demos** — Push the Copper to its limits: hundreds of colour changes per frame, dynamic copper list generation, and tricks like "copper bars" (changing colours mid-scanline using horizontal WAITs).
+**Demos** — Push the Copper to its limits: hundreds of color changes per frame, dynamic copper list generation, and tricks like "copper bars" (changing colors mid-scanline using horizontal WAITs).
 
 ---
 
@@ -150,15 +150,15 @@ Full PAL:   312 lines, but copper V wraps at 256
 
 ## Complete Examples
 
-### Example 1: Rainbow Bars (Colour Per Scanline)
+### Example 1: Rainbow Bars (Color Per Scanline)
 
 ```asm
-; copperlist.s — 256-colour rainbow using Copper
+; copperlist.s — 256-color rainbow using Copper
     SECTION copperlist,DATA_C    ; MUST be in Chip RAM!
 
 CopperList:
     ; Set up a basic display first
-    dc.w    $0100, $1200    ; BPLCON0: 1 bitplane, colour on
+    dc.w    $0100, $1200    ; BPLCON0: 1 bitplane, color on
     dc.w    $0092, $0038    ; DDFSTRT
     dc.w    $0094, $00D0    ; DDFSTOP
     dc.w    $008E, $2C81    ; DIWSTRT
@@ -177,7 +177,7 @@ CopperList:
     dc.w    $2F01, $FFFE    ; WAIT line 47
     dc.w    $0180, $0C30    ; COLOR00 = yellow-orange
 
-    ; ... repeat for each line with incrementing colours ...
+    ; ... repeat for each line with incrementing colors ...
 
     dc.w    $FFFF, $FFFE    ; end of copper list
 
@@ -275,8 +275,8 @@ FreeCopList(ucl);
 
 | Item | Cycles |
 |---|---|
-| Each Copper instruction | 4 colour clocks (= 8 low-res pixels) |
-| WAIT resolution (horizontal) | 4 colour clocks minimum |
+| Each Copper instruction | 4 color clocks (= 8 low-res pixels) |
+| WAIT resolution (horizontal) | 4 color clocks minimum |
 | Maximum instructions per line | ~112 (NTSC) / ~114 (PAL) |
 | PAL visible lines | 256 (lines 44–300) |
 | NTSC visible lines | 200 (lines 44–244) |
@@ -304,7 +304,7 @@ Reposition sprites mid-frame to display more than 8 sprites:
 ### Copper-Driven Palette Animation
 
 ```asm
-    ; Animate copper list by modifying colour values each frame
+    ; Animate copper list by modifying color values each frame
     ; (DMA reads new values each frame automatically)
     ; Just update the data words in the copper list in Chip RAM
     move.w  d0, CopperList+6     ; modify the MOVE data word

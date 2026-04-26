@@ -37,7 +37,7 @@ flowchart TD
 struct GfxBase {
     struct Library   LibNode;
     struct View     *ActiView;        /* currently active View */
-    struct copinit   *copinit;        /* system copper list initialisation */
+    struct copinit   *copinit;        /* system copper list initialization */
     LONG            *cia;             /* CIA base (deprecated) */
     LONG            *blitter;         /* blitter base (deprecated) */
     UWORD           *LOFlist;         /* long-frame copper list pointer */
@@ -101,7 +101,7 @@ struct GfxBase *GfxBase = (struct GfxBase *)
 if (GfxBase->ChipRevBits0 & GFXF_AA_ALICE)
 {
     /* AGA chipset (A1200/A4000) */
-    /* 8-bit planar, 256 colours, 24-bit palette */
+    /* 8-bit planar, 256 colors, 24-bit palette */
 }
 else if (GfxBase->ChipRevBits0 & GFXF_HR_DENISE)
 {
@@ -116,7 +116,7 @@ else if (GfxBase->ChipRevBits0 & GFXF_HR_AGNUS)
 else
 {
     /* OCS chipset (original A500/A1000/A2000) */
-    /* 512 KB Chip RAM, 4096 colour palette */
+    /* 512 KB Chip RAM, 4096 color palette */
 }
 ```
 

@@ -35,9 +35,9 @@ ULONG chip_free  = AvailMem(MEMF_CHIP);
 ULONG chip_total = AvailMem(MEMF_CHIP | MEMF_TOTAL);
 ```
 
-The exec memory list is built at boot time from the chip RAM size detected by the ROM initialisation code, which queries Agnus's internal address counter.
+The exec memory list is built at boot time from the chip RAM size detected by the ROM initialization code, which queries Agnus's internal address counter.
 
-## AmigaOS ROM Initialisation (Exec init)
+## AmigaOS ROM Initialization (Exec init)
 
 During cold boot, the Kickstart ROM probes Chip RAM size:
 
@@ -45,7 +45,7 @@ During cold boot, the Kickstart ROM probes Chip RAM size:
 2. Read back — if the value matches, 2 MB Chip RAM is present
 3. The exec `MemHeader` for Chip RAM is extended to $1FFFFF
 
-This is performed in the `RomBoot()` → `InitCode()` sequence before the exec memory system is fully initialised.
+This is performed in the `RomBoot()` → `InitCode()` sequence before the exec memory system is fully initialized.
 
 ## Implications for Programming
 

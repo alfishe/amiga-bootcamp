@@ -28,7 +28,7 @@ Think of it as a **hardware GPU for 2D raster operations** — years before PC g
 | No rotation | Cannot rotate — must be pre-rendered in software |
 | No 3D | No perspective, texture mapping, or Z-buffer |
 | No chunky pixels | Operates on **planar** bitplanes only (1 plane at a time) |
-| No colour blending | Pure Boolean logic — no alpha, no transparency gradients |
+| No color blending | Pure Boolean logic — no alpha, no transparency gradients |
 | Word-aligned width | Minimum operation width is 16 pixels (1 word) |
 
 ### How Software Uses It
@@ -70,7 +70,7 @@ move.w  #$0300, $DFF1FC    ; BLT_FMODE = 10 (64-bit)
 ```
 
 > [!IMPORTANT]
-> FMODE must be set **before** loading blitter registers and starting the blit. Changing FMODE mid-blit causes undefined behaviour.
+> FMODE must be set **before** loading blitter registers and starting the blit. Changing FMODE mid-blit causes undefined behavior.
 
 ## Width Calculation with FMODE
 

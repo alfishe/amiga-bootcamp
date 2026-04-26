@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Amiga offers two unique display modes that squeeze many more colours from limited bitplane hardware: **EHB** (Extra Half-Brite) and **HAM** (Hold-And-Modify). These modes have no direct equivalent on other platforms and are critical for understanding Amiga graphics capability and for FPGA implementation.
+The Amiga offers two unique display modes that squeeze many more colors from limited bitplane hardware: **EHB** (Extra Half-Brite) and **HAM** (Hold-And-Modify). These modes have no direct equivalent on other platforms and are critical for understanding Amiga graphics capability and for FPGA implementation.
 
 ---
 
@@ -13,8 +13,8 @@ The Amiga offers two unique display modes that squeeze many more colours from li
 ### How It Works
 
 Uses **6 bitplanes** (64 possible values):
-- Bitplane values 0–31: index into the 32-colour palette normally
-- Bitplane values 32–63: display the colour from register (value − 32) at **half brightness** (all RGB components shifted right by 1)
+- Bitplane values 0–31: index into the 32-color palette normally
+- Bitplane values 32–63: display the color from register (value − 32) at **half brightness** (all RGB components shifted right by 1)
 
 ```mermaid
 flowchart LR
@@ -32,12 +32,12 @@ flowchart LR
 Example pixel value = 37 (binary: 100101):
   Bit 5 = 1 → half-brite
   Bits 4-0 = 00101 = palette index 5
-  Output colour = palette[5] >> 1 (each R,G,B component halved)
+  Output color = palette[5] >> 1 (each R,G,B component halved)
 
 Example pixel value = 5 (binary: 000101):
   Bit 5 = 0 → normal
   Bits 4-0 = 00101 = palette index 5
-  Output colour = palette[5] (full brightness)
+  Output color = palette[5] (full brightness)
 ```
 
 ### Programming EHB
@@ -51,16 +51,16 @@ struct Screen *scr = OpenScreenTags(NULL,
     SA_DisplayID, EXTRAHALFBRITE_KEY,
     TAG_DONE);
 
-/* Set the 32 base colours: */
-ULONG colours32[32 * 3 + 2];
-colours32[0] = 32 << 16;  /* count = 32, first = 0 */
+/* Set the 32 base colors: */
+ULONG colors32[32 * 3 + 2];
+colors32[0] = 32 << 16;  /* count = 32, first = 0 */
 /* ... fill RGB values ... */
-colours32[32 * 3 + 1] = 0;  /* terminator */
-LoadRGB32(&scr->ViewPort, colours32);
+colors32[32 * 3 + 1] = 0;  /* terminator */
+LoadRGB32(&scr->ViewPort, colors32);
 
 /* Pixels 0–31 use base palette directly.
    Pixels 32–63 are automatically half-brightness versions.
-   No need to set colours 32–63 — hardware does it. */
+   No need to set colors 32–63 — hardware does it. */
 ```
 
 ---
@@ -111,25 +111,25 @@ flowchart LR
 ```
 
 > [!IMPORTANT]
-> **Each scanline starts fresh** — the first pixel of each line has no "previous pixel" to modify. The hardware resets to the background colour (register 0) at the start of each line. This is why HAM images often have a visible "colour ramp" at the left edge.
+> **Each scanline starts fresh** — the first pixel of each line has no "previous pixel" to modify. The hardware resets to the background color (register 0) at the start of each line. This is why HAM images often have a visible "color ramp" at the left edge.
 
 ### Practical Example — Encoding a HAM6 Scanline
 
-Suppose we want to display these colours on a scanline:
+Suppose we want to display these colors on a scanline:
 
 ```
 Target:  RGB(A,7,3) → RGB(A,7,F) → RGB(F,7,F) → RGB(F,0,8)
 
 Encoding:
-  Pixel 0: 00 xxxx (SET palette[n] = A,7,3)  → SET to base colour
+  Pixel 0: 00 xxxx (SET palette[n] = A,7,3)  → SET to base color
   Pixel 1: 01 1111 (MOD BLUE = F)            → A,7,3 → A,7,F  ✓
   Pixel 2: 10 1111 (MOD RED = F)              → A,7,F → F,7,F  ✓
-  Pixel 3: 00 xxxx (SET palette[m] = F,0,8)  → SET to nearest base colour
+  Pixel 3: 00 xxxx (SET palette[m] = F,0,8)  → SET to nearest base color
 
 Note: pixel 3 needs to change ALL THREE components.
 Since HAM can only modify ONE component per pixel, we must either:
   a) Use 3 pixels to transition (changing R, G, B separately) → "fringing"
-  b) Pick a base palette colour that's close to the target → "SET"
+  b) Pick a base palette color that's close to the target → "SET"
 ```
 
 ### The Fringing Problem
@@ -150,24 +150,24 @@ flowchart LR
     style H4 fill:#ffcdd2,stroke:#c62828,color:#333
 ```
 
-Pixels H3 and H4 are **fringing artifacts** — wrong colours visible during the transition. The encoder must change R, G, B individually (one per pixel), so sharp multi-component transitions always produce visible intermediate colours.
+Pixels H3 and H4 are **fringing artifacts** — wrong colors visible during the transition. The encoder must change R, G, B individually (one per pixel), so sharp multi-component transitions always produce visible intermediate colors.
 
-The encoder (usually offline) optimises palette choice and pixel encoding to minimise fringing. Common strategies:
-- Choose 16 base palette colours via **median-cut** from the image histogram
+The encoder (usually offline) optimizes palette choice and pixel encoding to minimize fringing. Common strategies:
+- Choose 16 base palette colors via **median-cut** from the image histogram
 - Use SET pixels at strong edges
 - Sequence MODIFY commands to approach target in fewest steps
 
 ```mermaid
 flowchart TD
     IMG["Source Image<br/>(24-bit RGB)"] --> HIST["Histogram Analysis"]
-    HIST --> MEDCUT["Median-Cut<br/>Select 16 base colours"]
+    HIST --> MEDCUT["Median-Cut<br/>Select 16 base colors"]
     MEDCUT --> PAL["Optimal 16-entry palette"]
 
     IMG --> SCAN["Process scanlines<br/>left to right"]
     PAL --> SCAN
 
     SCAN --> DECIDE{"Distance to target?"}
-    DECIDE -->|"Close base colour exists"| SET["SET command<br/>(no fringing)"]
+    DECIDE -->|"Close base color exists"| SET["SET command<br/>(no fringing)"]
     DECIDE -->|"Only 1 component differs"| MOD["MODIFY command<br/>(no fringing)"]
     DECIDE -->|"2-3 components differ"| FRINGE["2-3 MODIFY sequence<br/>(fringing visible)"]
 
@@ -187,7 +187,7 @@ struct Screen *scr = OpenScreenTags(NULL,
     SA_DisplayID, HAM_KEY,
     TAG_DONE);
 
-/* Set the 16 base palette colours: */
+/* Set the 16 base palette colors: */
 ULONG hamPalette[16 * 3 + 2];
 hamPalette[0] = 16 << 16;  /* count=16, first=0 */
 /* Palette entry 0: R=$A0, G=$70, B=$30 (12-bit values scaled to 32-bit) */
@@ -221,7 +221,7 @@ void SetHAMPixel(UBYTE *plane[], int x, int y, UBYTE cmd, UBYTE data)
     }
 }
 
-/* Example: SET colour 5, then modify blue to $F: */
+/* Example: SET color 5, then modify blue to $F: */
 SetHAMPixel(plane, 0, 0, 0x00, 5);    /* 00 0101 = SET palette[5] */
 SetHAMPixel(plane, 1, 0, 0x01, 0xF);  /* 01 1111 = MOD BLUE = $F */
 ```
@@ -246,15 +246,15 @@ Uses **8 bitplanes**. Same principle, wider data:
 | Aspect | HAM6 | HAM8 |
 |---|---|---|
 | Base palette entries | 16 | 64 |
-| Colour component precision | 4-bit (16 levels) | 6-bit (64 levels) |
-| Total colour space | 12-bit (4,096) | 18-bit (262,144) |
-| Fringing severity | Severe | Mild (more base colours to SET from) |
+| Color component precision | 4-bit (16 levels) | 6-bit (64 levels) |
+| Total color space | 12-bit (4,096) | 18-bit (262,144) |
+| Fringing severity | Severe | Mild (more base colors to SET from) |
 | Memory per 320×256 screen | 6 × 40 × 256 = 60 KB | 8 × 40 × 256 = 80 KB |
 
 ### HAM8 Palette Setup
 
 ```c
-/* HAM8 uses 64 of the 256 AGA palette entries as base colours: */
+/* HAM8 uses 64 of the 256 AGA palette entries as base colors: */
 struct Screen *scr = OpenScreenTags(NULL,
     SA_Width,     320,
     SA_Height,    256,
@@ -319,10 +319,10 @@ DMA slots consumed per bitplane per lowres line:
 The HAM decoder operates **one pixel clock behind** the bitplane data output:
 
 ```
-Bitplane DMA → Bitplane shift registers → HAM decoder → Colour register → DAC → Video out
+Bitplane DMA → Bitplane shift registers → HAM decoder → Color register → DAC → Video out
                                           ↑
                                     1-pixel delay
-                                    (needs previous pixel's colour)
+                                    (needs previous pixel's color)
 ```
 
 For FPGA implementation, the HAM decoder is a simple combinational circuit:
@@ -359,20 +359,20 @@ end
 
 ## Standard Palette Modes — For Comparison
 
-### Setting Palette Colours (Non-HAM)
+### Setting Palette Colors (Non-HAM)
 
 ```c
 /* OS 3.0+ — 24-bit precision (AGA): */
-ULONG colours[3 * 3 + 2];  /* 3 colours */
-colours[0] = 3 << 16;  /* count=3, first entry=0 */
+ULONG colors[3 * 3 + 2];  /* 3 colors */
+colors[0] = 3 << 16;  /* count=3, first entry=0 */
 /* Entry 0: black */
-colours[1] = 0x00000000; colours[2] = 0x00000000; colours[3] = 0x00000000;
+colors[1] = 0x00000000; colors[2] = 0x00000000; colors[3] = 0x00000000;
 /* Entry 1: bright red */
-colours[4] = 0xFF000000; colours[5] = 0x00000000; colours[6] = 0x00000000;
+colors[4] = 0xFF000000; colors[5] = 0x00000000; colors[6] = 0x00000000;
 /* Entry 2: pure blue */
-colours[7] = 0x00000000; colours[8] = 0x00000000; colours[9] = 0xFF000000;
-colours[10] = 0;  /* terminator */
-LoadRGB32(vp, colours);
+colors[7] = 0x00000000; colors[8] = 0x00000000; colors[9] = 0xFF000000;
+colors[10] = 0;  /* terminator */
+LoadRGB32(vp, colors);
 
 /* OCS/ECS — 12-bit precision: */
 UWORD oldPalette[] = { 0x000, 0xF00, 0x00F };  /* 4 bits per channel */
@@ -385,7 +385,7 @@ custom->color[2] = 0x00F;   /* $DFF184: COLOR02 */
 /* AGA: extra bits via BPLCON3 bank select */
 ```
 
-### Colour Cycling (Palette Animation)
+### Color Cycling (Palette Animation)
 
 ```c
 /* Rotate palette entries for animation — common demo/game technique: */
@@ -413,7 +413,7 @@ void CyclePalette(struct ViewPort *vp, int first, int last)
 ```
 
 > [!TIP]
-> Colour cycling is extremely cheap — only palette registers change, not pixel data. A single `SetRGB32` call costs a few microseconds vs redrawing the entire screen. This is why palette animation was so popular on the Amiga.
+> Color cycling is extremely cheap — only palette registers change, not pixel data. A single `SetRGB32` call costs a few microseconds vs redrawing the entire screen. This is why palette animation was so popular on the Amiga.
 
 ---
 
@@ -423,9 +423,9 @@ void CyclePalette(struct ViewPort *vp, int first, int last)
 |---|---|---|---|---|
 | Bitplanes | 5 | 6 | 6 | 8 |
 | Chipset | OCS/ECS/AGA | OCS/ECS/AGA | OCS/ECS/AGA | AGA only |
-| Programmable colours | 32 | 32 | 16 | 64 |
+| Programmable colors | 32 | 32 | 16 | 64 |
 | Total on-screen | 32 | 64 | 4,096 | 262,144 |
-| Colour depth | 12-bit (OCS) / 24-bit (AGA) | 12/24-bit | 12-bit | 18-bit |
+| Color depth | 12-bit (OCS) / 24-bit (AGA) | 12/24-bit | 12-bit | 18-bit |
 | Fringing | None | None | Significant | Mild |
 | Good for | GUI, games | GUI with shadows | Photos, static art | Photos, video stills |
 | Bad for | Photo-realism | Limited palette control | Animation, scrolling | Memory: 80 KB/frame |

@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Amiga has **8 hardware sprites**, each 16 pixels wide with 3 colours + transparent. Sprites are entirely DMA-driven — the custom chips fetch sprite data from Chip RAM and composite them over the playfield with zero CPU overhead. The Copper reloads sprite pointers every frame.
+The Amiga has **8 hardware sprites**, each 16 pixels wide with 3 colors + transparent. Sprites are entirely DMA-driven — the custom chips fetch sprite data from Chip RAM and composite them over the playfield with zero CPU overhead. The Copper reloads sprite pointers every frame.
 
 Sprite 0 is reserved by Intuition for the **mouse pointer**. Sprites 1–7 are available for application use.
 
@@ -19,7 +19,7 @@ flowchart LR
     subgraph "Custom Chips (Denise/Lisa)"
         DMA["Sprite DMA<br/>(8 channels)"] --> MUX["Priority MUX"]
         PF["Playfield<br/>(bitplane data)"] --> MUX
-        MUX --> DAC["Colour DAC<br/>→ Video Out"]
+        MUX --> DAC["Color DAC<br/>→ Video Out"]
     end
 
     SD0 --> DMA
@@ -58,15 +58,15 @@ Each sprite is stored as a contiguous block in Chip RAM:
 └──────────────────────────────────────────┘
 ```
 
-### Pixel Colour Encoding
+### Pixel Color Encoding
 
 ```
-Pixel colour = (DATB_bit << 1) | DATA_bit
+Pixel color = (DATB_bit << 1) | DATA_bit
 
   00 = transparent (playfield shows through)
-  01 = sprite colour 1
-  10 = sprite colour 2
-  11 = sprite colour 3
+  01 = sprite color 1
+  10 = sprite color 2
+  11 = sprite color 3
 ```
 
 ### Header Bit Layout
@@ -93,11 +93,11 @@ Word 1 (SPRxCTL):
 
 ---
 
-## Sprite Colour Palette
+## Sprite Color Palette
 
-Each pair of sprites shares 3 colour registers (colour 0 = transparent for all):
+Each pair of sprites shares 3 color registers (color 0 = transparent for all):
 
-| Sprite Pair | Colour Registers | Custom Addresses | Notes |
+| Sprite Pair | Color Registers | Custom Addresses | Notes |
 |---|---|---|---|
 | 0–1 | `COLOR17`–`COLOR19` | `$DFF1A2`–`$DFF1A6` | Pair with mouse pointer |
 | 2–3 | `COLOR21`–`COLOR23` | `$DFF1AA`–`$DFF1AE` | |
@@ -105,7 +105,7 @@ Each pair of sprites shares 3 colour registers (colour 0 = transparent for all):
 | 6–7 | `COLOR29`–`COLOR31` | `$DFF1BA`–`$DFF1BE` | |
 
 ```c
-/* Set sprite 0-1 colours directly: */
+/* Set sprite 0-1 colors directly: */
 custom->color[17] = 0xF00;  /* red */
 custom->color[18] = 0x0F0;  /* green */
 custom->color[19] = 0xFFF;  /* white */
@@ -113,24 +113,24 @@ custom->color[19] = 0xFFF;  /* white */
 
 ---
 
-## Attached Sprites — 15 Colours
+## Attached Sprites — 15 Colors
 
-Two sprites from the same pair can be **attached** to form a single 15-colour (+ transparent) sprite:
+Two sprites from the same pair can be **attached** to form a single 15-color (+ transparent) sprite:
 
 ```mermaid
 flowchart LR
     subgraph "Normal (2 independent sprites)"
-        S0["Sprite 0<br/>3 colours"] --- S1["Sprite 1<br/>3 colours"]
+        S0["Sprite 0<br/>3 colors"] --- S1["Sprite 1<br/>3 colors"]
     end
 
-    subgraph "Attached (1 wide-colour sprite)"
-        SA["Sprites 0+1 attached<br/>4 bits per pixel<br/>15 colours + transparent"]
+    subgraph "Attached (1 wide-color sprite)"
+        SA["Sprites 0+1 attached<br/>4 bits per pixel<br/>15 colors + transparent"]
     end
 
     style SA fill:#c8e6c9,stroke:#2e7d32,color:#333
 ```
 
-When attached, the even sprite provides bits 0–1 and the odd sprite provides bits 2–3 of the colour index. The 4-bit value indexes into colour registers 16–31.
+When attached, the even sprite provides bits 0–1 and the odd sprite provides bits 2–3 of the color index. The 4-bit value indexes into color registers 16–31.
 
 ```c
 /* Enable attachment: set bit 0 of odd sprite's CTL word */
@@ -178,8 +178,8 @@ The Copper waits for a line after one sprite ends, then reprograms the sprite po
 | Feature | OCS/ECS | AGA |
 |---|---|---|
 | Width | 16 pixels | 16, 32, or 64 pixels (via FMODE) |
-| Colours (single) | 3 + transparent | 3 + transparent |
-| Colours (attached) | 15 + transparent | 15 + transparent |
+| Colors (single) | 3 + transparent | 3 + transparent |
+| Colors (attached) | 15 + transparent | 15 + transparent |
 | Horizontal resolution | Low-res ÷ 2 | Same (unchanged) |
 
 ```c

@@ -4,7 +4,7 @@
 
 ## Overview
 
-`RastPort` is the primary drawing context in AmigaOS — the equivalent of a "device context" (Windows) or "graphics context" (X11). All graphics primitives (pixel, line, rectangle, polygon, text) operate through a RastPort, which bundles together a target `BitMap`, drawing pen colours, patterns, font, draw mode, and an optional `Layer` for clipping.
+`RastPort` is the primary drawing context in AmigaOS — the equivalent of a "device context" (Windows) or "graphics context" (X11). All graphics primitives (pixel, line, rectangle, polygon, text) operate through a RastPort, which bundles together a target `BitMap`, drawing pen colors, patterns, font, draw mode, and an optional `Layer` for clipping.
 
 Every Intuition window and screen has its own RastPort. When you draw into a window, you're drawing through its RastPort.
 
@@ -44,8 +44,8 @@ struct RastPort {
     struct AreaInfo *AreaInfo;   /* area fill vertex buffer */
     struct GelsInfo *GelsInfo;   /* GEL (BOB/VSprite) list */
     UBYTE           Mask;        /* plane mask (which planes to draw to) */
-    BYTE            FgPen;       /* foreground pen colour index */
-    BYTE            BgPen;       /* background pen colour index */
+    BYTE            FgPen;       /* foreground pen color index */
+    BYTE            BgPen;       /* background pen color index */
     BYTE            AOlPen;      /* area outline pen */
     BYTE            DrawMode;    /* JAM1, JAM2, COMPLEMENT, INVERSVID */
     BYTE            AreaPtSz;    /* area pattern size (log2) */
@@ -111,12 +111,12 @@ flowchart LR
 ### Pen and Position Setup
 
 ```c
-/* Set pen colours: */
-SetAPen(rp, 1);       /* foreground = colour register 1 */
-SetBPen(rp, 0);       /* background = colour register 0 */
+/* Set pen colors: */
+SetAPen(rp, 1);       /* foreground = color register 1 */
+SetBPen(rp, 0);       /* background = color register 0 */
 SetDrMd(rp, JAM1);    /* transparent background mode */
 
-/* OS 3.0+ — use named pen for correct Workbench colours: */
+/* OS 3.0+ — use named pen for correct Workbench colors: */
 SetAPen(rp, screen->RastPort.BitMap->Depth > 1 ?
     ObtainBestPen(screen->ViewPort.ColorMap,
                   0xFF000000, 0x00000000, 0x00000000,  /* red */
@@ -153,7 +153,7 @@ Draw(rp, 10, 10);     /* close: left edge */
 
 /* Single pixel: */
 WritePixel(rp, 160, 120);
-LONG colour = ReadPixel(rp, 160, 120);
+LONG color = ReadPixel(rp, 160, 120);
 
 /* Dashed lines: */
 SetDrPt(rp, 0xF0F0);  /* 16-bit pattern: 1111000011110000 */
@@ -240,8 +240,8 @@ FreeRaster(tmpRasData, 320, 256);
 /* Flood fill from a seed point: */
 /* Requires TmpRas (same setup as area fills) */
 Flood(rp, 1, 50, 50);
-/* mode 1 = fill until FgPen colour boundary */
-/* mode 0 = fill all connected pixels of same colour as seed */
+/* mode 1 = fill until FgPen color boundary */
+/* mode 0 = fill all connected pixels of same color as seed */
 ```
 
 ### Blitting (Block Transfer)
@@ -384,9 +384,9 @@ rp->Mask = 0xFF;  /* all planes — default */
 rp->Mask = 0x01;  /* only plane 0 — fast for single-plane effects */
 rp->Mask = 0x03;  /* planes 0 and 1 only */
 
-/* Use case: draw a 2-colour overlay without disturbing other planes: */
+/* Use case: draw a 2-color overlay without disturbing other planes: */
 rp->Mask = 0x04;  /* only plane 2 */
-SetAPen(rp, 4);   /* colour index with bit 2 set */
+SetAPen(rp, 4);   /* color index with bit 2 set */
 RectFill(rp, 0, 0, 319, 255);
 rp->Mask = 0xFF;  /* restore */
 ```

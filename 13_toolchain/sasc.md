@@ -4,7 +4,7 @@
 
 ## Overview
 
-SAS/C (originally Lattice C) was the dominant commercial C compiler for AmigaOS from the mid-1980s through the mid-1990s. Version **6.58** is the final release. It produces highly optimised 68k code with deep AmigaOS integration, including pragma-based system calls, SAS-specific debug formats, and a built-in profiler.
+SAS/C (originally Lattice C) was the dominant commercial C compiler for AmigaOS from the mid-1980s through the mid-1990s. Version **6.58** is the final release. It produces highly optimized 68k code with deep AmigaOS integration, including pragma-based system calls, SAS-specific debug formats, and a built-in profiler.
 
 Most existing Amiga source code and documentation assumes SAS/C conventions. Understanding its idioms is essential for working with legacy codebases.
 
@@ -90,7 +90,7 @@ lc -v -O -b0 -j73 main.c util.c LINK TO myapp
 | Flag | Meaning |
 |---|---|
 | `-v` | Verbose output |
-| `-O` | Enable global optimiser |
+| `-O` | Enable global optimizer |
 | `-b0` | Small data model (A4-relative, max 64 KB globals) |
 | `-b1` | Large data model (absolute addressing) |
 | `-j30` | Generate 68030 code |

@@ -20,7 +20,7 @@ block-beta
 
 ## DMA Channels and Priorities
 
-Agnus schedules DMA cycles across a fixed priority scheme within each horizontal raster line (228 colour clocks per line, PAL):
+Agnus schedules DMA cycles across a fixed priority scheme within each horizontal raster line (228 color clocks per line, PAL):
 
 | Priority | DMA Channel | Register Bits |
 |---|---|---|

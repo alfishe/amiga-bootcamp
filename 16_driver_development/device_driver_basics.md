@@ -58,7 +58,7 @@ static const APTR funcTable[] = {
 LONG DevOpen(struct IORequest *ioreq, ULONG unit, ULONG flags,
              struct MyDevBase *base)
 {
-    /* Initialise per-unit state if needed */
+    /* Initialize per-unit state if needed */
     struct MyUnit *u = &base->md_Units[unit];
     
     ioreq->io_Device = (struct Device *)base;

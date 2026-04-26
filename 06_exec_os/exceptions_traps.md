@@ -52,7 +52,7 @@ graph LR
 | 10 | `$028` | Line-A Emulator | Unused (available for soft traps) |
 | 11 | `$02C` | Line-F Emulator | 68040/060.library FPU emulation |
 | 12–14 | `$030–$038` | Reserved | — |
-| 15 | `$03C` | Uninitialised Interrupt | Alert |
+| 15 | `$03C` | Uninitialized Interrupt | Alert |
 | 24 | `$060` | Spurious Interrupt | Ignored |
 | 25–31 | `$064–$07C` | Auto-vector interrupts 1–7 | Exec interrupt dispatcher |
 | 32–47 | `$080–$0BC` | TRAP #0–#15 | User-installable traps |

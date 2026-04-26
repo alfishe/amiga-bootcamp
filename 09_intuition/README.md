@@ -17,6 +17,7 @@ Intuition is the AmigaOS windowing system and user interface manager. It sits be
 | [idcmp.md](idcmp.md) | IDCMP — event architecture, class reference, shared ports, antipatterns, use-case cookbook |
 | [boopsi.md](boopsi.md) | BOOPSI — OOP dispatcher model, ICA interconnection, custom class tutorial, class hierarchy |
 | [input_events.md](input_events.md) | Input Events — handler chain, QoS/priority, Commodities, latency analysis, game input |
+| [commodities.md](commodities.md) | Commodities Exchange — background input filtering, hotkeys, CxObjects, Exchange control |
 | **[frameworks/](frameworks/)** | **GUI Frameworks: MUI, ReAction, BGUI** |
 
 ---
@@ -246,9 +247,9 @@ graph LR
 ```mermaid
 graph TB
     subgraph "Screens (front to back)"
-        S1["Screen 1: Custom (640×256 4-colour)<br/>sc_ViewPort → Copper List 1"]
-        S2["Screen 2: Workbench (640×256 8-colour)<br/>sc_ViewPort → Copper List 2"]
-        S3["Screen 3: Game (320×256 32-colour)<br/>sc_ViewPort → Copper List 3"]
+        S1["Screen 1: Custom (640×256 4-color)<br/>sc_ViewPort → Copper List 1"]
+        S2["Screen 2: Workbench (640×256 8-color)<br/>sc_ViewPort → Copper List 2"]
+        S3["Screen 3: Game (320×256 32-color)<br/>sc_ViewPort → Copper List 3"]
     end
 
     subgraph "Copper"

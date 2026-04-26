@@ -36,7 +36,7 @@ Mode flags (lower 16 bits):
 
 ## Standard AGA Modes
 
-| Mode ID | Resolution | Colours | H rate |
+| Mode ID | Resolution | Colors | H rate |
 |---|---|---|---|
 | `PAL_MONITOR_ID \| LORES_KEY` | 320×256 | 256 | 15.6 kHz |
 | `PAL_MONITOR_ID \| HIRES_KEY` | 640×256 | 256 | 15.6 kHz |
@@ -55,13 +55,13 @@ Mode flags (lower 16 bits):
 
 struct Screen *scr;
 
-/* 256-colour AGA screen, PAL, 320×256 */
+/* 256-color AGA screen, PAL, 320×256 */
 scr = OpenScreenTags(NULL,
     SA_DisplayID,  PAL_MONITOR_ID | LORES_KEY,
     SA_Width,      320,
     SA_Height,     256,
-    SA_Depth,      8,           /* 8 bitplanes = 256 colours */
-    SA_Colors32,   (ULONG)colour_table,  /* LoadRGB32 format */
+    SA_Depth,      8,           /* 8 bitplanes = 256 colors */
+    SA_Colors32,   (ULONG)color_table,  /* LoadRGB32 format */
     SA_Title,      (ULONG)"My AGA Screen",
     SA_Quiet,      TRUE,
     TAG_DONE);
@@ -79,7 +79,7 @@ scr = OpenScreenTags(NULL,
 ```
 
 > [!NOTE]
-> HAM8 screens require 8 bitplanes. The display system automatically programmes BPLCON0 with HAM=1. The first 64 colour registers are used as the HAM8 index palette.
+> HAM8 screens require 8 bitplanes. The display system automatically programmes BPLCON0 with HAM=1. The first 64 color registers are used as the HAM8 index palette.
 
 ## BestModeID() — Querying Available Modes
 

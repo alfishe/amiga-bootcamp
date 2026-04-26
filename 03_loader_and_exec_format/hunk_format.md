@@ -422,7 +422,7 @@ HUNK_END ($3F2)     End of this hunk
 HUNK_END ($3F2)     End of this hunk
 ```
 
-No data follows — BSS is zero-initialised by the loader.
+No data follows — BSS is zero-initialized by the loader.
 
 ---
 

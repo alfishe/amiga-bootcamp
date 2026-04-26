@@ -214,7 +214,7 @@ struct Library *MakeLibrary(
 );   /* LVO -84 */
 ```
 
-This combines allocation, JMP table construction, data initialisation, and init-function calling into one operation. Used by `RTF_AUTOINIT` modules and direct library creation.
+This combines allocation, JMP table construction, data initialization, and init-function calling into one operation. Used by `RTF_AUTOINIT` modules and direct library creation.
 
 ---
 
