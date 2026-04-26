@@ -230,7 +230,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [rexxsyslib.md](11_libraries/rexxsyslib.md) | ARexx interface |
 | [mathffp.md](11_libraries/mathffp.md) | Floating point libraries, FFP, IEEE |
 | [layers.md](11_libraries/layers.md) | Window clipping layers |
-| [diskfont.md](11_libraries/diskfont.md) | Disk-based font loading |
+| [diskfont.md](11_libraries/diskfont.md) | **Bitmap fonts: .font file format, FontContentsHeader, glyph bitmap layout, FONTS: assign, adding fonts, bitmap vs TrueType, Compugraphic outline fonts** |
 | [datatypes.md](11_libraries/datatypes.md) | DataTypes system: object-oriented file loading for images, sound, text, animation |
 | [amigaguide.md](11_libraries/amigaguide.md) | AmigaGuide hypertext help system: database format, API, context-sensitive help |
 | [translator.md](11_libraries/translator.md) | translator.library: English-to-phonetic translation, narrator.device integration, ARPABET phonemes |

@@ -18,7 +18,7 @@ Shared libraries beyond the core exec/dos/graphics/intuition subsystems. These p
 | [rexxsyslib.md](rexxsyslib.md) | ARexx scripting: hosting ARexx ports, command parsing, sending commands, return codes |
 | [mathffp.md](mathffp.md) | Motorola FFP and IEEE 754 floating point |
 | [layers.md](layers.md) | Window clipping: ClipRect engine, Simple/Smart/Super refresh, damage repair, backfill hooks, layer locking |
-| [diskfont.md](diskfont.md) | Disk-based fonts: FONTS: directory structure, AvailFonts enumeration, color fonts (OS 3.0+) |
+| [diskfont.md](diskfont.md) | **Bitmap fonts deep dive: .font file format (FontContentsHeader), font descriptor files (DiskFontHeader), glyph bitmap layout, FONTS: assign, adding/installing fonts, bitmap vs TrueType/OpenType comparison, color fonts (OS 3.0+), Compugraphic outline fonts, AvailFonts enumeration, font loading pipeline** |
 | [datatypes.md](datatypes.md) | DataTypes system: object-oriented file loading for images, sound, text, animation via BOOPSI classes |
 | [amigaguide.md](amigaguide.md) | AmigaGuide hypertext help system: database format, @commands, API, ARexx integration, cross-database linking |
 | [translator.md](translator.md) | translator.library: English-to-phonetic translation for speech synthesis, narrator.device integration, ARPABET phonemes |
