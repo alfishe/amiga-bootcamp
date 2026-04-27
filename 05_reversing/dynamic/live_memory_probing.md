@@ -4,7 +4,28 @@
 
 ## Overview
 
-Live memory probing on a running Amiga means directly reading exec structures — `SysBase`, `LibList`, `TaskReady`, `MemList` — to observe system state without a traditional debugger.
+The Amiga has no `Task Manager`, no `dtrace`, no `/proc`. But it has something better: **every critical OS data structure is reachable from a single pointer at absolute address `$4`.** From `SysBase`, you can walk the library list, enumerate every running task, map every memory region, and even modify kernel structures — all from a user-mode program. No debugger required.
+
+Live memory probing means reading (and sometimes writing) exec structures directly from a running Amiga without a traditional debugger. This is how tools like Scout, SysInspector, and XOpa work. It's how you verify that a hook is installed, check if a library is loaded, or inspect task state during development. This article covers the key data structures, the traversal patterns, and the safety rules.
+
+```mermaid
+graph TB
+    SYSBASE["SysBase<br/>at absolute $4"]
+    subgraph "Reachable Structures"
+        LIBLIST["LibList<br/>→ every loaded library"]
+        DEVLIST["DeviceList<br/>→ every loaded device"]
+        TASKREADY["TaskReady<br/>→ runnable tasks"]
+        TASKWAIT["TaskWait<br/>→ waiting tasks"]
+        MEMLIST["MemList<br/>→ memory regions"]
+    end
+    SYSBASE --> LIBLIST
+    SYSBASE --> DEVLIST
+    SYSBASE --> TASKREADY
+    SYSBASE --> TASKWAIT
+    SYSBASE --> MEMLIST
+```
+
+---
 
 ---
 
@@ -121,6 +142,116 @@ Permit();
 
 > [!CAUTION]
 > Direct memory writes to OS structures bypass all synchronization. Always use `Forbid()` at minimum; use `Disable()` if modifying interrupt-visible data.
+
+---
+
+## Decision Guide — Safe Probing Rules
+
+| Operation | Required Protection | Risk Without Protection |
+|---|---|---|
+| Reading a single field (`lib_Version`) | None — atomic word read | None on 68000–68060 |
+| Walking a linked list (LibList, TaskReady) | `Forbid()` / `Permit()` | Task switch mid-walk → stale pointer → crash |
+| Modifying a structure field | `Forbid()` (minimum) or `Disable()` | Other task reads half-written value |
+| Allocating/freeing memory during probing | `Forbid()` only — don't `Disable()` | `Disable()` blocks interrupts, may deadlock AllocMem |
+| Walking interrupt-visible data | `Disable()` / `Enable()` | Interrupt modifies structure mid-read |
+
+---
+
+## Named Antipatterns
+
+### 1. "The Naked List Walk"
+
+**What it looks like** — walking `TaskReady` without `Forbid()`:
+
+```c
+// BROKEN — task switch mid-walk
+struct Task *t = (struct Task *)SysBase->TaskReady.lh_Head;
+while (t->tc_Node.ln_Succ) {
+    printf("%s\n", t->tc_Node.ln_Name);
+    t = (struct Task *)t->tc_Node.ln_Succ;  // ← may be stale after switch!
+}
+```
+
+**Why it fails:** If the current task's time slice expires during the walk, another task can add or remove nodes from `TaskReady`. The `ln_Succ` pointer you cached is now dangling — pointing to freed or moved memory.
+
+**Correct:**
+
+```c
+Forbid();
+struct Task *t = (struct Task *)SysBase->TaskReady.lh_Head;
+while (t->tc_Node.ln_Succ) {
+    printf("%s\n", t->tc_Node.ln_Name);
+    t = (struct Task *)t->tc_Node.ln_Succ;
+}
+Permit();
+```
+
+### 2. "The Disable Trap"
+
+**What it looks like** — using `Disable()` when only `Forbid()` is needed:
+
+```c
+// OVERKILL — Disable blocks ALL interrupts AND task switches
+Disable();
+struct Library *lib = FindName(&SysBase->LibList, "intuition.library");
+UWORD ver = lib->lib_Version;  // atomic word read — Forbid is enough!
+Enable();
+```
+
+**Why it fails:** `Disable()` blocks ALL interrupts — including the vertical blank interrupt that drives the system clock. Holding `Disable()` for more than a few hundred cycles causes lost time, missed serial data, and audio dropouts. Forbid is sufficient for list traversal; Disable is only needed when interrupts themselves modify the same data.
+
+**Correct:** Use the weakest protection that covers your access pattern.
+
+---
+
+## Use-Case Cookbook
+
+### Check If a Hook Is Installed
+
+```c
+BOOL is_hook_installed(struct Library *lib, LONG lvo, APTR expected_func) {
+    APTR current = (APTR)(*(ULONG *)((UBYTE *)lib + lvo + 2));
+    return (current == expected_func);
+}
+```
+
+### Live Patch Verification Script
+
+```c
+/* Verify a library function is still at its original address */
+ULONG get_jmp_target(struct Library *lib, LONG lvo) {
+    UBYTE *entry = (UBYTE *)lib + lvo;
+    if (*(UWORD *)entry != 0x4EF9) return 0;  // Not a JMP ABS.L
+    return *(ULONG *)(entry + 2);
+}
+
+if (get_jmp_target(DOSBase, -48) != original_write_addr)
+    printf("WARNING: dos.library Write() has been patched!\n");
+```
+
+---
+
+## Cross-Platform Comparison
+
+| Amiga Concept | Win32 Equivalent | Linux Equivalent | Notes |
+|---|---|---|---|
+| `SysBase` at absolute `$4` | `NtCurrentPeb()` or `fs:[0x30]` | No equivalent — kernel/user split blocks direct access | Amiga's flat memory model makes this trivially accessible |
+| Walking `LibList` | `EnumProcessModules()` | `dl_iterate_phdr()` | Amiga's linked list is directly readable; Win32/Linux require API calls |
+| `TaskReady` enumeration | `CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS)` | `/proc/[pid]/stat` | Amiga lets you read the scheduler's run queue directly |
+| `MemList` memory map | `VirtualQuery()` | `/proc/self/maps` | Same result; Amiga reads kernel memory, Linux reads a pseudo-file |
+| `Forbid()`/`Permit()` protection | `EnterCriticalSection()` | `pthread_mutex_lock()` | Same purpose: prevent concurrent modification |
+
+---
+
+## FAQ
+
+### Is live probing safe on 68000 (no MMU)?
+
+Yes — and it's even simpler. On 68000, there's no memory protection at all. Any address is readable. The risks are purely logical: reading a list while it's being modified. `Forbid()` is sufficient on all CPU models.
+
+### Can live probing crash the system?
+
+Writing to the wrong address can corrupt OS structures and cause an immediate crash or silent data corruption. Reading is generally safe. The most common crash from reading is dereferencing a `NULL` pointer at the end of a list without checking `ln_Succ` first.
 
 ---
 

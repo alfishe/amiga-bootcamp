@@ -4,7 +4,33 @@
 
 ## Overview
 
-String references are the fastest entry point into a disassembled Amiga binary. Library name strings, error messages, and format strings immediately reveal program intent and identify OS API usage patterns.
+A binary is a sea of bytes. Most of it is unintelligible machine code. But floating in that sea are islands of ASCII: library names, error messages, format strings, screen titles. Each string is a **label on a code path** — the first thing a reverse engineer should find, because it's the only human-readable content in the entire binary.
+
+String cross-reference analysis is the fastest entry point into an unknown Amiga binary. Find the `.library` strings → find `OpenLibrary` calls → identify every OS API the program uses. Find error messages → find the error-handling code paths. Find format strings → find printf/logging sites → understand program flow. This article covers the complete string-driven RE methodology.
+
+```mermaid
+graph TB
+    subgraph "String Types"
+        LIB[".library strings<br/>→ OpenLibrary calls"]
+        ERR["Error messages<br/>→ failure code paths"]
+        FMT["Format strings<br/>→ printf/logging"]
+        TITLE["Screen/window titles<br/>→ product identity"]
+        PATH["File path strings<br/>→ file I/O targets"]
+    end
+    subgraph "What They Reveal"
+        API["API usage map"]
+        FLOW["Program flow"]
+        ID["Product name/version"]
+        FILES["File access patterns"]
+    end
+    LIB --> API
+    ERR --> FLOW
+    FMT --> FLOW
+    TITLE --> ID
+    PATH --> FILES
+```
+
+---
 
 ---
 
@@ -112,6 +138,115 @@ for s in idautils.Strings():
         for ref in refs:
             func = idc.get_func_name(ref.frm)
             print(f"{s.ea:#x} [{text!r:40s}] ← {func or 'unknown'} @ {ref.frm:#x}")
+
+---
+
+## Decision Guide — String-Driven Entry Points
+
+| String Type | What to Do First | What It Tells You |
+|---|---|---|
+| `".library"` | Xref → find OpenLibrary | Every OS API the program uses |
+| `"Error:"` / `"Can't"` / `"Failed"` | Xref → error handler | Failure code paths, rare branches |
+| `"%d"` / `"%s"` / `"%ld"` | Xref → VPrintf/printf | Logging sites, parameter types |
+| File paths (`"SYS:"`, `"LIBS:"`, `"PROGDIR:"`) | Xref → Open/Lock/LoadSeg | File I/O targets |
+| Screen/window titles | Xref → OpenScreen/OpenWindow | Application identity, version |
+
+---
+
+## Named Antipatterns
+
+### 1. "The Dead String"
+
+**What it looks like** — finding an error string with no cross-references and assuming the code path is unreachable:
+
+```asm
+LEA     _err_fatal(PC), A0     ; "FATAL: disk error"
+; No xref to this string — but it's used via computed address!
+```
+
+**Why it fails:** Some programs build string addresses dynamically (e.g., through a string table indexed at runtime). IDA won't detect these as xrefs. The string IS used — just not through a static reference.
+
+**Correct:** For strings without xrefs, check if they're part of a larger string table (consecutive string data). If so, a function loading a base address + computed offset may reference them dynamically.
+
+### 2. "The Null Bait"
+
+**What it looks like** — IDA showing a 100-character "string" because it didn't stop at an embedded null:
+
+```asm
+; SAS/C strings are Pascal-style: length-prefixed, NOT null-terminated!
+DC.B    $0E, "Hello, World!", 0   ; length byte = 14, then data, then null
+; IDA sees only "Hello, World!" — misses the length byte
+```
+
+**Why it fails:** SAS/C uses Pascal-style strings (length byte prefix) for some internal data. IDA's C-style null-terminated string detection stops at the first null and may misinterpret string boundaries.
+
+**Correct:** Check the byte before the string. If it equals the string length, it's a Pascal string — the string starts at that byte, not after it.
+
+---
+
+## Use-Case Cookbook
+
+### Map Every OS API Call from Strings Alone
+
+```python
+# IDA Python: from .library strings → OpenLibrary → all calls
+import idautils, idc
+
+LIBRARIES = {}
+for s in idautils.Strings():
+    text = str(s)
+    if text.endswith('.library'):
+        for xref in idautils.XrefsTo(s.ea):
+            # Walk forward from xref to find JSR (-552,A6)
+            ea = xref.frm
+            for _ in range(20):
+                if idc.print_insn_mnem(ea) == 'JSR':
+                    op = idc.print_operand(ea, 0)
+                    if '-552' in op:
+                        # Find where D0 (result) is stored
+                        next_ea = idc.next_head(ea)
+                        if idc.print_insn_mnem(next_ea) == 'MOVE.L':
+                            dest = idc.print_operand(next_ea, 0)
+                            LIBRARIES[text] = dest
+                            print(f"{text} → stored at {dest}")
+                ea = idc.next_head(ea)
+```
+
+### Find All Version Strings
+
+Version strings often follow the pattern `"$VER: name version (date)"`:
+
+```bash
+strings mybinary | grep -i '\$VER:'
+# Output: $VER: MyApp 1.23 (12.04.1993)
+```
+
+---
+
+## Cross-Platform Comparison
+
+| Amiga Concept | Win32 Equivalent | Linux Equivalent | Notes |
+|---|---|---|---|
+| `.library` strings → OpenLibrary | `.dll` strings → LoadLibrary | `.so` strings → dlopen | Same pattern: string identifies dynamically loaded module |
+| String xref analysis | `strings.exe` + IDA cross-reference | `strings` + radare2/Ghidra xref | Universal RE technique: strings are the first foothold |
+| SAS/C Pascal strings | Delphi/BCB short strings | N/A (C-dominated ecosystem) | Pascal-style strings are rare outside Amiga SAS/C |
+| `$VER:` version string convention | `VS_VERSION_INFO` resource | `.comment` ELF section | Amiga's convention is informal but widely followed |
+
+---
+
+## FAQ
+
+### Why do some strings have no xrefs in IDA?
+
+Possible causes: (1) the string is referenced via a computed address (base+index), (2) the string is in a data table accessed by offset, (3) the string is dead code from a library compiled in but never called, (4) IDA's string detection split a long string incorrectly.
+
+### How do I handle non-ASCII strings (German umlauts, etc.)?
+
+Amiga uses ISO 8859-1 (Latin-1) encoding. Characters above `$7F` are valid Latin-1 but may display incorrectly in IDA's default ASCII view. Set IDA's string encoding to Latin-1 or use `idc.get_strlit_contents(ea, -1, STRTYPE_C_16)` for wide strings.
+
+---
+
+## References
 ```
 
 ---

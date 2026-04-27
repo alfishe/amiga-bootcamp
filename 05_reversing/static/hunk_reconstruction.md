@@ -4,7 +4,30 @@
 
 ## Overview
 
-Manually parsing a HUNK binary from a hex dump is a foundational Amiga RE skill. It reveals segment boundaries, symbol tables, and relocation data before any tool processing.
+A hex dump. Four bytes: `00 00 03 F3`. That's `HUNK_HEADER` — the start of an Amiga executable. Everything that follows — code segments, data, BSS, relocations, symbols — is a stream of tagged longword records. Reading this stream by hand is the first skill every Amiga reverse engineer should develop: it reveals the skeleton of the binary before any tool touches it, and it catches corrupted files, packing wrappers, and obfuscated headers that automated loaders may silently misinterpret.
+
+This article walks through manual HUNK parsing from a raw hex dump, covering the header, code/data/BSS segments, HUNK_RELOC32 patching, HUNK_SYMBOL extraction, and HUNK_EXT import/export resolution — all with copy-paste Python scripts.
+
+```mermaid
+graph LR
+    subgraph "HUNK Stream"
+        HDR["HUNK_HEADER<br/>000003F3"]
+        CODE["HUNK_CODE<br/>000003E9"]
+        DATA["HUNK_DATA<br/>000003EA"]
+        BSS["HUNK_BSS<br/>000003EB"]
+        RELOC["HUNK_RELOC32<br/>000003EC"]
+        SYM["HUNK_SYMBOL<br/>000003F0"]
+        END["HUNK_END<br/>000003F2"]
+    end
+    HDR -->|"num hunks, sizes"| CODE
+    CODE -->|"code bytes"| DATA
+    DATA -->|"data bytes"| BSS
+    BSS -->|"size only"| RELOC
+    RELOC -->|"patch offsets"| SYM
+    SYM -->|"debug names"| END
+```
+
+---
 
 ---
 
@@ -112,6 +135,107 @@ After loading the HUNK file in IDA:
 3. Use `Edit → Operand type → Offset (data segment)` to annotate as a pointer
 
 IDA's Amiga loader applies relocations automatically, so all cross-hunk pointers show their final resolved addresses.
+
+---
+
+## Decision Guide — HUNK Analysis Scenarios
+
+| Scenario | Tool | Why |
+|---|---|---|
+| Quick symbol dump | `hunkinfo` or hex grep for `$3F0` | Instant, no scripting needed |
+| Unknown / corrupted file | Manual hex walk (Step 1–2) | Identifies problems automated tools hide |
+| Full symbol + reloc extraction | Python script (Steps 3–4) | Exports everything for external analysis |
+| Standard RE in IDA | IDA Amiga HUNK loader | Automatic — no manual steps needed |
+| Obfuscated / packed binary | Manual hex walk first | Detect non-standard headers before IDA silently fails |
+
+---
+
+## Named Antipatterns
+
+### 1. "The Missing Relocation"
+
+**What it looks like** — seeing `MOVE.L #$0000000, An` in a HUNK_CODE section and assuming the value is zero:
+
+```asm
+MOVE.L  #$00000000, D1    ; looks like D1 = 0
+; But HUNK_RELOC32 at this offset changes it at load time!
+```
+
+**Why it fails:** `HUNK_RELOC32` replaces placeholder longwords in CODE/DATA with actual addresses at load time. A `$00000000` may become `$00123456` after relocation. Without checking the relocation table, you're reading pre-patch values — completely wrong.
+
+**Correct:** Always cross-reference every longword in CODE/DATA against the HUNK_RELOC32 table before interpreting it as a value.
+
+### 2. "The End-of-Hunk Confusion"
+
+**What it looks like** — finding `000003F2` (HUNK_END) and assuming that's the end of the file:
+
+```hex
+000003F2  ← HUNK_END of hunk 0
+000003E9  ← HUNK_CODE of hunk 1 — file continues!
+```
+
+**Why it fails:** `HUNK_END` marks the end of a single hunk (code segment), not the end of the file. Multi-hunk executables have multiple `HUNK_END` markers — one per segment. Stopping at the first one loses all remaining hunks.
+
+**Correct:** Continue parsing after `HUNK_END` until you reach either EOF or the end of the header-declared hunk count.
+
+---
+
+## Use-Case Cookbook
+
+### Detect a Packed Binary (Cruncher Wrapper)
+
+Packed executables often have unusual hunk structures:
+
+```bash
+xxd mybinary | head -4
+# Normal: 0000 03F3 ... (HUNK_HEADER, num_hunks = N)
+# Packed: 0000 03F3 0000 0001 0000 0000 ... (single hunk, huge size)
+#   → single hunks with massive CODE segments = likely decruncher stub
+```
+
+### Extract Strings from a HUNK Binary Without Loading
+
+```python
+import struct, sys
+data = open(sys.argv[1], 'rb').read()
+for i in range(0, len(data), 4):
+    tag = struct.unpack_from('>I', data, i)[0]
+    if tag in (0x3E9, 0x3EA):  # CODE or DATA
+        size = struct.unpack_from('>I', data, i+4)[0] & 0x3FFFFFFF
+        segment = data[i+8 : i+8+size*4]
+        # Extract printable ASCII runs
+        import re
+        for m in re.finditer(rb'[\x20-\x7E]{4,}', segment):
+            print(f'{i+8+m.start():08X}: {m.group().decode("ascii")}')
+```
+
+---
+
+## Cross-Platform Comparison
+
+| Amiga Concept | Win32 PE Equivalent | Linux ELF Equivalent | Notes |
+|---|---|---|---|
+| HUNK_HEADER | PE `MZ` + `PE\0\0` signature | ELF `\x7FELF` magic | Same: file type identifier at offset 0 |
+| Hunk sizes in longs | PE section `SizeOfRawData` | ELF `p_filesz` | Amiga uses 32-bit longword units; PE/ELF use bytes |
+| HUNK_RELOC32 | PE `.reloc` section | ELF `.rela.dyn` | Same purpose: load-time address patching |
+| HUNK_SYMBOL | PDB debug symbols (external) | ELF `.symtab` (embedded) | Amiga debug symbols in-line; PE keeps them separate |
+| HUNK_EXT import/export | PE Import/Export Directory | ELF `.dynsym` | Same concept: cross-module symbol resolution |
+
+---
+
+## FAQ
+
+### Why are hunk sizes in longs, not bytes?
+
+The Amiga's 68000 CPU is a 16/32-bit architecture where memory is naturally addressed in 16-bit words and 32-bit longwords. Using longword units for hunk sizes keeps the headers word-aligned and simplifies the loader. Multiply by 4 to get byte sizes.
+
+### What's the difference between HUNK_UNIT and HUNK_HEADER?
+
+`HUNK_UNIT` (`$3E7`) marks an object file (`.o`), intended for linking. `HUNK_HEADER` (`$3F3`) marks a linked executable. Object files contain HUNK_EXT symbols for unresolved references; executables have all references resolved.
+
+---
+
+## References
 
 ---
 
