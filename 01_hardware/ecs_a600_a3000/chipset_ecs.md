@@ -6,7 +6,7 @@
 
 ### Chip RAM Addressing
 
-OCS Agnus could only generate 19-bit DMA addresses (512 KB) or 20-bit (1 MB with Fat Agnus). Super Agnus extends this to **21 bits**, addressing 2 MB of Chip RAM.
+OCS Agnus could only generate 19-bit DMA addresses (512 KB) or 20-bit (1 MB with Fat Agnus). Super Agnus extends this to **21 bits**, addressing 2 MB of Chip RAM. See [OCS Chipset Internals](../ocs_a500/chipset_ocs.md) for the original Agnus DMA architecture.
 
 The revision of Super Agnus present determines the Chip RAM limit:
 

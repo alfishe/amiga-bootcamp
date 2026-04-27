@@ -4,7 +4,7 @@
 
 ## Overview
 
-`m68k-amigaos-gcc` is the GCC-based cross-compiler for AmigaOS, typically based on GCC 2.95 (legacy) or GCC 6.5 (bebbo's fork). It produces Amiga hunk-format executables and supports all 68k variants.
+`m68k-amigaos-gcc` is the GCC-based cross-compiler for AmigaOS, typically based on GCC 2.95 (legacy) or GCC 6.5 (bebbo's fork). It produces Amiga hunk-format executables and supports all 68k variants. By default, bebbo's toolchain uses [vasm](vasm_vlink.md) as the assembler and [vlink](vasm_vlink.md) as the linker — the compiler emits assembly, vasm assembles it, and vlink produces the final hunk executable.
 
 ---
 
@@ -75,8 +75,27 @@ m68k-amigaos-gcc -noixemul -o hello hello.c
 
 ---
 
+## Toolchain Integration — vasm & vlink
+
+bebbo's GCC uses **[vasm](vasm_vlink.md)** and **[vlink](vasm_vlink.md)** as its default assembler and linker. The compiler emits assembly (`.s`), vasm assembles it to hunk-format object files, and vlink links the final executable. This is fully configurable — `-Wa,...` passes flags to the assembler, `-Wl,...` passes flags to the linker.
+
+```bash
+# Single command — GCC orchestrates assembler and linker internally:
+m68k-amigaos-gcc -noixemul -m68020 -O2 -o myapp myapp.c
+# Internal pipeline: gcc → .s → vasmm68k_mot → .o → vlink → executable
+
+# Pass assembler-specific flags:
+m68k-amigaos-gcc -Wa,-m68060,-devpac -o myapp myapp.c
+
+# Pass linker-specific flags:
+m68k-amigaos-gcc -Wl,-Map=myapp.map -o myapp myapp.c
+```
+
+---
+
 ## References
 
+- [vasm & vlink](vasm_vlink.md) — assembler and linker used by this toolchain
 - Codeberg: https://codeberg.org/bebbo/amiga-gcc
 - Mirror: https://franke.ms/git/bebbo/amiga-gcc
 - GCC 6.5 m68k cross-compiler documentation

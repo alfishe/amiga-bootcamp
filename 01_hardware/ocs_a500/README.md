@@ -26,6 +26,7 @@ The **Original Chip Set** (OCS) ships in the Amiga 1000 (1985), A500 (1987), and
 | [paula_serial.md](paula_serial.md) | Serial port: SERPER/SERDATR, baud rate |
 | [sprites.md](sprites.md) | Hardware sprites: SPRxPTH, control words, attach mode |
 | [cdtv_hardware.md](cdtv_hardware.md) | CDTV platform: DMAC, CD-ROM, IR remote, NVRAM |
+| [gary_system_controller.md](gary_system_controller.md) | Gary CSG 5719: address decode, DMA arbitration, ROM overlay, Zorro II AutoConfig, Slow RAM, antipatterns, FPGA checklist |
 
 ---
 
