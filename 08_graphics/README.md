@@ -10,7 +10,7 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 |---|---|
 | [gfx_base.md](gfx_base.md) | GfxBase structure, chipset detection (OCS/ECS/AGA), PAL/NTSC, display pipeline (MakeVPort/MrgCop/LoadView), blitter queue |
 | [bitmap.md](bitmap.md) | BitMap structure, planar layout, allocation |
-| [display_modes.md](display_modes.md) | Chipset comparison (OCS/ECS/AGA), ModeID system, PAL/NTSC timing, DMA slot budget |
+| [display_modes.md](display_modes.md) | Full chipset comparison, ModeID selection flowchart, CRT vs flat-panel, interlace/progressive tradeoffs, named antipatterns, FPGA/MiSTer impact, historical context, modern analogies, FAQ |
 | [ham_ehb_modes.md](ham_ehb_modes.md) | HAM6/HAM8 encoding pipeline, EHB half-brite, fringing, palette programming, FPGA decoder logic |
 | [copper.md](copper.md) | Copper coprocessor, instruction format, UCopList |
 | [copper_programming.md](copper_programming.md) | Copper deep dive: architecture, copper list construction, gradient and raster effects |

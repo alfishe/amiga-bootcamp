@@ -24,7 +24,7 @@ The **Advanced Graphics Architecture** (AGA) is the final custom chipset develop
 | [aga_display_modes.md](aga_display_modes.md) | HAM8, 256-color, doublescan, VGA |
 | [aga_blitter.md](aga_blitter.md) | 64-bit blitter bus, FMODE |
 | [aga_copper.md](aga_copper.md) | AGA Copper programming guide |
-| [cpu_030_040.md](cpu_030_040.md) | 68030/040 on A3000/A4000: cache, MMU, FPU |
+| [cpu_030_040.md](cpu_030_040.md) | 68030/040/060: accelerator catalog, benchmarks, named antipatterns (cache/DMA coherency, missing libraries, timing loops, chip bus speed), FPGA impact, FAQ |
 | [akiko_cd32.md](akiko_cd32.md) | CD32 Akiko chip: C2P conversion, CD-ROM, NVRAM |
 | [Gayle IDE & PCMCIA](../common/gayle_ide_pcmcia.md) | A1200 Gayle: IDE and PCMCIA (shared with A600) |
 
