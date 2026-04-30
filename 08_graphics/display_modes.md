@@ -643,3 +643,4 @@ LACE alternates two 256-line fields at 25/30 Hz each to produce 512 visible line
 - See also: [ham_ehb_modes.md](ham_ehb_modes.md) — HAM6/HAM8/EHB in depth
 - See also: [AGA Display Modes](../01_hardware/aga_a1200_a4000/aga_display_modes.md) — AGA-specific capabilities
 - See also: [Chipset AGA](../01_hardware/aga_a1200_a4000/chipset_aga.md) — Lisa chip, FMODE, 24-bit palette
+- See also: [DMA Architecture](../01_hardware/common/dma_architecture.md) — mode-dependent DMA slot budget, CPU bandwidth calculations

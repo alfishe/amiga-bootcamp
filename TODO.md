@@ -105,6 +105,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `aga_blitter.md` | aga | 167 | ✅ Adequate | AGA 32-bit blitter: 4× throughput, FMODE register |
 | `aga_palette.md` | aga | 134 | ✅ Adequate | AGA 24-bit palette: LOCT/SHCT banks |
 | `chipset_aga.md` | aga | 126 | ✅ Adequate | AGA chipset architecture overview |
+| `aga_sprites.md` | aga | 180 | ✅ Adequate | AGA sprite enhancements: 32/64px width, FMODE SPR_FMODE, BPLCON4 ESPRM/OSPRM color bank, DMA format changes, alignment |
 | `aga_display_modes.md` | aga | 122 | ✅ Adequate | AGA display modes: DBLPAL, Multiscan, HAM8 |
 | `aga_registers_delta.md` | aga | 97 | ✅ Adequate | OCS→AGA register differences table |
 | `memory_types.md` | common | 423 | ✅ Deep | Chip/Fast/Slow RAM, DMA constraints, $C00000 alias |
@@ -114,6 +115,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `m68k_cpu.md` | common | 141 | ✅ Adequate | 68000 architecture baseline: registers, exceptions |
 | `zorro_bus.md` | common | 139 | ✅ Adequate | Zorro II/III expansion bus: AutoConfig, bus arbitration |
 | `autoconfig.md` | common | 662 | ✅ Deep | AutoConfig protocol: CFGIN/CFGOUT chain, ExpansionRom encoding, nibble-pair map, size codes, shut-up mechanism, Z2/Z3 differences, antipatterns, FPGA notes, boot sequence positioning |
+| `dma_architecture.md` | common | 581 | ✅ Deep | Scanline slot allocation, even/odd interleaving, DMA channel priority, bitplane DMA budget (DDFSTRT/DDFSTOP/BPLxMOD), bus arbitration (Agnus as bus master, DTACK, wait states), Blitter-Nasty/BLTPRI, per-model bus table (A1000→CD32), Buster/Ramsey/SDMAC/Gayle glue chips, AGA FMODE bandwidth equation, alignment requirements, FPGA implementation notes (Minimig state machine, SDRAM timing, common bugs), bandwidth calculation cookbook with 4 worked examples, best practices, FAQ |
 | `cdtv_hardware.md` | ocs | 283 | ✅ Adequate | CDTV-specific: CD-ROM controller, front panel, boot ROM |
 | `custom_registers.md` | ocs | 183 | ✅ Adequate | OCS custom chip register map |
 | `blitter.md` | ocs | 154 | ✅ Adequate | Blitter engine basics: channels, minterms, line draw |
@@ -124,6 +126,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `chipset_ocs.md` | ocs | 107 | ✅ Adequate | OCS chipset architecture: Agnus/Denise/Paula |
 | `chipset_ecs.md` | ecs | 119 | ✅ Adequate | ECS chipset changes: Super Agnus, 2 MB Chip RAM |
 | `ecs_registers_delta.md` | ecs | 114 | ✅ Adequate | OCS→ECS register differences table |
+| `ecs_sprites.md` | ecs | 98 | ✅ Adequate | ECS sprite enhancements: border sprites (BRDSPRT), independent resolution (SPRES), color bank, half-ECS trap |
 | `productivity_modes.md` | ecs | 97 | ✅ Adequate | ECS productivity/VGA: 640×480×4, 31 kHz scan |
 | `chip_ram_expansion.md` | ecs | 77 | ✅ Adequate | A600 trapdoor Chip RAM expansion |
 | `gary_system_controller.md` | ecs | 576 | ✅ Deep | Gary & Fat Gary: address decoding, bus arbitration, interrupt controller, SCSI/SDMAC integration, AutoConfig controller, chip variants (5719/5391/5393), runtime detection (4 methods), Gary vs Gayle vs Ramsey/Budgie decision guide, 3 named antipatterns, 3 pitfalls, FPGA timing requirements, historical context (TTL→ASIC), modern Northbridge analogy |
@@ -249,7 +252,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `ham_ehb_modes.md` | 442 | ✅ Adequate | HAM6/HAM8 encoding, EHB half-brite, FPGA decoder logic |
 | `rastport.md` | 403 | ✅ Adequate | RastPort drawing context, layer clipping, text pipeline |
 | `copper_programming.md` | 319 | ✅ Deep | Copper deep dive: copper list construction, gradient, raster effects |
-| `sprites.md` | 306 | ❌ Pending | Tier 3 #15: needs antipatterns, pitfalls (HW vs SimpleSprite), FPGA sprite timing |
+| `sprites.md` | 582 | ✅ Deep | Tier 3 #15 upgrade: DMA timing, CLXCON/CLXDAT collision, V39 ExtSprite API, decision flowchart, 5 named antipatterns, multiplexing techniques, real-world use cases, FPGA notes, competitive landscape |
 | `gfx_base.md` | 237 | ✅ Adequate | GfxBase, chipset detection, display pipeline overview |
 | `text_fonts.md` | 215 | ❌ Pending | Tier 3 #16: needs cookbook (bitmap vs outline), font spacing pitfalls, ColorFont layout |
 | `copper.md` | 124 | ✅ Adequate | Copper coprocessor basics, instruction format, UCopList |

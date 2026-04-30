@@ -105,3 +105,9 @@ BPL2PTH/BPL2PTL  $DFF0E4/$DFF0E6
 - ADCD 2.1 Hardware Manual — Agnus/DMA chapters
 - NDK39: `hardware/dmabits.h`, `hardware/intbits.h`, `hardware/custom.h`
 - *Amiga Hardware Reference Manual* 3rd ed.
+
+## See Also
+
+- [DMA Architecture](../common/dma_architecture.md) — scanline slot allocation, bus arbitration, bandwidth calculations
+- [ECS Chipset](../ecs_a600_a3000/chipset_ecs.md) — Super Agnus and ECS Denise enhancements
+- [AGA Chipset](../aga_a1200_a4000/chipset_aga.md) — Alice, Lisa, FMODE

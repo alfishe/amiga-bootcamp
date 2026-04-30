@@ -12,3 +12,4 @@
 - [cia_chips.md](cia_chips.md) — Complex Interface Adapters (8520): Timers, Parallel, Serial
 - [gayle_ide_pcmcia.md](gayle_ide_pcmcia.md) — Gayle system controller: IDE and PCMCIA logic
 - [floppy_hardware.md](floppy_hardware.md) — MFM encoding, disk controller, and drive mechanics
+- [dma_architecture.md](dma_architecture.md) — DMA architecture: scanline slot allocation, bus arbitration, even/odd interleaving, per-model bus widths, Buster/Ramsey/SDMAC, FMODE bandwidth, FPGA timing

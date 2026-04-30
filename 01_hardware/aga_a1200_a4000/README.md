@@ -23,6 +23,7 @@ The **Advanced Graphics Architecture** (AGA) is the final custom chipset develop
 | [aga_palette.md](aga_palette.md) | 24-bit color system, 256 registers |
 | [aga_display_modes.md](aga_display_modes.md) | HAM8, 256-color, doublescan, VGA |
 | [aga_blitter.md](aga_blitter.md) | 64-bit blitter bus, FMODE |
+| [aga_sprites.md](aga_sprites.md) | AGA sprite enhancements: 32/64px width, FMODE, color bank selection (ESPRM/OSPRM) |
 | [aga_copper.md](aga_copper.md) | AGA Copper programming guide |
 | [cpu_030_040.md](cpu_030_040.md) | 68030/040/060: accelerator catalog, benchmarks, named antipatterns (cache/DMA coherency, missing libraries, timing loops, chip bus speed), FPGA impact, FAQ |
 | [akiko_cd32.md](akiko_cd32.md) | CD32 Akiko chip: C2P conversion, CD-ROM, NVRAM |

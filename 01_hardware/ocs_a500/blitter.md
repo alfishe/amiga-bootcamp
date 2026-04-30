@@ -152,3 +152,9 @@ WaitBlit();   /* graphics.library — waits and resets to safe state */
 - NDK39: `hardware/blit.h`, `graphics/blitattr.h`
 - graphics.library Autodocs: `BltBitMap`, `BltTemplate`, `BltClear`
 - http://amigadev.elowar.com/read/ADCD_2.1/Hardware_Manual_guide/node006D.html
+
+## See Also
+
+- [DMA Architecture](../common/dma_architecture.md) — Blitter-Nasty (BLTPRI), bus arbitration, CPU starvation mechanics
+- [Blitter Programming](../../08_graphics/blitter_programming.md) — Advanced minterms, cookie-cut, area fill
+- [AGA Blitter](../aga_a1200_a4000/aga_blitter.md) — 64-bit FMODE blitter

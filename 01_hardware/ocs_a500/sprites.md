@@ -129,6 +129,12 @@ SetPointer(window, pointer_data, height, width, x_offset, y_offset);
 ClearPointer(window);  /* restore system default */
 ```
 
+## See Also
+
+- [ECS Sprite Enhancements](../ecs_a600_a3000/ecs_sprites.md) — border sprites, independent resolution (SPRES)
+- [AGA Sprite Enhancements](../aga_a1200_a4000/aga_sprites.md) — 32/64px width, FMODE, color bank selection
+- [Sprites — Graphics Programming Guide](../../08_graphics/sprites.md) — OS API, techniques, antipatterns, decision guides
+
 ## References
 
 - ADCD 2.1 Hardware Manual — Sprites chapter

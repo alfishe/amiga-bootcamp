@@ -596,3 +596,4 @@ For MiSTer and emulator developers, planar BitMap emulation has specific require
 - See also: [blitter_programming.md](blitter_programming.md) — Advanced Blitter minterms and cookie-cut
 - See also: [views.md](views.md) — Attaching BitMaps to ViewPorts for display
 - See also: [rastport.md](rastport.md) — RastPort drawing context and primitives
+- See also: [dma_architecture.md](../01_hardware/common/dma_architecture.md) — bitplane DMA slot budget, DDFSTRT/DDFSTOP registers, bandwidth calculations

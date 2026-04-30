@@ -23,6 +23,7 @@ The **Enhanced Chip Set** (ECS) is a significant revision of OCS, shipping from 
 | [productivity_modes.md](productivity_modes.md) | Multiscan/productivity display modes |
 | [gary_system_controller.md](gary_system_controller.md) | Gary & Fat Gary — system controller gate array: address decode, bus arbitration, AutoConfig, SCSI/FPU glue, chip variants, runtime detection, antipatterns, FPGA timing |
 | [Gayle IDE & PCMCIA](../common/gayle_ide_pcmcia.md) | A600 Gayle: IDE and PCMCIA (shared with A1200) |
+| [ecs_sprites.md](ecs_sprites.md) | ECS sprite enhancements: border sprites, independent resolution (SPRES), color bank |
 | [chip_ram_expansion.md](chip_ram_expansion.md) | 2 MB Chip RAM with Super Agnus |
 
 ## ECS vs OCS — Key Differences
