@@ -131,9 +131,59 @@ struct DiagArea {
 
 The boot vector is called by `ConfigChain()` during the early boot sequence — this is how SCSI controllers install their filesystem handlers.
 
+## Real-World Performance & Bottlenecks
+
+While the theoretical speeds are high, real-world Zorro performance is often gated by the Amiga's system bus controller and motherboard design.
+
+### The "Buster" Bottleneck
+In the A3000 and A4000, the **Buster** chip manages Zorro III traffic. 
+- **Revision 9**: Contained bugs that made Zorro III DMA unstable or slow.
+- **Revision 11**: The "Golden" revision. It fixed several timing bugs and allowed for reliable **Burst Mode** transfers, which are essential for reaching speeds above 10 MB/s.
+
+### Bandwidth Comparison (Real-World)
+
+| Interface | Effective CPU-to-VRAM | Notes |
+|---|---|---|
+| **Zorro II** | ~2.5 – 3.5 MB/s | Gated by 7 MHz 68000 bus timing. |
+| **Zorro III** | ~10 – 15 MB/s | Requires Buster 11 and a 68040/060. |
+| **PCI Bridge** | ~20 – 30 MB/s | Limited by the Zorro-to-PCI bridge interface. |
+| **Local Bus** | **~60 – 80 MB/s** | Bypasses Zorro; uses CPU-slot (CyberStorm PPC). |
+
+### 2. PCI Bridgeboards (Mediator, G-REX, Prometheus)
+PCI bridges allowed the Amiga to break out of the aging Zorro ecosystem and tap into the vast, cheap pool of PC hardware.
+
+#### Hardware Architecture
+*   **Mediator (Elbox)**: The most popular solution. It consists of a "Logic Board" (containing GALs/CPLDs) and a "Busboard." It uses a **Memory Windowing** technique (typically 8MB) to map the vast 4GB PCI address space into the Amiga's 24-bit or 32-bit space.
+*   **G-REX (DCE)**: Designed for high-end PowerPC systems. It connects directly to the **CPU local slot** of a BlizzardPPC or CyberStormPPC. Unlike the Mediator, it uses **Linear Mapping**, making the entire PCI memory space directly addressable without window switching, resulting in superior performance.
+*   **Prometheus (Mayap/Individual Computers)**: A simpler Zorro III-to-PCI bridge using a single PLX bridge chip.
+
+#### Software & Libraries
+*   **pci.library**: The standard API for PCI hardware on the Amiga. It handles resource allocation (BARs), interrupt routing, and device discovery.
+*   **OpenPCI**: An open-source alternative library designed to provide a unified driver interface across different bridge brands.
+*   **Mediator Multimedia CD**: The proprietary driver suite from Elbox, required for many of their advanced features (like using a graphics card's VRAM as system Fast RAM).
+
+#### Supported PCI Cards
+| Category | Supported Models | Notable Drivers |
+|---|---|---|
+| **Graphics** | 3dfx Voodoo 3/4/5, ATI Radeon 9200/9250, S3 ViRGE | Picasso96, CyberGraphX v4 |
+| **Sound** | Sound Blaster 128, ESS Solo-1, ForteMedia FM801 | AHI (Amiga Hardware Interface) |
+| **Networking** | Realtek 8139 (10/100 Mbps) | SANA-II (Roadshow, Genesis) |
+| **USB** | NEC-based cards (e.g., Elbox Spider) | Poseidon USB Stack |
+| **TV/Video** | Brooktree Bt848/878 based cards | TVPaint, VGR |
+
+> [!TIP]
+> **Mediator VRAM trick**: One of the most powerful features of the Mediator is the ability to use the 128MB+ of RAM on a Radeon card as system Fast RAM. While slower than local motherboard RAM, it is significantly faster than swapping to a hard drive.
+
+### 3. FPGA-Based Modern Cards
+Modern Zorro cards like the **MNT ZZ9000** use an FPGA to provide RTG, Ethernet, and USB. They often include an ARM processor or specialized hardware logic to perform operations (like JPEG decoding) locally on the card, reducing the amount of raw data that needs to be sent over the Zorro bus.
+
+*   **Product Page**: [MNT ZZ9000](https://mntre.com/zz9000)
+*   **Official Sources (GitLab)**: [Firmware & Drivers](https://source.mnt.re/amiga)
+
 ## References
 
 - NDK39: `libraries/expansion.h`, `libraries/configregs.h`, `libraries/configvars.h`
 - ADCD 2.1 Autodocs: `expansion` — http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_3._guide/node025B.html
 - *Amiga Hardware Reference Manual* 3rd ed. — AutoConfig chapter
 - Dave Haynie's Zorro III specification documents
+- Mediator PCI Technical Reference — http://www.elbox.com/mediator_tech.html

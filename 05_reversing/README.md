@@ -24,8 +24,17 @@ This section provides a systematic methodology for reverse engineering AmigaOS e
 | [static/code_vs_data_disambiguation.md](static/code_vs_data_disambiguation.md) | Distinguishing code bytes from data — IDA/Ghidra workflows |
 | [patching_techniques.md](patching_techniques.md) | Surgical binary patching methods |
 | [unpacking_and_decrunching.md](unpacking_and_decrunching.md) | Executable unpacking, decruncher architecture, and manual extraction |
+| [custom_loaders_and_drm.md](custom_loaders_and_drm.md) | Bypassing DOS, Trackloaders, and physical DRM tricks |
+| [anti_debugging.md](anti_debugging.md) | The Cracker vs. Developer arms race: Trace vector abuse, NMI defeat, CIA timers |
+| [whdload_architecture.md](whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, and runtime memory patching |
 | [case_studies/](case_studies/) | Real-world RE walkthroughs |
 | [case_studies/ramdrive_device.md](case_studies/ramdrive_device.md) | ramdrive.device RE walkthrough |
+
+### Game Reverse Engineering
+
+| File | Topic |
+|---|---|
+| [games/game_reversing.md](games/game_reversing.md) | Game RE: disassembly, modification, asset extraction, save game analysis |
 
 ### Per-Compiler Reverse Engineering — Binary Field Manuals
 

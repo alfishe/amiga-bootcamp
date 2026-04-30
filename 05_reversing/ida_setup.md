@@ -217,6 +217,28 @@ If C pseudocode generation is a strict requirement for your workflow, you must u
 
 ---
 
+## Step 12: GCC Binary Specific Workflows
+
+When analyzing a binary compiled with GCC (often identified by a `.text` hunk or a `LINK A6` in the first function), the standard analysis workflow changes slightly:
+
+**1. Handle `.text` as mixed code+data.** GCC embeds strings and jump tables directly in the code hunk. After auto-analysis:
+- Search for `LEA xxx(PC), An` instructions (Edit → Find → by instruction mnemonic or IDAPython)
+- For each, check if the target address contains ASCII bytes — if yes, press `A` to define as string
+- Mark the string as `DATA` type so IDA doesn't try to disassemble it as code
+
+**2. Function boundary detection without LINK.** IDA's auto-analysis finds most functions via call-graph tracing from the entry point. For stragglers:
+- Every `BSR addr` / `JSR addr` target is a function entry — use `Create function` (P key) at those addresses
+- Look for `MOVEM.L Dn/An, -(SP)` at addresses following a `RTS` — strong function-start indicator
+- Use IDAPython to scan: `for ea in idautils.Heads(): if idc.print_insn_mnem(ea) == 'MOVEM.L': ...`
+
+**3. Identify `main()` in stripped builds.** The libnix startup sequence is fixed:
+```
+Entry → MOVEA.L 4.W, A6 → JSR __startup_SysBase → (open dos.library) → JSR _main
+```
+The `JSR` immediately after the `dos.library` open is `_main`. Mark it as a function and rename.
+
+---
+
 ## References
 
 - IDA Pro 7.x documentation — processor modules, FLIRT

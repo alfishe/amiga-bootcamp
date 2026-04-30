@@ -66,6 +66,18 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 ---
 
+## Tier 4 — Modernization & Advanced Techniques (New Articles)
+
+| # | New Article | Why Needed | Status |
+|---|---|---|---|
+| 26 | **Custom Trackloaders & DRM** | 80% of classic games bypassed DOS. Reversing them requires understanding raw MFM sync words, bootblocks, and copy protection (e.g. Rob Northen Copylock). | ❌ **Pending** |
+| 27 | **RTG (Retargetable Graphics)** | Modern Amigas use RTG (Picasso96/CyberGraphX) for 16/24-bit chunky graphics. Application-level rendering is undocumented in our `08_graphics` folder. | ❌ **Pending** |
+| 28 | **AHI Audio Interface** | Hardware-agnostic 16-bit multi-channel audio mixing is standard for modern Amiga apps, decoupling audio from the 8-bit 4-channel Paula chip limits. | ❌ **Pending** |
+| 29 | **Demoscene Techniques** | Exploits like Sprite Multiplexing and Copper Chunks defined the platform's capabilities. Crucial for understanding high-performance hardware banging. | ❌ **Pending** |
+| 30 | **Modern Cross-Compilation** | Setting up `m68k-amigaos-gcc`, `vbcc`, and `vasm` via CMake on modern macOS/Linux to build native `.hunk` binaries. | ❌ **Pending** |
+
+---
+
 ## Per-Article Status
 
 | Status | Meaning |
@@ -428,4 +440,14 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | 24 | `10_devices/console.md` | 244 lines |
 | 25 | `10_devices/trackdisk.md` | 178 lines |
 
-> **Progress**: 15 of 25 items complete (60%). Tier 1 fully cleared. 0 Tier 2 remaining. 10 Tier 3 items remain.
+**Tier 4 — 5 pending advanced topics:**
+
+| # | File | Current |
+|---|---|---|
+| 26 | `05_reversing/custom_loaders_and_drm.md` | 168 lines |
+| 27 | `08_graphics/rtg_programming.md` | 0 lines |
+| 28 | `11_libraries/ahi_programming.md` | 0 lines |
+| 29 | `17_demoscene/README.md` | 0 lines |
+| 30 | `13_toolchain/cross_compilation_guide.md` | 0 lines |
+
+> **Progress**: 15 of 30 items complete (50%). Tier 1 and 2 fully cleared. 10 Tier 3 items and 5 Tier 4 items remain.

@@ -72,6 +72,25 @@ For dynamic debugging, the workflow is identical to IDA:
 
 ---
 
+## Step 6: GCC Binary Specific Workflows
+
+When dealing with GCC-compiled Amiga binaries (especially those with debug info), there are a few Ghidra-specific workflows to note:
+
+**1. Install `ghidra-gcc2-stabs`** (`RidgeX/ghidra-gcc2-stabs`) if the binary has debug info. After loading:
+- Run the script: `Analysis → Run Script → ImportGCC2Stabs.java`
+- The script reads `HUNK_DEBUG`, extracts `N_FUN`/`N_SLINE`/`N_LSYM` stabs, and creates function labels, source line annotations, and local variable names automatically.
+- Even partial stabs (e.g., `N_SO` + `N_FUN` only) restore function boundaries and names.
+
+**2. PC-relative string handling.** Ghidra's m68k analyzer natively handles `LEA xxx(PC), An` correctly and creates data cross-references. Check the `References` view for `LEA` targets — strings listed there can be viewed and renamed.
+
+**3. Function boundary heuristic.** Ghidra's default analysis finds GCC functions reasonably well. For missed functions:
+- Use `Search → For Instruction Patterns` → `MOVEM.L *, -(SP)` (opcode `48E7`) to find all prologues.
+- Right-click → `Create Function` at each found address.
+
+**4. Recognizing tail calls.** Ghidra may misidentify `BRA _otherFunc` as a local branch. If Ghidra marks code after a `BRA` as unreachable or creates a new function at the `BRA` target, verify manually: if the `BRA` target is a named function elsewhere in `.text`, it's a tail call — the `BRA` terminates the current function and the target function returns directly to the original caller.
+
+---
+
 ## References
 
 - [ghidra-amiga by BartmanAbyss](https://github.com/BartmanAbyss/ghidra-amiga) — The definitive Amiga loader and extension suite for Ghidra.

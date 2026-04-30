@@ -116,6 +116,61 @@ _large_func:
 
 ---
 
+## Debug Information — HUNK_DEBUG and Stabs
+
+GCC 2.95.x for AmigaOS embeds debug info when compiled with `-g`. The format is **stabs** (BSD DBX format) — not DWARF2, which is disabled on this target. Debug data lives in a `HUNK_DEBUG` block (hunk type `0x3F1`) separate from `HUNK_SYMBOL`.
+
+### Hunk Types for Symbols
+
+| Hunk type | Hex | Contents |
+|---|---|---|
+| `HUNK_SYMBOL` | `0x3F0` | Linker-visible public symbol names + offsets. Present in non-stripped builds. |
+| `HUNK_DEBUG` | `0x3F1` | Stabs debug info: source file names, function names, line numbers, type info. Only with `-g`. |
+
+`HUNK_DEBUG` structure:
+```
+ULONG magic;          // BSD a.out magic (checked against ZMAGIC)
+ULONG symsz;          // size of symbol table (N × sizeof(struct nlist))
+ULONG strsz;          // size of string table
+struct nlist[N];      // stabs entries
+char  strings[];      // null-terminated string pool
+```
+
+### Key Stabs Entry Types
+
+| Stab type | Decimal | Meaning |
+|---|---|---|
+| `N_OPT` | 60 | Compiler option — value `"gcc2_compiled."` marks GCC 2.x output |
+| `N_SO` | 100 | Source file. Two consecutive `N_SO` entries = directory + filename |
+| `N_SOL` | 132 | Included sub-source file (`#include`) |
+| `N_FUN` | 36 | Function entry: `"name:Fdesc"` (global) or `"name:fdesc"` (static); `n_value` = start address. Empty name `""` marks function *end*. |
+| `N_SLINE` | 68 | Source line: `n_desc` = line number, `n_value` = code offset from function start |
+| `N_LSYM` | 128 | Local variable (stack): `"name:type"`, `n_value` = frame offset |
+| `N_GSYM` | 32 | Global variable |
+| `N_LBRAC` / `N_RBRAC` | 192 / 224 | Open/close scope block |
+
+### Finding Function Names in a Debug Build
+
+1. Locate `HUNK_DEBUG` (type `0x3F1`) in the binary
+2. Read the BSD header; verify magic
+3. Iterate `struct nlist` entries, looking for `n_type == N_FUN`
+4. The string before the `:` in the stabs string is the function name
+5. `n_value` is the function's start offset within the hunk
+6. The next `N_FUN` with empty name marks the function's end
+
+**Tooling:**
+- `GccFindHit` (from `cnvogelg/m68k-amigaos-toolchain`) — reads HUNK_DEBUG and maps a crash address to source file + line + function
+- `ghidra-gcc2-stabs` (GitHub: `RidgeX/ghidra-gcc2-stabs`) — Ghidra plugin that imports stabs from `HUNK_DEBUG` and creates function labels, line numbers, and local variable annotations automatically
+
+### `gcc2_compiled.` Marker
+
+An `N_OPT` stab with string `"gcc2_compiled."` appears before the first `N_SO` entry in every GCC 2.x debug build. It:
+- Confirms GCC 2.x lineage (not SAS/C, VBCC, or GCC 3+)
+- Is only present when `-g` was passed — absent in release/stripped builds
+- In stripped binaries, use hunk naming (`.text`) and code patterns instead
+
+---
+
 ## Calling Conventions
 
 GCC uses a simpler calling convention model than SAS/C — one primary convention with variations controlled by function attributes. However, what GCC lacks in convention count it makes up for in **register allocation flexibility**: every function gets a customized stack frame and register save set based on exactly which variables the compiler decides to keep in registers.
@@ -347,6 +402,31 @@ GCC's call-site code reveals whether the caller passes parameters in registers o
 > [!NOTE]
 > **Varargs functions** (like `Printf`, `sprintf`, custom `Format()`) force ALL arguments onto the stack in GCC 2.95.x — even the first two. This is a reliable disambiguator: if you see a call with 3+ stack pushes and NO register args, the target is likely a varargs function.
 
+#### Varargs Callee — `va_arg()` Expansion
+
+Inside a varargs function, `va_list` is a plain `char *` pointer into the stack frame. `va_start` initializes it; `va_arg(ap, T)` reads the next argument and advances by `sizeof(T)` rounded to 4 bytes.
+
+```asm
+; va_arg() for a 32-bit value — canonical pattern:
+    MOVEA.L -$04(A6), A0       ; load va_list (ap) from stack slot
+    MOVE.L  (A0)+, D0          ; read next arg, advance ap by 4
+    MOVE.L  A0, -$04(A6)       ; write back updated ap
+
+; va_arg() inside a loop (ap kept in address register):
+.va_loop:
+    MOVE.L  (A2)+, D0          ; A2 = ap; read 32-bit arg, A2 += 4
+    TST.L   D0
+    BEQ.S   .va_done
+    ; process D0 ...
+    BRA.S   .va_loop
+```
+
+**Key recognition patterns:**
+- `(An)+` post-increment reads in a loop — the defining mark of `va_arg` iteration
+- `ap` is either kept in an address register across the loop or reloaded/stored each iteration
+- 16-bit types (`short`) are promoted to 32 bits on the stack — `va_arg` still advances by 4, not 2
+- Format strings for `printf`-style calls always appear as `LEA .LCx(PC), Dn` followed by `MOVE.L Dn, -(SP)` (the format string is the first stack push, last to arrive at the function)
+
 ### `__attribute__((interrupt))` — Interrupt Handler
 
 ```asm
@@ -368,6 +448,76 @@ _exit_func:
     ; No RTS — compiler knows this never returns
     ; May be followed by ILLEGAL or DC.B 0 padding
 ```
+
+### AmigaOS-Specific GCC Attributes
+
+GCC 2.95.x for AmigaOS defines attribute macros that map to Amiga calling conventions. These produce fundamentally different code and must be recognized to correctly reconstruct function prototypes.
+
+#### `__regargs` — Register-Based Argument Passing
+
+`__attribute__((regparm(N)))` (available as the `__regargs` macro) passes the first N arguments in registers using a different layout than standard cdecl:
+
+| Arg # | Type | Standard cdecl | `__regargs` |
+|---|---|---|---|
+| **arg1** | integer | D0 | D0 |
+| **arg1** | pointer | D0 | **A0** |
+| **arg2** | integer | D1 | D1 |
+| **arg2** | pointer | D1 | **A1** |
+| **arg3** | any | stack | D2 or A2 |
+| **remaining** | any | stack | stack |
+
+The critical difference: **pointer arguments arrive in address registers (A0, A1), not D0/D1**. If you assume cdecl and a function's first parameter is a pointer, you will look for it in `D0` — but with `__regargs` it arrives in `A0`.
+
+```asm
+; Standard cdecl: Write(fh, buf, len) — fh/buf/len in D0/D1/stack
+    MOVE.L  #1024, -(SP)           ; len on stack
+    MOVE.L  buffer, D1             ; buf in D1 (integer-sized)
+    MOVE.L  fh, D0                 ; fh in D0
+    BSR     _Write
+
+; __regargs: WriteEx(fh, buf, len) — fh(int) in D0, buf(ptr) in A0, len in D1
+    MOVE.L  #1024, D1              ; len in D1
+    MOVEA.L buffer, A0             ; buf (pointer) → A0, not D1!
+    MOVE.L  fh, D0                 ; fh in D0
+    BSR     _WriteEx
+```
+
+Callee with `__regargs` — how the prologue differs:
+
+```asm
+_WriteEx:                          ; __regargs: D0=fh, A0=buf(ptr), D1=len
+    MOVEM.L D2-D3/A2, -(SP)
+    MOVE.L  D0, D2                 ; save fh (from D0 — same as cdecl)
+    MOVEA.L A0, A2                 ; save buf from A0 — NOT from D1!
+    MOVE.L  D1, D3                 ; save len from D1
+```
+
+**RE trap**: If you assume cdecl and see `MOVEA.L A0, A2` early in the prologue with no preceding `MOVEA.L D0, A2`, the function is `__regargs` and the first pointer arg arrived directly in A0.
+
+#### `__saveds` — Small-Data Register Reload
+
+`__attribute__((saveds))` forces the function to reload the small-data base register (A4) at entry from `__DATA_BAS`. Used for library functions callable from a different task context. Recognizable by `LEA __DATA_BAS(PC), A4` as the very first instruction before any other work:
+
+```asm
+_saveds_func:
+    LEA     __DATA_BAS(PC), A4     ; reload small-data base — __saveds signature
+    MOVEM.L D2/A2, -(SP)
+    ; ... normal function body follows ...
+```
+
+On most AmigaOS GCC builds without `-msep-data`, `__saveds` is a no-op in the generated code — present in source for SAS/C compatibility, invisible in the binary.
+
+#### `__chip` — Chip RAM Variable Placement
+
+Variables declared `__attribute__((chip))` land in a `.datachip` section. The linker emits this as a separate `HUNK_DATA` block with chip-RAM flag bits set in the hunk size longword (bits 30–31 encode `MEMF_CHIP`):
+
+```
+HUNK_DATA  0x3EA  size=0x80000040   ; bit 30 set = MEMF_CHIP requested
+  ; ...chip-RAM variable data...
+HUNK_END
+```
+
+Accesses to chip-RAM variables in disassembly look identical to normal `.data` accesses — the `MEMF_CHIP` flag is only visible in the hunk header, not in the instructions.
 
 ---
 
@@ -406,6 +556,109 @@ Compared to SAS/C:
 ```
 
 When `-fPIC` is enabled, globals are accessed through a GOT (Global Offset Table) similar to ELF shared libraries. This pattern uses `A4` as the GOT base register and `LEA xxx(PC), A4` at function entry.
+
+---
+
+## BOOPSI / MUI Dispatcher Pattern
+
+BOOPSI and MUI custom class dispatchers compiled with GCC require special recognition because the OS invokes them with a **non-GCC calling convention**: arguments arrive in specific m68k registers hardcoded by the OS ABI, not in D0/D1/stack.
+
+### OS Entry Convention vs GCC Normal
+
+| Register | OS-mandated meaning | GCC normal cdecl meaning |
+|---|---|---|
+| **A0** | `IClass *cl` — the class pointer | arg1 (if pointer, with `__regargs`) |
+| **A1** | `Msg msg` — message (first field = MethodID) | arg2 (if pointer, with `__regargs`) |
+| **A2** | `Object *obj` — the object being operated on | callee-saved (must be preserved) |
+
+GCC-compiled dispatchers always begin by saving A2 and remapping all three inputs to callee-saved registers before any dispatch logic:
+
+```asm
+_MyClass_Dispatcher:
+    ; Entered with: A0=class, A1=msg, A2=obj  (OS convention)
+    MOVEM.L D2-D3/A2-A4, -(SP)    ; save callee-saved regs (A2 saved here!)
+    MOVEA.L A0, A3                  ; A3 = cl  (callee-saved)
+    MOVEA.L A2, A4                  ; A4 = obj (A2 clobbered next, save first)
+    MOVEA.L A1, A2                  ; A2 = msg (now A2 holds msg, not obj)
+
+    MOVE.L  (A2), D2               ; D2 = msg->MethodID (first field)
+```
+
+### MethodID Dispatch — CMP Chain vs Jump Table
+
+For fewer than ~8 methods, GCC emits a linear comparison chain:
+
+```asm
+    CMPI.L  #$0101, D2             ; OM_NEW?
+    BEQ     .om_new
+    CMPI.L  #$0102, D2             ; OM_DISPOSE?
+    BEQ     .om_dispose
+    CMPI.L  #$0103, D2             ; OM_SET?
+    BEQ     .om_set
+    CMPI.L  #$0104, D2             ; OM_GET?
+    BEQ.S   .om_get
+    ; ... more methods ...
+    ; Default: forward to superclass
+    MOVEA.L A3, A0                 ; restore cl
+    MOVEA.L A4, A2                 ; restore obj
+    ; A1 still = msg (or reload from A2 if clobbered)
+    JMP     (_IDoSuperMethodA).L   ; tail-call superclass dispatcher
+```
+
+For dense MethodID ranges with 8+ methods, GCC may emit a jump table. The MethodID base is subtracted, range-checked, then used as a scaled index:
+
+```asm
+    MOVE.L  D2, D0
+    SUB.L   #$0101, D0             ; normalize MethodID to 0-based index
+    CMPI.L  #<max_method_idx>, D0
+    BHI.S   .default_handler       ; out of range → superclass
+    ADD.L   D0, D0                 ; scale by 2 (word offsets)
+    MOVE.W  .method_table(PC,D0.L), D1
+    JMP     .method_table(PC,D1.W) ; indirect branch through table
+.method_table:
+    DC.W    .om_new-.method_table
+    DC.W    .om_dispose-.method_table
+    ; ...
+```
+
+### Common MUI Method IDs
+
+These appear in `CMPI.L #$XXXXXXXX, D2` comparisons in MUI class dispatchers:
+
+| MethodID | BOOPSI/MUI Method | Typical handler action |
+|---|---|---|
+| `0x0101` | `OM_NEW` | Allocate instance data, call superclass OM_NEW |
+| `0x0102` | `OM_DISPOSE` | Free resources, call superclass OM_DISPOSE |
+| `0x0103` | `OM_SET` | Apply attribute list from msg |
+| `0x0104` | `OM_GET` | Return attribute value |
+| `0x80420006` | `MUIM_Draw` | Render the gadget |
+| `0x8042000D` | `MUIM_Cleanup` | Release render resources |
+| `0x80420012` | `MUIM_Setup` | Prepare for rendering |
+
+Custom class methods use MUI-registered IDs starting at `0x80420000 + offset`. If you see a large hex constant as a CMPI operand starting with `0x8042`, it's a custom MUI method.
+
+### `MakeClass()` / `MUI_CreateCustomClass()` Call Pattern
+
+Class initialization code (often in a global constructor or `LibInit`):
+
+```asm
+; MUI_CreateCustomClass(NULL, superclass_name, NULL, inst_size, dispatcher):
+    PEA     _MyClass_Dispatcher    ; dispatcher function pointer
+    MOVE.L  #<instance_data_size>, -(SP)
+    MOVE.L  #0, -(SP)             ; taglist (NULL)
+    PEA     .superclass_str(PC)    ; "Group.mui" etc.
+    MOVE.L  #0, -(SP)             ; base (NULL for public classes)
+    JSR     _MUI_CreateCustomClass
+    LEA     $14(SP), SP           ; clean 5 args × 4 bytes
+    MOVE.L  D0, (_MyClass).L       ; store IClass * globally
+```
+
+**RE checklist for dispatcher identification:**
+1. Function entered with no MOVEM of D0/D1 first — instead A0, A1, A2 are immediately remapped
+2. First read is `MOVE.L (A2), Dn` or `MOVE.L (A1), Dn` — loading MethodID
+3. A chain of `CMPI.L #$0101`…`#$0104` or larger hex values
+4. At least one path ends with `JMP (_IDoSuperMethodA).L` or `BSR _DoSuperMethod`
+5. Nearby global holds the result of `MUI_CreateCustomClass`/`MakeClass`
 
 ---
 
@@ -458,6 +711,59 @@ See [cpp_vtables_reversing.md](../cpp_vtables_reversing.md) for the complete GCC
 - RTTI pointer at `vtable[-1]`
 - `offset_to_top` at `vtable[-2]`
 - C++ name mangling follows GCC 2.95 conventions (different from StormC++)
+
+### C++ Exception Handling — SJLJ Mechanism
+
+GCC 2.95.x on AmigaOS uses **SJLJ (setjmp/longjmp) exception handling**. Zero-cost DWARF2 unwinding is explicitly disabled (`DWARF2_UNWIND_INFO 0` in `amigaos.h`) because AmigaOS has no OS-level stack unwinder.
+
+Every function containing a `try` block gets an exception frame registered on a thread-local EH stack at entry and deregistered at exit:
+
+```asm
+; try-block function prologue — SJLJ EH:
+_func_with_try:
+    LINK    A6, #-<eh_frame_size>   ; allocate ExceptionFrame on stack
+    ; ExceptionFrame layout: {jmp_buf[6], *prev_frame, *exception_type, *handler}
+    MOVEM.L D2/A2, -(SP)
+
+    LEA     -<eh_frame_size>(A6), A0  ; A0 = &ExceptionFrame
+    JSR     ___sjljeh_init_handler    ; push frame onto __sjlj_eh_stack
+
+    JSR     _setjmp                   ; setjmp into frame's jmp_buf
+    TST.L   D0
+    BEQ.S   .normal_path              ; D0=0: initial entry, execute try body
+    ; D0≠0: returning from longjmp — exception in flight
+    BRA     .catch_handler
+
+.normal_path:
+    ; ... try block body ...
+
+.function_exit:
+    JSR     ___sjljeh_remove_handler  ; pop frame from __sjlj_eh_stack
+    MOVEM.L (SP)+, D2/A2
+    UNLK    A6
+    RTS
+
+.catch_handler:
+    ; ... catch block body ...
+    BRA.S   .function_exit
+```
+
+**RE identification of try/catch blocks:**
+- `JSR ___sjljeh_init_handler` — always marks the start of a try region
+- `JSR _setjmp` followed immediately by `TST.L D0` / `BEQ` — the try/catch branch
+- `JSR ___sjljeh_remove_handler` — always paired with init, marks the end of the guarded region
+- Functions without exceptions have neither; the overhead is obvious (30+ extra instructions)
+
+**Throw site pattern:**
+```asm
+; throw SomeException():
+    ; allocate exception object (or use static)
+    MOVE.L  D0, _current_exception  ; store exception pointer globally
+    JSR     ___sjljeh_throw         ; unwind: calls longjmp on innermost frame
+    ; unreachable (noreturn)
+```
+
+If you see `___sjljeh_throw` in a function, that function throws an exception. If you see `___sjljeh_init_handler` + `_setjmp`, it catches one.
 
 ---
 
@@ -717,6 +1023,20 @@ The A6 frame pointer choice (rather than A5) comes from the System V m68k ABI, w
 
 ---
 
+## Practical RE Workflow — Stripped Binary Analysis
+
+Quick steps when you have a stripped GCC Amiga binary with zero symbols:
+
+1. **Confirm compiler**: `.text` hunk name? → GCC. `LINK A5` in first function? → SAS/C. `LINK A6`? → GCC with frame pointer.
+2. **Find entry**: `MOVEA.L 4.W, A6` near start of `.text` → libnix entry. Follow to `JSR _main`.
+3. **Apply FLIRT**: identify C runtime, `dos.library` stubs, math functions — this names 20–40% of functions immediately.
+4. **Trace call graph from `main`**: rename each function as you understand it; GCC's per-function register save sets help scope the function boundary.
+5. **Look for `__CTOR_LIST__`**: if present, trace it before `main` — global constructors may initialize important state.
+6. **Check for `__regargs`**: if a function's first pointer arg seemingly doesn't use D0/D1, check if it arrives in A0 (regparm convention).
+7. **BOOPSI/MUI class?**: look for `MakeClass`/`MUI_CreateCustomClass` and trace to the dispatcher function.
+
+---
+
 ## FAQ
 
 **Q: How do I tell GCC 2.95.x from GCC 6.x (bebbo) in a binary?**
@@ -738,4 +1058,14 @@ A: Search for libnix startup signature: `MOVE.L 4.W, A6` / `JSR ___startup_SysBa
 - [startup_code.md](../../../04_linking_and_libraries/startup_code.md) — libnix/clib2 startup internals
 - *bebbo's amiga-gcc*: https://codeberg.org/bebbo/amiga-gcc
 - *GeekGadgets*: GCC 2.95 for AmigaOS (archived documentation)
+- *adtools/amigaos-gcc-2.95.3 — amigaos.h*: https://github.com/adtools/amigaos-gcc-2.95.3/blob/master/gcc/config/m68k/amigaos.h — calling convention, attributes, EH config
+- *RidgeX/ghidra-gcc2-stabs*: https://github.com/RidgeX/ghidra-gcc2-stabs — Ghidra plugin for stabs import
+- *BartmanAbyss/ghidra-amiga*: https://github.com/BartmanAbyss/ghidra-amiga — Ghidra hunk loader + AmigaOS types
+- *cnvogelg/GccFindHit* (stabs parser): https://github.com/cnvogelg/m68k-amigaos-toolchain/blob/master/tools/GccFindHit.c
+- *cahirwpz — AmigaOS GCC regparm*: http://cahirwpz.users.sourceforge.net/gcc-amigaos/regparm.html
+- *Tetracorp — Reverse Engineering Amiga*: https://tetracorp.github.io/guide/reverse-engineering-amiga.html
+- *GCC 2.95 caveats*: https://gcc.gnu.org/gcc-2.95/caveats.html
+- *STABS format reference*: https://sourceware.org/gdb/onlinedocs/stabs.html
+- *SDI_hook.h (BOOPSI/MUI dispatcher macros)*: https://github.com/amiga-mui/betterstring/blob/master/include/SDI_hook.h
+- *BOOPSI documentation*: https://wiki.amigaos.net/wiki/BOOPSI_-_Object_Oriented_Intuition
 - See also: [sasc.md](sasc.md), [vbcc.md](vbcc.md) — compare with other compilers
