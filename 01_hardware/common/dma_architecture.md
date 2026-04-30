@@ -580,3 +580,4 @@ Still feasible — but add Copper + Blitter and the CPU drops to single digits.
 - [Gary System Controller](../ocs_a500/gary_system_controller.md) — Bus timeout, address decode
 - [Zorro Bus](zorro_bus.md) — Expansion bus DMA, Buster/Super Buster
 - [Video Signal & Timing](video_timing.md) — clock derivation, beam counters, genlock, video output
+- [Bus Architecture & Register Access](bus_architecture.md) — CPU bus cycles, register access hazards, accelerator bridge, cache coherency

@@ -422,3 +422,4 @@ A: WHDLoad patches old games that assume all memory is Chip RAM. It redirects al
 - See also: [blitter_programming.md](../../08_graphics/blitter_programming.md) — Blitter DMA (Chip RAM only)
 - See also: [exec_memory.md](../../06_exec_os/exec_memory.md) — AmigaOS memory management API
 - See also: [dma_architecture.md](dma_architecture.md) — DMA slot allocation, bus arbitration, why Chip RAM bandwidth matters
+- See also: [bus_architecture.md](bus_architecture.md) — Bus hierarchy, Chip↔Fast RAM transfer techniques, cache coherency

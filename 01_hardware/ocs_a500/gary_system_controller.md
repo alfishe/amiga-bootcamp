@@ -556,3 +556,4 @@ No. Gary generates every chip-select signal on the board. Without Gary, the 6800
 - [Zorro Bus](../common/zorro_bus.md) — Zorro II expansion protocol, AutoConfig, Buster 5721 arbitration
 - [CIA Chips](../common/cia_chips.md) — CIA-A Port A OVL bit, interrupt lines, and timer outputs that Gary routes to the 68000
 - [Address Space](../common/address_space.md) — Complete A500/A2000 memory map with all Gary-decoded regions annotated
+- [Bus Architecture](../common/bus_architecture.md) — Bus hierarchy, register access patterns, accelerator bridge, cache coherency

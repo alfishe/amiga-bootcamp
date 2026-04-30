@@ -96,8 +96,8 @@ Each scanline consists of **227.5 color clocks** (alternating 227 and 228 per li
  ←────────────────── 227.5 color clocks ──────────────────→
 
  ┌──────┬──────┬─────────┬──────────────────────┬──────────┐
- │ SYNC │BLANK │  Back   │    Active Display     │  Front   │
- │      │      │  Porch  │  (visible pixels)     │  Porch   │
+ │ SYNC │BLANK │  Back   │    Active Display    │  Front   │
+ │      │      │  Porch  │  (visible pixels)    │  Porch   │
  └──────┴──────┴─────────┴──────────────────────┴──────────┘
  H=0                     H=$81                         H=$E3
          ← HBLANK →      ← DDFSTRT...DDFSTOP →
@@ -740,3 +740,4 @@ A: For basic display, ±10 ns per clock edge is sufficient. For genlock compatib
 - [OCS Chipset](../ocs_a500/chipset_ocs.md) — Agnus/Denise architecture
 - [ECS Chipset](../ecs_a600_a3000/chipset_ecs.md) — Super Agnus/Super Denise enhancements
 - [AGA Chipset](../aga_a1200_a4000/chipset_aga.md) — Alice/Lisa architecture
+- [Bus Architecture & Register Access](bus_architecture.md) — Bus hierarchy, accelerator bridge mechanics, register access rules

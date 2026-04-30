@@ -4,7 +4,9 @@
 
 ## Overview
 
-The Amiga uses a **24-bit physical address bus** on OCS/ECS machines (68000/68020 effective), giving 16 MB of addressable space. AGA machines with 68030/040 and 32-bit-clean software can address the full 4 GB, but Chip RAM and custom registers remain in the lower 16 MB.
+The Amiga uses a **24-bit physical address bus** on OCS/ECS machines (68000/68020 effective), giving 16 MB of addressable space.
+
+AGA machines with 68030/040/060 and 32-bit-clean software can address the full 4 GB, but Chip RAM and custom registers remain in the lower 16 MB.
 
 ## Memory Map — 24-bit (OCS/ECS: A1000, A500, A500+, A2000, A600, A3000, CDTV)
 
@@ -173,3 +175,4 @@ flowchart TB
 - Commodore A1200/A4000 Technical Reference Manuals (local archive)
 - See also: [memory_types.md](memory_types.md) — Chip RAM vs Fast RAM vs Slow RAM, DMA accessibility, per-model configurations
 - See also: [chip_ram_expansion.md](../ecs_a600_a3000/chip_ram_expansion.md) — 2 MB Chip RAM with Super Agnus
+- See also: [bus_architecture.md](bus_architecture.md) — Bus mechanics, register access patterns, cross-domain transfers

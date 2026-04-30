@@ -574,3 +574,4 @@ No. The FPU chip select is hard-wired to decode $E80000–$EFFFFF. There is no G
 - [ECS Chipset](chipset_ecs.md) — Super Agnus + ECS Denise (A3000)
 - [CPU 030/040](../aga_a1200_a4000/cpu_030_040.md) — Accelerators that must interoperate with Gary's bus arbitration
 - [SCSI Device](../../10_devices/scsi.md) — Software interface to the SCSI hardware Gary enables
+- [Bus Architecture](../common/bus_architecture.md) — Bus hierarchy, register access patterns, accelerator bridge, cache coherency

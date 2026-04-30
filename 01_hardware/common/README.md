@@ -14,3 +14,4 @@
 - [floppy_hardware.md](floppy_hardware.md) — MFM encoding, disk controller, and drive mechanics
 - [dma_architecture.md](dma_architecture.md) — DMA architecture: scanline slot allocation, bus arbitration, even/odd interleaving, per-model bus widths, Buster/Ramsey/SDMAC, FMODE bandwidth, FPGA timing
 - [video_timing.md](video_timing.md) — Video signal & system timing: crystal-to-CPU clock tree, beam counters, BEAMCON0, genlock overlay, video output signals, scandoublers
+- [bus_architecture.md](bus_architecture.md) — Bus hierarchy, CPU bus cycles, register access patterns, accelerator bridges, cache coherency, cross-domain transfers, per-model address maps
