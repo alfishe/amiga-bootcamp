@@ -67,6 +67,13 @@ If using the HUNK plugin:
 - HUNK_SYMBOL entries become IDA names automatically
 - HUNK_RELOC32 become IDA fixups
 
+> [!NOTE]
+> **Alternative: Native Disassemblers**
+> If you are working directly on an Amiga or via emulation (WinUAE), native tools are highly effective:
+> - **Interactive Disassemblers**: *ReSource* allows for interactive tracing and is well-aware of AmigaOS structures.
+> - **Command-line Disassemblers**: *IRA* (Interactive Reassembler) is excellent for generating re-assemblable source code from HUNK binaries.
+> - **Assembler Environments**: *AsmOne* provides a fully integrated debugging, disassembling, and patching environment.
+
 ### 2.2 Set Processor
 
 `Options → General → Processor type = Motorola 680x0`
@@ -209,9 +216,23 @@ Look for timer/protection mechanisms:
 
 ---
 
+## Limitations: The Decompilation Problem
+
+While decompilation (generating C/C++ source code from assembly) is a common modern RE workflow via Hex-Rays or Ghidra, the Amiga ecosystem presents severe challenges for decompilation:
+
+- **Heavy reliance on hand-written assembly**: Many Amiga games and demos eschewed C compilers entirely. Decompiling highly optimized 68000 assembly that uses custom chip registers directly into C yields poor, unreadable results.
+- **Custom Calling Conventions**: Unlike modern standard ABIs (e.g., cdecl, fastcall), Amiga software frequently used register-based arguments (e.g., D0-D1 for data, A0-A1 for pointers) tailored to specific routines.
+
+> [!NOTE]
+> **Historical Context**
+> Straightforward decompilation of Amiga games is largely a myth. Successful "decompilation" projects, such as Tom Morton's *GLFrontier* (a port of the Atari ST/Amiga game *Frontier*), rely heavily on custom-built decompilation solutions tailored precisely to the game's specific binary patterns, rather than generic tools.
+
+---
+
 ## References
 
 - [ida_setup.md](ida_setup.md) — IDA configuration details
 - [compiler_fingerprints.md](compiler_fingerprints.md) — compiler identification
 - [lvo_table.md](../04_linking_and_libraries/lvo_table.md) — complete LVO tables
+- [code_vs_data_disambiguation.md](static/code_vs_data_disambiguation.md) — distinguishing code bytes from data
 - NDK39: all `.fd` and `include/` files

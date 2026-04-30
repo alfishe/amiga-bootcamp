@@ -6,10 +6,9 @@
 
 | Component | Version / Notes |
 |---|---|
-| IDA Pro | 7.0+ (7.5+ recommended for Hex-Rays decompiler quality) |
+| IDA Pro | 7.0+ (provides standard M68k disassembly, no Hex-Rays support) |
 | Processor module | M68k — included in IDA standard install |
 | HUNK loader | Included in some IDA builds; community plugin if absent |
-| Hex-Rays decompiler | 68k decompiler license required for pseudocode |
 
 ---
 
@@ -161,21 +160,60 @@ annotate_lvos()
 
 ---
 
-## Step 8: Hex-Rays Decompiler Tips for 68k
+## Step 8: Mapping Custom Hardware Registers
 
-The Hex-Rays 68k decompiler needs type information to produce clean pseudocode:
+When reversing games or hardware-banging software, you will frequently encounter direct accesses to `$DFF000` (Custom Chips), `$BFE001` (CIAA), and `$BFD000` (CIAB).
 
-1. **Set function types** — mark return type and argument registers for library call wrappers
-2. **Suppress spurious variables** — many D-register temps appear; use `Collapse variable` or retype
-3. **Add `__asm` register hints** for known argument registers
+To make these readable in IDA:
+1. Ensure the Amiga NDK headers are loaded (from Step 6).
+2. Go to the `Structures` tab and ensure the `Custom` structure (from `hardware/custom.h`) is defined.
+3. Jump to address `$DFF000` in the IDA view (you may need to create a dummy data segment at `$DFF000` if one doesn't exist).
+4. Apply the `Custom` struct format to the data at `$DFF000` (using `Alt+Q`).
+5. When you see an instruction like `MOVE.W D0, $096(A4)` where you know `A4` points to `$DFF000`, press `T` (Struct offset) to map it to the human-readable `dmacon` register.
 
-Example — marking a library function prototype:
-```c
-// In IDA Local Types:
-APTR __cdecl AllocMem_wrap(ULONG byteSize, ULONG requirements);
-```
+> [!TIP]
+> **Automating with IDAPython:** Instead of mapping structures manually, you can use the Python scripts included in this repository to bulk-define all custom chip and CIA registers specific to your target Amiga model.
+> 
+> Choose the script matching your target chipset:
+> - **[`scripts/ida9_amiga_ocs.py`](scripts/ida9_amiga_ocs.py)** (A1000, A500, A2000)
+> - **[`scripts/ida9_amiga_ecs.py`](scripts/ida9_amiga_ecs.py)** (A500+, A600, A3000)
+> - **[`scripts/ida9_amiga_aga.py`](scripts/ida9_amiga_aga.py)** (A1200, A4000, CD32)
+> 
+> Simply load your binary in IDA 9.x, go to `File > Script file...` (or `Alt-F7`), and select the script. It will automatically create the `HW_CUSTOM`, `HW_CIAA`, and `HW_CIAB` segments, format the data types, and apply the physical register names. This makes hardware accesses immediately readable (e.g., `MOVE.W D0, $DFF096` becomes `MOVE.W D0, DMACON`). Using the correct chipset script ensures you quickly spot if an OCS game accidentally accesses an AGA-only register!
+---
 
-Then apply to call sites via `Y` (set type) on the JSR instruction.
+## Step 9: Dynamic Analysis Workflow
+
+IDA Pro is primarily used for **static analysis** in standard Amiga workflows. Do not attempt to use IDA's Remote GDB debugger out-of-the-box, as standard WinUAE does not contain a GDB stub.
+
+**The Golden Amiga Reversing Workflow:**
+1. Use **IDA Pro** to build the map: label variables, identify routines, and find the target logic (e.g., the copy protection check).
+2. Note the physical offset of the instruction in the binary (or its relative location to a known signature).
+3. Run the software in **WinUAE**.
+4. Press `Shift+F12` to drop into the **WinUAE native debugger**.
+5. Set breakpoints (`f <address>`) based on your findings in IDA.
+6. Step through the live hardware state natively in WinUAE, where all custom chip registers and DMA timings are perfectly emulated.
+
+---
+
+## Step 10: Patching Workflows
+
+IDA's internal 68k assembler is notoriously finicky for generating inline patches directly in the database. If you need to neutralize a check (e.g., changing a `BNE` to `NOP`s):
+
+1. **Live Testing:** In the WinUAE debugger, use the `a <address>` command to assemble new instructions live in memory, or `w <address> <value>` to write hex bytes directly. Test the patch live before committing it to disk.
+2. **Permanent Patching:** Once the offset and replacement bytes are confirmed, use a dedicated hex editor (like HxD or ImHex) on the actual executable file on disk, or write a small Python patcher script to seek and write the bytes.
+3. **Advanced Payload Patching:** For large patches that don't fit inline, use `vasm` to assemble a payload block, append it to a new HUNK or overwrite dead code, and redirect the execution flow via a `JMP`.
+
+---
+
+## Step 11: Decompilation Alternatives (Ghidra)
+
+> [!WARNING]
+> **Hex-Rays Does Not Support M68k.** The official Hex-Rays decompiler *does not* natively support the Motorola 68000 architecture. IDA Pro will provide world-class disassembly, debugging, and cross-referencing for Amiga binaries, but it **cannot** generate C pseudocode for them.
+
+If C pseudocode generation is a strict requirement for your workflow, you must use **Ghidra**:
+1. Ghidra officially supports the 68000 architecture for both disassembly and its integrated decompiler.
+2. Use the **[ghidra-amiga](https://github.com/BartmanAbyss/ghidra-amiga)** plugin by BartmanAbyss, which provides a robust HUNK loader, Amiga custom chipset register mappings, and OS library base tracking specifically designed for the Ghidra decompiler engine.
 
 ---
 

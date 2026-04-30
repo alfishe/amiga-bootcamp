@@ -397,3 +397,4 @@ StormC is the primary Amiga C++ compiler. C++ code is identifiable by:
 - GCC for m68k: https://github.com/bebbo/amiga-gcc
 - VBCC manual: http://www.compilers.de/vbcc.html
 - *Amiga ROM Kernel Reference Manual: Libraries* — register conventions
+- [code_vs_data_disambiguation.md](code_vs_data_disambiguation.md) — distinguishing code bytes from data/variables

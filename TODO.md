@@ -130,7 +130,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | Article | Lines | Status | Notes |
 |---|---|---|---|
 | `exe_crunchers.md` | 617 | ✅ Deep | PowerPacker/Imploder/Shrinkler, decrunch stubs — exemplary article |
-| `hunk_format.md` | 536 | ✅ Deep | Complete HUNK binary specification, all 22 hunk type codes |
+| `hunk_format.md` | 583 | ✅ Deep | Complete HUNK binary specification, all 22 hunk type codes, debug format tags, bit masking |
 | `hunk_relocation.md` | 326 | ✅ Adequate | Relocation mechanics with visual before/after diagrams |
 | `overlay_system.md` | 311 | ✅ Adequate | HUNK_OVERLAY tree architecture, runtime manager |
 | `exe_load_pipeline.md` | 276 | ✅ Adequate | LoadSeg → relocation → segment chain → CreateProc |
@@ -161,17 +161,33 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `methodology.md` | 217 | ✅ Deep | Step-by-step RE workflow: static → dynamic → reconstruction |
 | `ida_setup.md` | 190 | ✅ Adequate | IDA Pro config for 68k/Amiga: loaders, plugins |
 | `compiler_fingerprints.md` | 183 | ✅ Adequate | Compiler identification by code patterns |
-| `static/api_call_identification.md` | 296 | ⚠️ Thin | API call pattern recognition — needs expansion |
-| `static/m68k_codegen_patterns.md` | 156 | ⚠️ Thin | 68k code generation idiom catalog — needs expansion |
-| `static/library_jmp_table.md` | 142 | ⚠️ Thin | Library LVO table identification techniques — needs expansion |
-| `static/struct_recovery.md` | 137 | ⚠️ Thin | Struct layout reconstruction from disassembly — needs expansion |
-| `dynamic/live_memory_probing.md` | 132 | ⚠️ Thin | Runtime memory inspection techniques — needs expansion |
-| `dynamic/setfunction_patching.md` | 130 | ⚠️ Thin | Dynamic SetFunction interception — needs expansion |
+| `static/api_call_identification.md` | 532 | ✅ Deep | API call pattern recognition — complete with Mermaid, decision guide, antipatterns, cookbook |
+| `static/m68k_codegen_patterns.md` | 399 | ✅ Deep | 68k code generation idiom catalog — complete with StormC/Aztec, Mermaid flowchart, cookbook |
+| `static/library_jmp_table.md` | 381 | ✅ Deep | Library LVO table identification techniques — complete with third-party reconstruction, Python scripts |
+| `static/struct_recovery.md` | 278 | ✅ Deep | Struct layout reconstruction from disassembly — complete with IDA Python batch annotator |
+| `dynamic/live_memory_probing.md` | 263 | ✅ Deep | Runtime memory inspection techniques — complete with Mermaid, safe probing rules, cookbook |
+| `dynamic/setfunction_patching.md` | 323 | ✅ Deep | Dynamic SetFunction interception — complete with before/after Mermaid, trampoline patterns, cookbook |
 | `case_studies/ramdrive_device.md` | 129 | ✅ Deep | Real-world RE walkthrough: RAMDrive reverse engineering |
-| `static/hunk_reconstruction.md` | 123 | ⚠️ Thin | HUNK binary reconstruction from memory — needs expansion |
-| `static/string_xref_analysis.md` | 123 | ⚠️ Thin | String cross-reference analysis — needs expansion |
-| `dynamic/serial_debug.md` | 118 | ⚠️ Thin | Serial debug output techniques — needs expansion |
-| `dynamic/enforcer_mungwall.md` | 110 | ⚠️ Thin | Enforcer/MungWall runtime error detection — needs expansion |
+| `static/hunk_reconstruction.md` | 247 | ✅ Deep | HUNK binary reconstruction from memory — complete with antipatterns, Python extraction scripts |
+| `static/string_xref_analysis.md` | 258 | ✅ Deep | String cross-reference analysis — complete with Mermaid, library mapping cookbook, Pascal string handling |
+| `dynamic/serial_debug.md` | 178 | ✅ Deep | Serial debug output techniques — complete with Mermaid, baud rate pitfalls, host-side capture |
+| `dynamic/enforcer_mungwall.md` | 215 | ✅ Deep | Enforcer/MungWall runtime error detection — complete with decision guide, antipatterns, cross-platform comparison |
+| `static/asm68k_binaries.md` | 924 | ⚠️ Adequate | Hand-written assembly RE: demos, games, bootblocks, hardware-banging code — substantial research content added |
+| `static/ansi_c_reversing.md` | 603 | ⚠️ Adequate | ANSI C RE: struct recovery, control flow reconstruction, library anchoring — BPTR + SAS/C convention details added |
+| `static/cpp_vtables_reversing.md` | 745 | ⚠️ Adequate | C++ OOP RE: vtables, inheritance hierarchies, RTTI, name mangling — GCC vtable layout + C++ ABI details added |
+| `static/other_languages.md` | 679 | ⚠️ Adequate | Non-C languages: AMOS, Blitz Basic, Amiga E, Modula-2, FORTH, ARexx — JForth corrected + BlitzLib table + E object layout added |
+
+| Per-Compiler RE | Lines | Status | Notes |
+|---|---|---|---|
+| `static/compilers/README.md` | 102 | ✅ Adequate | Compiler identification flowchart and comparison matrix |
+| `static/compilers/sasc.md` | 1006 | ✅ Adequate | SAS/C 5.x/6.x: LINK A5 + 9-reg save, all 4 calling conventions, register vs stack allocation, call-site patterns, IDA Python detection |
+| `static/compilers/gcc.md` | 742 | ✅ Adequate | GCC 2.95.x: `.text` hunk, A6 frame pointer, `__CTOR_LIST__`, tail-call optimization, libnix startup, register allocation/stack variable identification |
+| `static/compilers/vbcc.md` | 327 | ✅ Adequate | VBCC: No frame pointer, per-function saves, `__reg()`, cross-module optimization, `__MERGED` hunks |
+| `static/compilers/stormc.md` | 321 | ✅ Adequate | StormC / StormC++: SAS/C-compatible C, unique C++ ABI, vtable layout differences, PowerPC support |
+| `static/compilers/aztec_c.md` | 125 | ✅ Adequate | Manx Aztec C: D3-D7 save only (5 regs), D2 scratch, pre-1990 era |
+| `static/compilers/lattice_c.md` | 153 | ✅ Adequate | Lattice C 3.x/4.x: SAS/C predecessor, evolutionary markers, simpler optimizer |
+| `static/compilers/dice_c.md` | 135 | ✅ Adequate | DICE C: No frame pointer, `_mainCRTStartup`, fast compile speed, Matt Dillon's compiler |
+| `static/code_vs_data_disambiguation.md` | 698 | ✅ Adequate | Code vs data disambiguation: IDA/Ghidra workflows, Amiga failure modes, detection scripts |
 
 ### 06 — Exec Kernel (exec.library)
 
@@ -291,6 +307,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `workbench.md` | 194 | ✅ Adequate | WBStartup, AppWindow, AppIcon, AppMenuItem |
 | `icon.md` | 188 | ✅ Adequate | .info format, DiskObject, ToolTypes, true-color icons |
 | `rexxsyslib.md` | 176 | ✅ Adequate | ARexx hosting, command parsing, return codes |
+| `arexx_integration.md` | 1128 | ✅ Adequate | Complete ARexx integration guide: dispatch tables, 6 antipatterns, use-case cookbook, event loop integration |
 | `keymap.md` | 162 | ✅ Adequate | Raw-to-ASCII, KeyMap structure, dead keys |
 
 ### 12 — Networking
@@ -350,14 +367,14 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | Status | Count |
 |---|---|
-| ✅ Deep | 46 |
-| ✅ Adequate | 99 |
-| ⚠️ Thin | 10 |
+| ✅ Deep | 56 |
+| ✅ Adequate | 113 |
+| ⚠️ Thin | 0 |
 | ❌ Pending (Tier 3) | 10 |
-| **Total** | **165** |
+| **Total** | **179** |
 
 > MUI framework adds 13 additional articles (4 Deep, 9 Adequate) tracked separately above.
-> **Progress**: 15 of 25 primary targets complete (60%). Tier 1 fully cleared. 0 Tier 2 remaining. 10 Tier 3 items remain.
+> **Progress**: 8 per-compiler RE articles created (1 README + 7 compiler field manuals). 1 code-vs-data disambiguation article added. 1 ARexx integration guide added. 10 Tier 3 items remain.
 
 ---
 

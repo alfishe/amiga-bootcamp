@@ -16,6 +16,7 @@ Shared libraries beyond the core exec/dos/graphics/intuition subsystems. These p
 | [locale.md](locale.md) | Internationalization: catalog system (.cd/.ct files), locale-aware date/number formatting, character classification |
 | [keymap.md](keymap.md) | Keyboard mapping: raw-to-ASCII translation, KeyMap structure, dead keys, rawkey codes, national layouts |
 | [rexxsyslib.md](rexxsyslib.md) | ARexx scripting: hosting ARexx ports, command parsing, sending commands, return codes |
+| [arexx_integration.md](arexx_integration.md) | ARexx integration guide: exposing app features, dispatch tables, antipatterns, cookbook |
 | [mathffp.md](mathffp.md) | Motorola FFP and IEEE 754 floating point |
 | [layers.md](layers.md) | Window clipping: ClipRect engine, Simple/Smart/Super refresh, damage repair, backfill hooks, layer locking |
 | [diskfont.md](diskfont.md) | **Bitmap fonts deep dive: .font file format (FontContentsHeader), font descriptor files (DiskFontHeader), glyph bitmap layout, FONTS: assign, adding/installing fonts, bitmap vs TrueType/OpenType comparison, color fonts (OS 3.0+), Compugraphic outline fonts, AvailFonts enumeration, font loading pipeline** |

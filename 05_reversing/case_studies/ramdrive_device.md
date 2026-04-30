@@ -4,7 +4,43 @@
 
 ## Overview
 
-`ramdrive.device` is the Amiga's built-in RAM disk device. It ships in Kickstart ROM and implements the `trackdisk.device`-compatible interface on top of allocated Chip/Fast RAM. Analysing it teaches exec device architecture, IORequest handling, and the device-as-library pattern.
+`ramdrive.device` is the Amiga's built-in RAM disk device. It provides a RAM-based disk drive (`RAD:`) that can survive a warm reboot (Ctrl-Amiga-Amiga). This makes it an excellent target for reverse engineering to understand **Resident Modules**, **Exec Device Architecture**, and **Memory Survival** techniques.
+
+Analysing it teaches:
+- Exec device initialization and the `Resident` structure.
+- `BeginIO` dispatch logic.
+- Persistence mechanisms across system resets.
+
+---
+
+## Resident Structure (`ROMTag`)
+
+Like all Amiga libraries and devices, `ramdrive.device` starts with a `struct Resident` (defined in `exec/resident.h`):
+
+```c
+struct Resident {
+    UWORD rt_MatchWord;    /* $4AFC (RTC_MATCHWORD) */
+    struct Resident *rt_MatchTag; /* Pointer to self */
+    APTR  rt_EndSkip;      /* Pointer to end of module */
+    UBYTE rt_Flags;        /* RTF_AFTERDOS | RTF_COLDBOOT */
+    UBYTE rt_Version;      /* Version of module */
+    UBYTE rt_Type;         /* NT_DEVICE */
+    BYTE  rt_Pri;          /* Priority */
+    char *rt_Name;         /* "ramdrive.device" */
+    char *rt_IdString;     /* ID string */
+    APTR  rt_Init;         /* Pointer to Init routine */
+};
+```
+
+### Reset Survival Mechanism
+
+The primary challenge for `ramdrive.device` is ensuring its memory is not reclaimed by the system after a reset.
+
+1.  **Memory Allocation**: When first initialized, it allocates a large block for disk data.
+2.  **Validation**: It writes a "magic cookie" and a checksum at the start of this block.
+3.  **Resident List**: It adds its own `ROMTag` to the `ExecBase->ResModules` list.
+4.  **Warm Reboot**: On a reset, the Exec loader scans memory for `RTC_MATCHWORD` ($4AFC). When it finds the `ramdrive.device` tag, it checks the block's checksum.
+5.  **Re-binding**: If valid, the device re-binds the existing data block instead of allocating a new one.
 
 ---
 
@@ -22,12 +58,10 @@ for i in range(0, len(rom)-4, 2):
         rt_matchword = struct.unpack_from(">H", rom, i)[0]
         rt_matchtag  = struct.unpack_from(">I", rom, i+2)[0]
         rt_name      = struct.unpack_from(">I", rom, i+14)[0]
-        # print offset and map rt_name to string
+        # Offset lookup for "ramdrive.device" string
         print(f"RomTag @ ROM+{i:#x}")
 EOF
 ```
-
-The RomTag for `ramdrive.device` has `RT_TYPE=NT_DEVICE` and `RT_NAME="ramdrive.device"`.
 
 ---
 
@@ -60,11 +94,11 @@ struct RAMDriveBase {
 | −30 | `BeginIO` | Queue or execute an IORequest |
 | −36 | `AbortIO` | Cancel pending IORequest |
 
-`BeginIO` is the heart of any device driver — it dispatches on `io_Command`.
-
 ---
 
 ## IORequest Command Handling
+
+`BeginIO` is the heart of the driver. It dispatches on `io_Command`:
 
 ```c
 void BeginIO(struct IORequest *ior) {
@@ -96,34 +130,38 @@ void rd_Read(struct IOStdReq *io) {
 
 ---
 
-## Memory Allocation Strategy
+## Deep Analysis: Checksum Verification
 
-On initialization, `ramdrive.device` uses `AllocMem`:
+When disassembling the initialization routine, look for the verification pattern that identifies a valid "surviving" RAM disk:
 
-```c
-rdbase->rd_RAMStart = AllocMem(rdbase->rd_RAMSize,
-                               MEMF_PUBLIC | MEMF_CLEAR);
+```asm
+; Typical checksum verification pattern
+CheckSum:
+    move.l  (a0)+, d1     ; Get magic cookie
+    cmpi.l  #$ABCDEF01, d1 ; Verify magic
+    bne.s   Invalid
+    move.l  #Length, d0
+Loop:
+    add.l   (a0)+, d2     ; Sum up the block
+    dbf     d0, Loop
+    cmp.l   Expected, d2
 ```
-
-Later requests can pass `MEMF_CHIP` to force chip RAM allocation (useful for audio/graphics DMA sources).
 
 ---
 
 ## Disassembly Landmarks in IDA
 
-After loading Kickstart ROM in IDA with M68k + HUNK/ROM loader:
-
-1. Search for string `"ramdrive.device"` → find RomTag
-2. `RT_INIT` pointer → initialization function
-3. `RT_INIT` calls `MakeLibrary` then `AddDevice`
-4. The device base is stored — follow to find `BeginIO` function
-5. `BeginIO` switch table → individual command handlers
+1. **Search for string `"ramdrive.device"`** → finds the `ROMTag`.
+2. **`RT_INIT` pointer** → points to the initialization function.
+3. **`RT_INIT` logic** → calls `MakeLibrary` then `AddDevice`.
+4. **Library Base** → Follow the `rd_Device` base to find the `BeginIO` entry point at offset -30.
+5. **Switch Table** → `BeginIO` typically uses a jump table (JMP) or a series of `CMPI / BEQ` to dispatch commands.
 
 ---
 
 ## References
 
-- NDK39: `exec/devices.h`, `exec/io.h`, `devices/trackdisk.h`
+- NDK39: `exec/devices.h`, `exec/io.h`, `devices/trackdisk.h`, `exec/resident.h`
 - [io_requests.md](../../06_exec_os/io_requests.md) — IORequest structure and dispatch
 - `10_devices/trackdisk_device.md` — TD_* command codes
-- Kickstart 3.1 ROM dump (required for disassembly)
+- [IRA Disassembly of ramdrive.device](http://aminet.net/package/dev/asm/ramdrive_src) — Reference for instruction patterns.

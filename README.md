@@ -119,8 +119,21 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 |---|---|
 | [methodology.md](05_reversing/methodology.md) | General Amiga RE workflow |
 | [ida_setup.md](05_reversing/ida_setup.md) | IDA Pro setup for Amiga binaries |
+| [ghidra_setup.md](05_reversing/ghidra_setup.md) | Ghidra setup & decompilation |
 | [compiler_fingerprints.md](05_reversing/compiler_fingerprints.md) | SAS/C vs GCC vs VBCC codegen patterns |
 | [patching_techniques.md](05_reversing/patching_techniques.md) | Binary patching strategies |
+| [unpacking_and_decrunching.md](05_reversing/unpacking_and_decrunching.md) | Executable unpacking, decruncher architecture, and manual extraction |
+| [case_studies/ramdrive_device.md](05_reversing/case_studies/ramdrive_device.md) | Case Study: ramdrive.device RE walkthrough |
+
+| Per-Compiler RE Field Manuals | Topic |
+|---|---|
+| [compilers/sasc.md](05_reversing/static/compilers/sasc.md) | SAS/C 5.x/6.x: LINK A5 + 9-reg save, absolute strings, `_LibBase` globals |
+| [compilers/gcc.md](05_reversing/static/compilers/gcc.md) | GCC 2.95.x: `.text` hunk, A6 frame pointer, PC-relative strings, `__CTOR_LIST__` |
+| [compilers/vbcc.md](05_reversing/static/compilers/vbcc.md) | VBCC: No frame pointer, per-function saves, `__reg()`, `__MERGED` hunks |
+| [compilers/stormc.md](05_reversing/static/compilers/stormc.md) | StormC / StormC++: SAS/C-compatible C, unique C++ ABI, PPC support |
+| [compilers/aztec_c.md](05_reversing/static/compilers/aztec_c.md) | Manx Aztec C: D3-D7 save only (5 regs), D2 scratch, pre-1990 era |
+| [compilers/lattice_c.md](05_reversing/static/compilers/lattice_c.md) | Lattice C 3.x/4.x: SAS/C predecessor, simpler optimizer, 6-reg save |
+| [compilers/dice_c.md](05_reversing/static/compilers/dice_c.md) | DICE C: No frame pointer, `_mainCRTStartup`, fast compile speed |
 
 | Static Analysis | Topic |
 |---|---|
@@ -130,6 +143,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [m68k_codegen_patterns.md](05_reversing/static/m68k_codegen_patterns.md) | Compiler-specific assembly idioms |
 | [string_xref_analysis.md](05_reversing/static/string_xref_analysis.md) | String cross-reference hunting |
 | [struct_recovery.md](05_reversing/static/struct_recovery.md) | Recovering C structures from assembly |
+| [code_vs_data_disambiguation.md](05_reversing/static/code_vs_data_disambiguation.md) | Distinguishing code bytes from data/variables — Amiga-specific failure modes |
 
 | Dynamic Analysis | Topic |
 |---|---|
@@ -138,6 +152,15 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [live_memory_probing.md](05_reversing/dynamic/live_memory_probing.md) | Live memory inspection |
 | [serial_debug.md](05_reversing/dynamic/serial_debug.md) | Serial debug output |
 
+| Language-Specific Analysis | Topic |
+|---|---|
+| [asm68k_binaries.md](05_reversing/static/asm68k_binaries.md) | ⚠️ Hand-written assembly reversing — demos, games, bootblocks |
+| [ansi_c_reversing.md](05_reversing/static/ansi_c_reversing.md) | ⚠️ ANSI C reversing — struct recovery, control flow, library anchoring |
+| [cpp_vtables_reversing.md](05_reversing/static/cpp_vtables_reversing.md) | ⚠️ C++ OOP reversing — vtables, inheritance, RTTI, name mangling |
+| [other_languages.md](05_reversing/static/other_languages.md) | ⚠️ Non-C languages — AMOS, Blitz Basic, Amiga E, Modula-2, FORTH |
+
+| Case Studies | Topic |
+|---|---|
 | [ramdrive_device.md](05_reversing/case_studies/ramdrive_device.md) | RAM disk device driver RE |
 
 ### 06 — Exec Kernel (OS 3.1/3.2)
@@ -228,6 +251,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [locale.md](11_libraries/locale.md) | Internationalization, catalogs |
 | [keymap.md](11_libraries/keymap.md) | Keyboard mapping, MapRawKey |
 | [rexxsyslib.md](11_libraries/rexxsyslib.md) | ARexx interface |
+| [arexx_integration.md](11_libraries/arexx_integration.md) | ARexx integration guide: exposing app features, dispatch, cookbook |
 | [mathffp.md](11_libraries/mathffp.md) | Floating point libraries, FFP, IEEE |
 | [layers.md](11_libraries/layers.md) | Window clipping layers |
 | [diskfont.md](11_libraries/diskfont.md) | **Bitmap fonts: .font file format, FontContentsHeader, glyph bitmap layout, FONTS: assign, adding fonts, bitmap vs TrueType, Compugraphic outline fonts** |

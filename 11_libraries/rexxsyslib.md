@@ -173,4 +173,5 @@ QUIT
 
 - NDK39: `rexx/storage.h`, `rexx/rxslib.h`
 - ADCD 2.1: rexxsyslib.library autodocs
+- [arexx_integration.md](arexx_integration.md) — Complete ARexx integration guide: dispatch tables, antipatterns, use-case cookbook
 - See also: [process_management.md](../07_dos/process_management.md) — process/task message ports
