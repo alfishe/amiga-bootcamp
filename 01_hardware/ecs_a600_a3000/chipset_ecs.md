@@ -117,3 +117,8 @@ BOOL is_aga        = (rev & (1 << GFXB_AA_ALICE))  != 0;
 - NDK39: `graphics/gfxbase.h`
 - AmigaMail Vol. 2 — ECS chipset programming articles
 - *Amiga Hardware Reference Manual* 3rd ed. — Appendix F (ECS)
+
+## See Also
+
+- [Video Signal & Timing](../common/video_timing.md) — BEAMCON0 theory, clock tree, genlock mechanics
+- [DMA Architecture](../common/dma_architecture.md) — scanline slot allocation, bus arbitration

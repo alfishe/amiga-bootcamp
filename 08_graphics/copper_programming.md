@@ -317,3 +317,4 @@ Reposition sprites mid-frame to display more than 8 sprites:
 - HRM: *Copper* chapter — complete instruction encoding
 - [copper.md](../01_hardware/ocs_a500/copper.md) — register-level reference
 - [copper.md](copper.md) — graphics.library UCopList API
+- [Video Signal & Timing](../01_hardware/common/video_timing.md) — beam counters, scanline anatomy, clock tree

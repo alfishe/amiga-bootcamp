@@ -95,3 +95,8 @@ Some Zorro II cards (e.g., Flicker Fixer by MicroWay, Indivision ECS) scan-doubl
 - AmigaMail Vol. 2 — ECS multiscan articles
 - NDK39: `graphics/modeid.h` — monitor mode IDs
 - A3000 Technical Reference Manual — display timing chapter
+
+## See Also
+
+- [Video Signal & Timing](../common/video_timing.md) — BEAMCON0 theory, signal generation pipeline, genlock
+- [Display Modes](../../08_graphics/display_modes.md) — ModeID system, DblPAL/DblNTSC mode selection

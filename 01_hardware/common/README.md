@@ -13,3 +13,4 @@
 - [gayle_ide_pcmcia.md](gayle_ide_pcmcia.md) — Gayle system controller: IDE and PCMCIA logic
 - [floppy_hardware.md](floppy_hardware.md) — MFM encoding, disk controller, and drive mechanics
 - [dma_architecture.md](dma_architecture.md) — DMA architecture: scanline slot allocation, bus arbitration, even/odd interleaving, per-model bus widths, Buster/Ramsey/SDMAC, FMODE bandwidth, FPGA timing
+- [video_timing.md](video_timing.md) — Video signal & system timing: crystal-to-CPU clock tree, beam counters, BEAMCON0, genlock overlay, video output signals, scandoublers

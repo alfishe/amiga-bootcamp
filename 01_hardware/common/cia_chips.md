@@ -216,3 +216,7 @@ Standard 2-button Atari joysticks ignore the clock signal and remain fully compa
 - NDK39: `hardware/cia.h`, `resources/cia.h`
 - Autodocs: `cia` resource — http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_3._guide/node00C7.html
 
+## See Also
+
+- [Video Signal & Timing](video_timing.md) — E-clock derivation from master crystal, CIA timer implications
+- [DMA Architecture](dma_architecture.md) — scanline slot allocation, bus arbitration

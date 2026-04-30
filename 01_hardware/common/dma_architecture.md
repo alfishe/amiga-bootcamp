@@ -579,3 +579,4 @@ Still feasible — but add Copper + Blitter and the CPU drops to single digits.
 - [Copper](../ocs_a500/copper.md) — Copper instruction timing and DMA interaction
 - [Gary System Controller](../ocs_a500/gary_system_controller.md) — Bus timeout, address decode
 - [Zorro Bus](zorro_bus.md) — Expansion bus DMA, Buster/Super Buster
+- [Video Signal & Timing](video_timing.md) — clock derivation, beam counters, genlock, video output

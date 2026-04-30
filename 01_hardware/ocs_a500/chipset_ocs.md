@@ -111,3 +111,4 @@ BPL2PTH/BPL2PTL  $DFF0E4/$DFF0E6
 - [DMA Architecture](../common/dma_architecture.md) — scanline slot allocation, bus arbitration, bandwidth calculations
 - [ECS Chipset](../ecs_a600_a3000/chipset_ecs.md) — Super Agnus and ECS Denise enhancements
 - [AGA Chipset](../aga_a1200_a4000/chipset_aga.md) — Alice, Lisa, FMODE
+- [Video Signal & Timing](../common/video_timing.md) — clock tree, beam counters, video output
