@@ -8,6 +8,7 @@
 - [address_space.md](address_space.md) — The 24-bit and 32-bit Amiga memory maps
 - [memory_types.md](memory_types.md) — Chip RAM, Fast RAM, Slow RAM, and Ranger RAM
 - [zorro_bus.md](zorro_bus.md) — Zorro II/III expansion architecture and PCI bridges
+- [autoconfig.md](autoconfig.md) — AutoConfig discovery protocol: CFGIN/CFGOUT chain, ExpansionRom, board enumeration
 - [cia_chips.md](cia_chips.md) — Complex Interface Adapters (8520): Timers, Parallel, Serial
 - [gayle_ide_pcmcia.md](gayle_ide_pcmcia.md) — Gayle system controller: IDE and PCMCIA logic
 - [floppy_hardware.md](floppy_hardware.md) — MFM encoding, disk controller, and drive mechanics

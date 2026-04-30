@@ -74,7 +74,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 ### 01 — Hardware (by chipset generation)
 | Folder | Coverage |
 |---|---|
-| [common/](01_hardware/common/) | M68k CPU, address space, **memory types (Chip/Fast/Slow RAM)**, CIA chips, Zorro bus, **Gayle IDE/PCMCIA** |
+| [common/](01_hardware/common/) | M68k CPU, address space, **memory types (Chip/Fast/Slow RAM)**, CIA chips, Zorro bus, **AutoConfig protocol**, **Gayle IDE/PCMCIA** |
 | [ocs_a500/](01_hardware/ocs_a500/) | OCS chipset: custom registers, copper, blitter, sprites, Paula, **A1000 WCS**, **A2000 Zorro II**, **CDTV hardware**, **Gary CSG 5719 system controller (bus arbitration, ROM overlay, AutoConfig, Slow RAM)** |
 | [ecs_a600_a3000/](01_hardware/ecs_a600_a3000/) | ECS chipset: Super Agnus, productivity modes, **Gary & Fat Gary system controller (bus arbitration, AutoConfig, SCSI/FPU glue, antipatterns)** |
 | [aga_a1200_a4000/](01_hardware/aga_a1200_a4000/) | AGA chipset: Alice, Lisa, copper, blitter (64-bit), palette, **CD32 Akiko**, **A4000T SCSI** |

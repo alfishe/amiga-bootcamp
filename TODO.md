@@ -1,7 +1,7 @@
 # Amiga Knowledge Base — Gap Analysis & Improvement Proposal
 
 > **Date:** 2026-04-25
-> **Updated:** 2026-04-27 (per-article line-count tracking)
+> **Updated:** 2026-04-30 (expansion.library & autoconfig.md hardening)
 > **Scope:** All 17 sections, ~90 articles, `/doc/amiga/`
 
 ---
@@ -113,6 +113,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `address_space.md` | common | 175 | ✅ Adequate | 24-bit memory map: Chip, Fast, ROM, I/O, Zorro II |
 | `m68k_cpu.md` | common | 141 | ✅ Adequate | 68000 architecture baseline: registers, exceptions |
 | `zorro_bus.md` | common | 139 | ✅ Adequate | Zorro II/III expansion bus: AutoConfig, bus arbitration |
+| `autoconfig.md` | common | 662 | ✅ Deep | AutoConfig protocol: CFGIN/CFGOUT chain, ExpansionRom encoding, nibble-pair map, size codes, shut-up mechanism, Z2/Z3 differences, antipatterns, FPGA notes, boot sequence positioning |
 | `cdtv_hardware.md` | ocs | 283 | ✅ Adequate | CDTV-specific: CD-ROM controller, front panel, boot ROM |
 | `custom_registers.md` | ocs | 183 | ✅ Adequate | OCS custom chip register map |
 | `blitter.md` | ocs | 154 | ✅ Adequate | Blitter engine basics: channels, minterms, line draw |
@@ -314,7 +315,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `mathffp.md` | 468 | ✅ Adequate | Motorola FFP and IEEE 754 floating point formats |
 | `locale.md` | 265 | ✅ Adequate | .cd/.ct catalog system, locale-aware formatting |
 | `layers.md` | 224 | ❌ Pending | Tier 3 #23: needs Mermaid layer stacking diagram, damage region pitfalls |
-| `expansion.md` | 217 | ✅ Adequate | Zorro II/III, AutoConfig ROM layout, FPGA notes |
+| `expansion.md` | 806 | ✅ Deep | Zorro II/III, AutoConfig ROM layout, FPGA/Emulator implementation guide, firmware complexity tiers, SCSI boot use-case walkthrough (Phase 1-4) |
 | `utility.md` | 203 | ✅ Adequate | TagItem lists, callback hooks, date/time utilities |
 | `workbench.md` | 194 | ✅ Adequate | WBStartup, AppWindow, AppIcon, AppMenuItem |
 | `icon.md` | 188 | ✅ Adequate | .info format, DiskObject, ToolTypes, true-color icons |
@@ -379,8 +380,8 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | Status | Count |
 |---|---|
-| ✅ Deep | 56 |
-| ✅ Adequate | 113 |
+| ✅ Deep | 57 |
+| ✅ Adequate | 112 |
 | ⚠️ Thin | 0 |
 | ❌ Pending (Tier 3) | 10 |
 | **Total** | **179** |
