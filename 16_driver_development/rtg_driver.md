@@ -208,18 +208,18 @@ The card's VRAM is managed by `rtg.library`. The driver reports available memory
 ```
 ┌───────────────────────────────────────┐ $0000_0000 (VRAM start)
 │ Screen 0 (Workbench)                  │
-│ 1024 × 768 × 16bpp = 1,572,864 bytes │
+│ 1024 × 768 × 16bpp = 1,572,864 bytes  │
 ├───────────────────────────────────────┤ $0018_0000
-│ Screen 1 (Application)               │
-│ 800 × 600 × 32bpp = 1,920,000 bytes  │
+│ Screen 1 (Application)                │
+│ 800 × 600 × 32bpp = 1,920,000 bytes   │
 ├───────────────────────────────────────┤ $0035_4E00
 │ Hardware Sprite Data                  │
-│ 64 × 64 × 2bpp cursor               │
+│ 64 × 64 × 2bpp cursor                 │
 ├───────────────────────────────────────┤
-│ Off-screen bitmap cache              │
-│ (window backing store, icons, etc.)  │
+│ Off-screen bitmap cache               │
+│ (window backing store, icons, etc.)   │
 ├───────────────────────────────────────┤
-│ Free VRAM                            │
+│ Free VRAM                             │
 └───────────────────────────────────────┘ MemorySize
 
 Total: 2 MB (Picasso II) / 4 MB (Picasso IV)
