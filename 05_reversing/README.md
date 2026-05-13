@@ -20,13 +20,13 @@ This section provides a systematic methodology for reverse engineering AmigaOS e
 | [ida_setup.md](ida_setup.md) | IDA Pro configuration for 68k/Amiga analysis |
 | [ghidra_setup.md](ghidra_setup.md) | Ghidra configuration for 68k/Amiga analysis & decompilation |
 | [compiler_fingerprints.md](compiler_fingerprints.md) | Compiler identification by code patterns |
-| [library_reconstruction.md](library_reconstruction.md) | Reconstructing unknown library JMP tables |
+| [static/library_jmp_table.md](static/library_jmp_table.md) | Reconstructing unknown library JMP tables and LVOs |
 | [static/code_vs_data_disambiguation.md](static/code_vs_data_disambiguation.md) | Distinguishing code bytes from data — IDA/Ghidra workflows |
 | [patching_techniques.md](patching_techniques.md) | Surgical binary patching methods |
 | [unpacking_and_decrunching.md](unpacking_and_decrunching.md) | Executable unpacking, decruncher architecture, and manual extraction |
 | [custom_loaders_and_drm.md](custom_loaders_and_drm.md) | Bypassing DOS, Trackloaders, and physical DRM tricks |
 | [anti_debugging.md](anti_debugging.md) | The Cracker vs. Developer arms race: Trace vector abuse, NMI defeat, CIA timers |
-| [whdload_architecture.md](whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, and runtime memory patching |
+| [games/whdload_architecture.md](games/whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, and runtime memory patching |
 | [case_studies/](case_studies/) | Real-world RE walkthroughs |
 | [case_studies/ramdrive_device.md](case_studies/ramdrive_device.md) | ramdrive.device RE walkthrough |
 

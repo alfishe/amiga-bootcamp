@@ -57,7 +57,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | 17 | `09_intuition/screens.md` | 582 | 582 | ❌ **Pending** — Antipatterns, cookbook (screen flipping, borderless, PAL→NTSC handling) |
 | 18 | `09_intuition/windows.md` | 370 | 778 | ✅ **Complete** — Added 5 named antipatterns (Border Collision, Unresponsive Close, Leaked Message, Refresh Loop, Phantom Window), window type decision guide with Mermaid, 3 cookbooks (resizable, borderless overlay, multi-window shared port), historical comparison, modern analogies, use cases, 7 FAQ |
 | 19 | `09_intuition/menus.md` | 378 | 695 | ✅ **Complete** — Added render chain sequence diagram, 5 named antipatterns (Multi-Select Ghost, Stale Menu, Cleanup Reversal, Shortcut Collision, Phantom VisualInfo), complete lifecycle cookbook, historical comparison, modern analogies, use cases, 6 FAQ |
-| 20 | `09_intuition/gadgets.md` | 403 | 403 | ❌ **Pending** — Named antipatterns, BOOPSI command flow, GadTools→BOOPSI migration guide |
+| 20 | `09_intuition/gadgets.md` | 403 | 804 | ✅ **Complete** — Added 5 named antipatterns (Invisible Gadget, Message Mangler, Orphaned Chain, Hot-Swap Hazard, Silent Button), GadTools→BOOPSI migration guide with comparison table, form cookbook, historical timeline, modern analogies, use cases, 6 FAQ |
 | 21 | `11_libraries/iffparse.md` | 271 | 1031 | ✅ **DONE** — Nesting & chunk hierarchy diagrams, ILBM/EHB pitfalls, PBM read patterns, cross-reference to Datatypes |
 | 22 | `13_toolchain/gcc_amiga.md` | 82 | 82 | ❌ **Pending** — Extremely thin stub. Needs full build pipeline, Docker cross-compilation guide, linker scripts, amiga-gcc specifics |
 | 23 | `11_libraries/layers.md` | 224 | 739 | ✅ **Complete** — Expanded with ClipRect engine deep-dive, API reference with LVOs, backfill hook cookbook, refresh type decision guide, 4 named antipatterns, 4 pitfalls, ClipBlit vs ScrollRaster optimization, historical comparison table, modern analogies, 7 FAQ |
@@ -269,7 +269,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `commodities.md` | 769 | ✅ Deep | Tier 1 creation: Exchange, hotkeys, CxObjects, brokers |
 | `screens.md` | 582 | ❌ Pending | Tier 3 #17: needs antipatterns, cookbook (screen flipping, borderless, PAL→NTSC) |
 | `boopsi.md` | 505 | ✅ Adequate | OOP dispatcher, ICA interconnection, custom class tutorial |
-| `gadgets.md` | 403 | ❌ Pending | Tier 3 #20: needs antipatterns, BOOPSI command flow, GadTools→BOOPSI guide |
+| `gadgets.md` | 804 | ✅ Deep | 5 antipatterns, GadTools→BOOPSI migration, form cookbook, timeline, modern analogies, use cases, 6 FAQ |
 | `menus.md` | 695 | ✅ Deep | Render chain diagram, 5 antipatterns, lifecycle cookbook, historical + modern analogies, use cases, 6 FAQ |
 | `windows.md` | 778 | ✅ Deep | 5 named antipatterns, window type decision guide, 3 cookbooks (resizable, borderless, shared port), historical + modern analogies, use cases, 7 FAQ |
 | `requesters.md` | 370 | ✅ Adequate | EasyRequest, ASL file/font/screenmode dialogs |

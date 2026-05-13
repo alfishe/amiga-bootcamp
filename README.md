@@ -126,7 +126,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [unpacking_and_decrunching.md](05_reversing/unpacking_and_decrunching.md) | Executable unpacking, decruncher architecture, and manual extraction |
 | [custom_loaders_and_drm.md](05_reversing/custom_loaders_and_drm.md) | Bypassing DOS, Trackloaders, and physical DRM tricks |
 | [anti_debugging.md](05_reversing/anti_debugging.md) | The Cracker vs. Developer arms race: Trace vector abuse, NMI defeat |
-| [whdload_architecture.md](05_reversing/whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, memory patching |
+| [games/whdload_architecture.md](05_reversing/games/whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, memory patching |
 | [case_studies/ramdrive_device.md](05_reversing/case_studies/ramdrive_device.md) | Case Study: ramdrive.device RE walkthrough |
 
 | Per-Compiler RE Field Manuals | Topic |
@@ -213,6 +213,8 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [blitter.md](08_graphics/blitter.md) | Blitter DMA, minterms, BltBitMap |
 | [blitter_programming.md](08_graphics/blitter_programming.md) | Blitter deep dive: cookie-cut, fill, line draw |
 | [sprites.md](08_graphics/sprites.md) | Hardware sprites, SimpleSprite |
+| [display_modes.md](08_graphics/display_modes.md) | ModeID selection flowchart, CRT vs flat-panel, interlace/progressive tradeoffs, named antipatterns, FPGA/MiSTer impact, historical context, modern analogies, FAQ |
+| [ham_ehb_modes.md](08_graphics/ham_ehb_modes.md) | HAM6/HAM8 encoding pipeline, EHB half-brite, fringing, palette programming, FPGA decoder logic |
 | [rastport.md](08_graphics/rastport.md) | RastPort, drawing primitives, layers |
 | [views.md](08_graphics/views.md) | View/ViewPort, MakeVPort, display pipeline |
 | [text_fonts.md](08_graphics/text_fonts.md) | TextFont bitmap layout, baseline rendering, algorithmic styles, AvailFonts enumeration |
@@ -233,6 +235,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [boopsi.md](09_intuition/boopsi.md) | BOOPSI object system, custom classes |
 | [input_events.md](09_intuition/input_events.md) | InputEvent, Commodities Exchange |
 | [commodities.md](09_intuition/commodities.md) | Commodities Exchange: hotkeys, screen blankers, CxObject API |
+| **[frameworks/mui/](09_intuition/frameworks/mui/)** | **MUI (Magic User Interface): architecture, layout system, widgets, custom classes, events, reference snippets** |
 
 ### 10 — Devices
 | File | Topic |
