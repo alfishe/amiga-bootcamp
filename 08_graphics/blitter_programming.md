@@ -978,3 +978,4 @@ The Blitter is one of the most complex subsystems to reproduce accurately in an 
 - See also: [rastport.md](rastport.md) — RastPort drawing context (uses Blitter for all draw operations)
 - See also: [display_modes.md](display_modes.md) — DMA slot budget (Blitter competes for bus bandwidth)
 - See also: [Akiko — CD32 C2P](../01_hardware/aga_a1200_a4000/akiko_cd32.md) — hardware Chunky-to-Planar conversion (CD32 alternative to CPU/Blitter C2P)
+- **Scoopex Amiga Hardware Programming** (Photon) — [YouTube: Blitter episodes](https://www.youtube.com/playlist?list=PLc3ltHgmiidpK-s0eP5hTKJnjdTHz0_bW) — Video walkthroughs of Blitter setup, cookie-cut masking, line draw, and fill mode. Companion articles: [coppershade.org](http://coppershade.org/articles/)

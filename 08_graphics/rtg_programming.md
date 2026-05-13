@@ -437,3 +437,209 @@ Some RTG cards cannot coexist with native chipset output:
 | **Radeon (PCI)** | Yes | No native output | Pure RTG; no Amiga video |
 
 If your application relies on dragging screens between native and RTG displays, test on hardware that supports it — or restrict usage to Picasso96/CyberGraphX cards with known switcher support.
+
+---
+
+## Named Antipatterns
+
+### "The Infinite Lock" — Holding VRAM Lock Across Wait
+
+```c
+/* BAD: Holding the bitmap lock while waiting for the next frame.
+   The RTG driver cannot perform screen depth arrangement or
+   VRAM defragmentation while the lock is held. Some drivers
+   degrade multitasking severely or deadlock entirely. */
+lock = LockBitMapTags(bm, LBMI_BASEADDRESS, &vram, TAG_DONE);
+RenderFrame(vram);
+Wait(1L << win->UserPort->mp_SigBit);  /* DEADLOCK RISK */
+UnLockBitMap(lock);
+```
+
+```c
+/* CORRECT: Render, unlock, then wait */
+lock = LockBitMapTags(bm, LBMI_BASEADDRESS, &vram, TAG_DONE);
+RenderFrame(vram);
+UnLockBitMap(lock);              /* unlock FIRST */
+Wait(1L << win->UserPort->mp_SigBit);  /* safe to wait */
+```
+
+### "The Pitch Assumption" — Hardcoding Row Stride
+
+```c
+/* BAD: Assuming pitch equals width * bytes_per_pixel.
+   Graphics cards align scanlines to 16/32/64 byte boundaries.
+   This produces diagonal tearing or garbage rendering. */
+UBYTE *row = vram + (y * screen->Width * 4);  /* WRONG */
+```
+
+```c
+/* CORRECT: Always use the pitch returned by LockBitMapTags */
+UBYTE *row = vram + (y * pitch);  /* pitch from LBMI_BYTESPERROW */
+```
+
+### "The Zorro II Crawl" — Full-Screen 32-bit Over Slow Bus
+
+```c
+/* BAD: Pushing a full 800×600 32-bit frame over Zorro II every frame.
+   Zorro II bandwidth: ~3.5 MB/s.
+   Frame size: 800×600×4 = 1.92 MB.
+   Result: ~1.8 FPS — unusable. */
+for (y = 0; y < 600; y++)
+    for (x = 0; x < 800; x++)
+        ((ULONG*)(vram + y * pitch))[x] = pixel;
+```
+
+```c
+/* CORRECT: Use dirty rectangles — only update what changed.
+   Or use 8-bit indexed mode for high-res on Zorro II. */
+for (int i = 0; i < numDirtyRects; i++)
+{
+    struct Rect *r = &dirtyRects[i];
+    for (y = r->y1; y < r->y2; y++)
+        for (x = r->x1; x < r->x2; x++)
+            ((ULONG*)(vram + y * pitch))[x] = pixel;
+}
+```
+
+### "The Endianness Surprise" — Assuming Native Byte Order
+
+```c
+/* BAD: Assuming 32-bit pixels are in Amiga big-endian ARGB order.
+   Many PCI graphics cards (via Mediator) expose little-endian
+   BGRA format. The pixel you see as 0x00FF0000 (red in ARGB)
+   might actually render as blue on a little-endian card. */
+ULONG red = 0x00FF0000;  /* might be blue! */
+```
+
+```c
+/* CORRECT: Query the pixel format and adapt */
+ULONG red;
+switch (format) {
+    case PIXFMT_ARGB32: red = 0x00FF0000; break;
+    case PIXFMT_BGRA32: red = 0x000000FF; break;
+    case PIXFMT_RGB24:  /* 3 bytes per pixel */ break;
+    default: red = 0; break;
+}
+```
+
+### "The Silent AllocBitMap Fail" — VRAM Exhaustion
+
+```c
+/* BAD: Not checking if AllocBitMap actually allocated in VRAM.
+   When VRAM is exhausted, AllocBitMap silently falls back to
+   Fast RAM. Your bitmap is now in system RAM — every pixel write
+   crosses the Zorro bus TWICE (CPU write + DMA blit to card). */
+struct BitMap *bm = AllocBitMap(800, 600, 32, BMF_DISPLAYABLE, NULL);
+/* No check — might be in Fast RAM! */
+```
+
+```c
+/* CORRECT: Verify the bitmap is in VRAM */
+struct BitMap *bm = AllocBitMap(800, 600, 32, BMF_DISPLAYABLE, NULL);
+if (!bm) { /* total failure */ }
+
+/* Check if it's actually in VRAM */
+LONG flags = (LONG)GetAttr(P96GA_BitMapFlags, bm);
+if (!(flags & BMF_HARDWARE))
+{
+    /* Fallback to system RAM — warn user or reduce resolution */
+    Printf("Warning: no VRAM — falling back to system RAM\n");
+}
+```
+
+---
+
+## Historical Context & Modern Analogies
+
+### RTG Evolution Timeline
+
+```mermaid
+timeline
+    title Amiga RTG Evolution
+    1985 : OCS — Native chipset only\nMax 640×256, 32 colors
+    1990 : ECS — SuperHires, Productivity\nStill planar, still chip RAM
+    1992 : AGA — 256 colors, HAM8\nPlanar bottleneck remains
+    1994 : Picasso II — First P96 card\nCirrus GD5426, Zorro II, 2 MB
+    1995 : CyberVision 64 — S3 Trio64\nZorro III, hardware blitter
+    1996 : Picasso IV — Cirrus GD5446\n4 MB VRAM, built-in flicker fixer
+    1997 : Mediator PCI — PC cards on Amiga\nVoodoo 3, Radeon support
+    1998 : CyberVision PPC — Permedia 2\nCPU local bus, 3D acceleration
+    2000 : Warp3D — 3D API for Amiga\nUses RTG cards for 3D rendering
+    2005 : Picasso96 maintained by Individual Computers
+Modern P96 drivers for Radeon
+    2010 : PiStorm + Radeon — ARM-accelerated\nFull 32-bit RTG on budget hardware
+    2020 : Vampire + SAGA — FPGA RTG\nBuilt-in RTG core, DVI output
+```
+
+### Modern Analogies
+
+| Amiga RTG Concept | Modern Equivalent | Notes |
+|-------------------|-------------------|-------|
+| `LockBitMapTags()` | `SDL_LockSurface()` / `ID3D11Texture2D::Map()` | Direct VRAM access |
+| `UnLockBitMap()` | `SDL_UnlockSurface()` / `Unmap()` | Release VRAM lock |
+| `LBMI_BYTESPERROW` (pitch) | `SDL_Surface.pitch` / `D3D11_TEXTURE_DATA.rowPitch` | Scanline stride |
+| `PIXFMT_ARGB32` | `DXGI_FORMAT_B8G8R8A8_UNORM` | Pixel format negotiation |
+| `AllocBitMap(BMF_DISPLAYABLE)` | `SDL_CreateTexture(streaming)` | GPU-accessible allocation |
+| `ChangeScreenBuffer()` (flip) | `SDL_RenderPresent()` / `IDXGISwapChain::Present()` | Double-buffer swap |
+| `BltBitMap()` in VRAM | GPU blit / `CopyResource()` | On-card data movement |
+| Zorro II bandwidth (3.5 MB/s) | PCIe x1 2.0 (500 MB/s) | Bus bottleneck |
+| `BMF_HARDWARE` flag | `D3D11_USAGE_DEFAULT` | VRAM-resident |
+| Fast RAM fallback | System RAM staging texture | Slow fallback path |
+| Picasso96 vs CyberGraphX | OpenGL vs DirectX | Competing API standards |
+
+---
+
+## Use Cases
+
+| Application | RTG Mode | Resolution | Notable Pattern |
+|-------------|----------|------------|-----------------|
+| **Workbench 3.5+** | 8/16-bit indexed | 800×600+ | Desktop on RTG card instead of custom chipset |
+| **Web browsers (IBrowse, AWeb)** | 24/32-bit true color | 1024×768 | Full-color image rendering requires chunky pixels |
+| **Image editors (Photogenics)** | 32-bit ARGB | 800×600+ | Per-pixel alpha blending in VRAM |
+| **Video players (AmigaAMP visuals)** | 16-bit RGB565 | 640×480 | Frame-by-frame VRAM blit with dirty rects |
+| **3D games (Wipeout 2097, Heretic II)** | 16/32-bit + Warp3D | 640×480 | GPU 3D rendering on Voodoo/Radeon |
+| **DTP (PageStream)** | 8-bit indexed | 1024×768 | High-res workspace with color preview |
+| **Terminal emulators** | 8-bit indexed | 1024×768 | Fast text blitting with hardware acceleration |
+| **Screen capture / recording** | 32-bit ARGB | Any | LockBitMapTags to read back VRAM |
+
+---
+
+## FAQ
+
+**Q: Should I target Picasso96 or CyberGraphX?**
+A: Target both — use `LockBitMapTags()` which is API-compatible between P96 and CGX. For mode enumeration and pixel format queries, detect which library is available at runtime and call the appropriate function. Most modern Amiga systems use P96.
+
+**Q: Can I use RTG and native chipset screens at the same time?**
+A: Yes — if your RTG card supports it (Picasso II/IV, CyberVision 64). The two outputs go to separate monitors, or the card's monitor switcher toggles between them. Some cards (CyberVision PPC, BlizzardVision) cannot display native chipset output at all.
+
+**Q: What's the minimum VRAM for a usable RTG display?**
+A: 2 MB is the practical minimum. An 800×600×16-bit display uses ~960 KB, leaving room for double-buffering and OS structures. With 1 MB, you're limited to 640×480×16-bit or 800×600×8-bit.
+
+**Q: Can I use LockBitMapTags on a native chipset bitmap?**
+A: No — `LockBitMapTags()` only works on RTG (chunky) bitmaps. For native chipset bitmaps, use standard `graphics.library` functions (`WritePixel()`, `BltBitMap()`) or direct planar manipulation. See [pixel_conversion.md](pixel_conversion.md) for planar↔chunky bridging.
+
+**Q: How do I detect if an RTG card is present?**
+A: Query the display database with `NextDisplayInfo()` and check for modes with the `DIPF_IS_RTG` flag. If any RTG modes exist, an RTG card is installed.
+
+**Q: Why does my RTG screen flicker when I drag it?**
+A: Some RTG cards don't support screen dragging (notably CPU-slot cards like CyberVision PPC). The Picasso IV and CyberVision 64 support it via hardware monitor switching. If dragging is not supported, `SA_Quiet, TRUE` prevents the drag bar from appearing.
+
+---
+
+## References
+
+### SDK & Headers
+
+- `picasso96api.h` — Picasso96 API functions and constants
+- `cybergraphics.h` — CyberGraphX API functions and constants
+- `graphics/gfxbase.h` — GfxBase extensions for RTG support
+
+### Related Knowledge Base Articles
+
+- [Pixel Conversion](pixel_conversion.md) — chunky↔planar conversion algorithms
+- [Display Modes](display_modes.md) — ModeID selection, display database
+- [Bitmap](bitmap.md) — BitMap structure, allocation, interleaved layout
+- [Views](views.md) — ViewPort/View display pipeline
+- [RTG Driver Development](../16_driver_development/rtg_driver.md) — writing RTG card drivers
+- [Screens](../09_intuition/screens.md) — screen opening with RTG DisplayIDs
+- [Bus Architecture](../01_hardware/common/bus_architecture.md) — Zorro II/III bandwidth limits

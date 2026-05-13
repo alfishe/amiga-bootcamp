@@ -23,3 +23,4 @@ Shared libraries beyond the core exec/dos/graphics/intuition subsystems. These p
 | [datatypes.md](datatypes.md) | DataTypes system: object-oriented file loading for images, sound, text, animation via BOOPSI classes |
 | [amigaguide.md](amigaguide.md) | AmigaGuide hypertext help system: database format, @commands, API, ARexx integration, cross-database linking |
 | [translator.md](translator.md) | translator.library: English-to-phonetic translation for speech synthesis, narrator.device integration, ARPABET phonemes |
+| [ahi_programming.md](ahi_programming.md) | AHI retargetable audio: 16-bit multi-channel playback, software mixing, sample loading, streaming hooks, SFX cookbooks, 4 antipatterns, FPGA/MiSTer impact, modern analogies, 7 FAQ |

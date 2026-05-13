@@ -17,4 +17,5 @@ Development tools for building Amiga software, from native compilers to modern c
 | [pragmas.md](pragmas.md) | Compiler pragmas and inline stubs: SAS/C pragmas, GCC inline asm, proto headers, fd2pragma |
 | [ndk.md](ndk.md) | NDK versions (3.1/3.9/3.2): contents, downloads, cross-compiler integration |
 | [makefiles.md](makefiles.md) | Makefile patterns for GCC cross-compilation, vasm/vlink assembly, mixed C+asm projects |
+| [cross_compilation_guide.md](cross_compilation_guide.md) | Modern cross-compilation: CMake toolchain files (GCC + VBCC), VS Code integration, GitHub Actions CI/CD, mixed C+asm, Docker builds |
 | [debugging.md](debugging.md) | Debugging tools: Enforcer/MuForce memory watchdog, SnoopDOS tracing, FS-UAE GDB remote, kprintf, debugging checklist |

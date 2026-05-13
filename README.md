@@ -315,3 +315,13 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [sana2_driver.md](16_driver_development/sana2_driver.md) | Writing SANA-II network drivers |
 | [rtg_driver.md](16_driver_development/rtg_driver.md) | Writing Picasso96/RTG display drivers |
 | [ahi_driver.md](16_driver_development/ahi_driver.md) | Writing AHI audio drivers |
+
+### 17 — Demoscene Techniques
+| File | Topic |
+|---|---|
+| [README.md](17_demoscene/README.md) | Section overview: technique classification, DMA budget, famous effects table |
+| [copper_effects.md](17_demoscene/copper_effects.md) | Copper bars, raster splits, gradient shading, sine-based color cycling, double-buffered lists |
+| [sprite_techniques.md](17_demoscene/sprite_techniques.md) | Sprite multiplexing, sprite-built images, 15-color attached sprites, priority control |
+| [pixel_tricks.md](17_demoscene/pixel_tricks.md) | Copper chunky, HAM art, scroll-register distortion, modulo wrapping, plasma effects |
+| [3d_rendering.md](17_demoscene/3d_rendering.md) | Fixed-point 3D math, Blitter-filled polygons, rotozoom, dot tunnels, voxel space |
+| [timing_optimization.md](17_demoscene/timing_optimization.md) | Cycle counting, Blitter-CPU interleaving, memory access patterns, self-modifying code |

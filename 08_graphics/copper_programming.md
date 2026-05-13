@@ -318,3 +318,4 @@ Reposition sprites mid-frame to display more than 8 sprites:
 - [copper.md](../01_hardware/ocs_a500/copper.md) — register-level reference
 - [copper.md](copper.md) — graphics.library UCopList API
 - [Video Signal & Timing](../01_hardware/common/video_timing.md) — beam counters, scanline anatomy, clock tree
+- **Scoopex Amiga Hardware Programming** (Photon) — [YouTube: Copper tutorials](https://www.youtube.com/playlist?list=PLc3ltHgmiidpK-s0eP5hTKJnjdTHz0_bW) — Video walkthroughs of copper list construction, copper bars, and raster effects. Companion articles: [coppershade.org](http://coppershade.org/articles/)

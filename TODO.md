@@ -71,10 +71,10 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | # | New Article | Why Needed | Status |
 |---|---|---|---|
 | 26 | **Custom Trackloaders & DRM** | 80% of classic games bypassed DOS. Reversing them requires understanding raw MFM sync words, bootblocks, and copy protection (e.g. Rob Northen Copylock). | ✅ **DONE** — `05_reversing/custom_loaders_and_drm.md` (500 lines) |
-| 27 | **RTG (Retargetable Graphics)** | Modern Amigas use RTG (Picasso96/CyberGraphX) for 16/24-bit chunky graphics. Application-level rendering is undocumented in our `08_graphics` folder. | ❌ **Pending** |
-| 28 | **AHI Audio Interface** | Hardware-agnostic 16-bit multi-channel audio mixing is standard for modern Amiga apps, decoupling audio from the 8-bit 4-channel Paula chip limits. | ❌ **Pending** |
-| 29 | **Demoscene Techniques** | Exploits like Sprite Multiplexing and Copper Chunks defined the platform's capabilities. Crucial for understanding high-performance hardware banging. | ❌ **Pending** |
-| 30 | **Modern Cross-Compilation** | Setting up `m68k-amigaos-gcc`, `vbcc`, and `vasm` via CMake on modern macOS/Linux to build native `.hunk` binaries. | ❌ **Pending** |
+| 27 | **RTG (Retargetable Graphics)** | Modern Amigas use RTG (Picasso96/CyberGraphX) for 16/24-bit chunky graphics. Application-level rendering is undocumented in our `08_graphics` folder. | ✅ **DONE** — `08_graphics/rtg_programming.md` (645 lines) |
+| 28 | **AHI Audio Interface** | Hardware-agnostic 16-bit multi-channel audio mixing is standard for modern Amiga apps, decoupling audio from the 8-bit 4-channel Paula chip limits. | ✅ **DONE** — `11_libraries/ahi_programming.md` (737 lines) |
+| 29 | **Demoscene Techniques** | Exploits like Sprite Multiplexing and Copper Chunks defined the platform's capabilities. Crucial for understanding high-performance hardware banging. | ✅ **DONE** — `17_demoscene/` section (5 sub-articles + README) |
+| 30 | **Modern Cross-Compilation** | Setting up `m68k-amigaos-gcc`, `vbcc`, and `vasm` via CMake on modern macOS/Linux to build native `.hunk` binaries. | ✅ **DONE** — `13_toolchain/cross_compilation_guide.md` (603 lines) |
 
 ---
 
@@ -385,14 +385,14 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | Status | Count |
 |---|---|
-| ✅ Deep | 67 |
+| ✅ Deep | 73 |
 | ✅ Adequate | 112 |
 | ⚠️ Thin | 0 |
-| ❌ Pending (Tier 4) | 4 |
-| **Total** | **183** |
+| ❌ Pending | 0 |
+| **Total** | **185** |
 
 > MUI framework adds 13 additional articles (4 Deep, 9 Adequate) tracked separately above.
-> **Progress**: Tiers 1, 2, 3 fully complete. 4 Tier 4 new articles remain.
+> **Progress**: ALL TIERS COMPLETE ✅ — 30/30 items done. 73 Deep + 112 Adequate = 185 articles.
 
 ---
 
@@ -435,14 +435,16 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 All 11 items (including bonus iffparse.md) upgraded to Deep quality.
 
-**Tier 4 — 4 pending advanced topics:**
+**Tier 4 — ALL COMPLETE ✅**
+
+All 5 items created: Custom Loaders & DRM, RTG Programming, AHI Audio, Demoscene Techniques (5 sub-articles), Cross-Compilation Guide.
 
 | # | File | Current |
 |---|---|---|
 | 26 | `05_reversing/custom_loaders_and_drm.md` | 500 lines — ✅ Deep |
-| 27 | `08_graphics/rtg_programming.md` | 0 lines |
-| 28 | `11_libraries/ahi_programming.md` | 0 lines |
-| 29 | `17_demoscene/README.md` | 0 lines |
-| 30 | `13_toolchain/cross_compilation_guide.md` | 0 lines |
+| 27 | `08_graphics/rtg_programming.md` | 645 lines — ✅ Deep |
+| 28 | `11_libraries/ahi_programming.md` | 737 lines — ✅ Deep |
+| 29 | `17_demoscene/` (section) | 6 files — README(137) + copper_effects(792) + sprite_techniques(580) + pixel_tricks(667) + 3d_rendering(874) + timing_optimization(739) | ✅ Deep |
+| 30 | `13_toolchain/cross_compilation_guide.md` | 603 lines | ✅ Deep |
 
-> **Progress**: 26 of 30 items complete (87%). Tier 1, 2, 3 fully cleared. 4 Tier 4 new articles remain.
+> **Progress**: 30 of 30 items complete (100%). ALL TIERS COMPLETE ✅

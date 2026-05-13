@@ -569,6 +569,7 @@ These must be set **every frame** — typically by the Copper list during vertic
 - NDK39: `graphics/sprite.h`, `hardware/custom.h`
 - ADCD 2.1: `GetSprite`, `MoveSprite`, `ChangeSprite`, `FreeSprite`, `AllocSpriteData`, `GetExtSprite`
 - Phaze101 — *Amiga 68000 Assembly Course* Chapter 7 (sprite programming tutorial)
+- **Scoopex Amiga Hardware Programming** (Photon) — [YouTube: Sprite episodes](https://www.youtube.com/playlist?list=PLc3ltHgmiidpK-s0eP5hTKJnjdTHz0_bW) — Video walkthroughs of sprite setup, multiplexing, and attached sprites. Companion site: [coppershade.org](http://coppershade.org/)
 - ChibiAkumas — *68000 Assembly Lessons* (sprite and blitter tutorials)
 - Codetapper — Game reverse engineering analyses (Jim Power, Lionheart)
 
