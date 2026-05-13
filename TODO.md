@@ -52,17 +52,17 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | # | File | Was | Now | Status |
 |---|---|---|---|---|
-| 15 | `08_graphics/sprites.md` | 306 | 306 | ❌ **Pending** — Named antipatterns, pitfalls comparing hardware sprites vs SimpleSprite, FPGA sprite timing |
+| 15 | `08_graphics/sprites.md` | 306 | 582 | ✅ **Complete** — DMA timing, CLXCON/CLXDAT collision, V39 ExtSprite API, decision flowchart, 5 named antipatterns, multiplexing techniques, real-world use cases, FPGA notes, competitive landscape |
 | 16 | `08_graphics/text_fonts.md` | 215 | 708 | ✅ **Complete** — Expanded with ColorTextFont layout, Compugraphic outlines, font scaling/aspect ratio, draw mode effects, 3 cookbooks (centered title, multi-font label, word wrap), 4 antipatterns, 4 pitfalls, historical comparison, modern analogies, 6 FAQ |
 | 17 | `09_intuition/screens.md` | 582 | 992 | ✅ **Complete** — Added screen type decision guide (Mermaid), 5 named antipatterns (Orphan Screen, Hardcoded Mode, Stale Pointer, Forced Close, Layer Lock Trap), 3 cookbooks (screen flipping, borderless fullscreen, PAL/NTSC safe), historical comparison, modern analogies, use cases, 7 FAQ |
 | 18 | `09_intuition/windows.md` | 370 | 778 | ✅ **Complete** — Added 5 named antipatterns (Border Collision, Unresponsive Close, Leaked Message, Refresh Loop, Phantom Window), window type decision guide with Mermaid, 3 cookbooks (resizable, borderless overlay, multi-window shared port), historical comparison, modern analogies, use cases, 7 FAQ |
 | 19 | `09_intuition/menus.md` | 378 | 695 | ✅ **Complete** — Added render chain sequence diagram, 5 named antipatterns (Multi-Select Ghost, Stale Menu, Cleanup Reversal, Shortcut Collision, Phantom VisualInfo), complete lifecycle cookbook, historical comparison, modern analogies, use cases, 6 FAQ |
 | 20 | `09_intuition/gadgets.md` | 403 | 804 | ✅ **Complete** — Added 5 named antipatterns (Invisible Gadget, Message Mangler, Orphaned Chain, Hot-Swap Hazard, Silent Button), GadTools→BOOPSI migration guide with comparison table, form cookbook, historical timeline, modern analogies, use cases, 6 FAQ |
 | 21 | `11_libraries/iffparse.md` | 271 | 1031 | ✅ **DONE** — Nesting & chunk hierarchy diagrams, ILBM/EHB pitfalls, PBM read patterns, cross-reference to Datatypes |
-| 22 | `13_toolchain/gcc_amiga.md` | 82 | 82 | ❌ **Pending** — Extremely thin stub. Needs full build pipeline, Docker cross-compilation guide, linker scripts, amiga-gcc specifics |
+| 22 | `13_toolchain/gcc_amiga.md` | 82 | 606 | ✅ **Complete** — Full build pipeline, Docker setup, platform-specific builds (Linux/macOS/Windows), CPU targets, libnix/ixemul startup, flags, antipatterns, FAQ |
 | 23 | `11_libraries/layers.md` | 224 | 739 | ✅ **Complete** — Expanded with ClipRect engine deep-dive, API reference with LVOs, backfill hook cookbook, refresh type decision guide, 4 named antipatterns, 4 pitfalls, ClipBlit vs ScrollRaster optimization, historical comparison table, modern analogies, 7 FAQ |
-| 24 | `10_devices/console.md` | 244 | 244 | ❌ **Pending** — Escape sequence table, cookbook for raw console I/O, pitfalls with buffering |
-| 25 | `10_devices/trackdisk.md` | 178 | 178 | ❌ **Pending** — Sector-level format diagram, MFM encoding basics, pitfalls with trackdisk vs filesystem access |
+| 24 | `10_devices/console.md` | 244 | 470 | ✅ **Complete** — Decision guide, TUI/progress bar cookbooks, escape sequence table, antipatterns, pitfalls, 6 FAQ |
+| 25 | `10_devices/trackdisk.md` | 178 | 428 | ✅ **Complete** — Sector-level format diagram, MFM encoding, 16-command reference, antipatterns, FPGA/MiSTer impact, 6 FAQ |
 
 ---
 
@@ -70,7 +70,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | # | New Article | Why Needed | Status |
 |---|---|---|---|
-| 26 | **Custom Trackloaders & DRM** | 80% of classic games bypassed DOS. Reversing them requires understanding raw MFM sync words, bootblocks, and copy protection (e.g. Rob Northen Copylock). | ❌ **Pending** |
+| 26 | **Custom Trackloaders & DRM** | 80% of classic games bypassed DOS. Reversing them requires understanding raw MFM sync words, bootblocks, and copy protection (e.g. Rob Northen Copylock). | ✅ **DONE** — `05_reversing/custom_loaders_and_drm.md` (500 lines) |
 | 27 | **RTG (Retargetable Graphics)** | Modern Amigas use RTG (Picasso96/CyberGraphX) for 16/24-bit chunky graphics. Application-level rendering is undocumented in our `08_graphics` folder. | ❌ **Pending** |
 | 28 | **AHI Audio Interface** | Hardware-agnostic 16-bit multi-channel audio mixing is standard for modern Amiga apps, decoupling audio from the 8-bit 4-channel Paula chip limits. | ❌ **Pending** |
 | 29 | **Demoscene Techniques** | Exploits like Sprite Multiplexing and Copper Chunks defined the platform's capabilities. Crucial for understanding high-performance hardware banging. | ❌ **Pending** |
@@ -300,10 +300,10 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `audio.md` | 945 | ✅ Deep | Tier 2 upgrade: 5 antipatterns, MOD deep-dive, 14-bit Paula, cookbook, FPGA impact |
 | `timer.md` | 853 | ✅ Deep | Tier 2 upgrade: 8 antipatterns, 6-pattern cookbook, decision flowchart, FPGA impact |
 | `scsi.md` | 287 | ✅ Adequate | Per-model HDD interfaces, Gayle bandwidth, TD64/NSD |
-| `console.md` | 244 | ❌ Pending | Tier 3 #24: needs escape sequence table, raw console cookbook, buffering pitfalls |
+| `console.md` | 470 | ✅ Deep | Decision guide, TUI/progress bar cookbooks, antipatterns, pitfalls, 6 FAQ |
 | `input.md` | 216 | ✅ Adequate | Input handler chain, Commodities Exchange |
 | `keyboard.md` | 179 | ✅ Adequate | CIA-A handshake, raw key codes, reset sequence, FPGA notes |
-| `trackdisk.md` | 178 | ❌ Pending | Tier 3 #25: needs sector-level format diagram, MFM encoding, trackdisk vs filesystem |
+| `trackdisk.md` | 428 | ✅ Deep | MFM encoding, 16-command reference, antipatterns, FPGA/MiSTer impact, 6 FAQ |
 | `parallel.md` | 149 | ✅ Adequate | Centronics parallel port: CIA-A Port B |
 | `serial.md` | 130 | ✅ Adequate | UART/RS-232: CIA registers, baud rate, serial debugging |
 | `gameport.md` | 130 | ✅ Adequate | Joystick/mouse: quadrature decoding, controller types |
@@ -347,7 +347,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `debugging.md` | 191 | ✅ Adequate | Enforcer/MuForce, SnoopDOS, FS-UAE GDB remote, kprintf |
 | `sasc.md` | 156 | ✅ Adequate | SAS/C 6.x: pragma format, __saveds/__asm, compiler flags |
 | `stormc.md` | 106 | ✅ Adequate | StormC native IDE: C/C++, debugger, PowerPC support |
-| `gcc_amiga.md` | 101 | ❌ Pending | Tier 3 #22: extremely thin stub — needs full build pipeline, Docker guide, linker scripts |
+| `gcc_amiga.md` | 606 | ✅ Deep | Platform-specific builds, Docker, flags, antipatterns, FAQ |
 | `makefiles.md` | 97 | ✅ Adequate | GCC cross-compilation make patterns, vasm/vlink, mixed C+asm |
 | `ndk.md` | 84 | ✅ Adequate | NDK versions (3.1/3.9/3.2): contents, cross-compiler integration |
 | `pragmas.md` | 83 | ✅ Adequate | SAS/C pragmas, GCC inline asm, proto headers, fd2pragma |
@@ -385,14 +385,14 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | Status | Count |
 |---|---|
-| ✅ Deep | 57 |
+| ✅ Deep | 67 |
 | ✅ Adequate | 112 |
 | ⚠️ Thin | 0 |
-| ❌ Pending (Tier 3) | 10 |
-| **Total** | **179** |
+| ❌ Pending (Tier 4) | 4 |
+| **Total** | **183** |
 
 > MUI framework adds 13 additional articles (4 Deep, 9 Adequate) tracked separately above.
-> **Progress**: 8 per-compiler RE articles created (1 README + 7 compiler field manuals). 1 code-vs-data disambiguation article added. 1 ARexx integration guide added. 10 Tier 3 items remain.
+> **Progress**: Tiers 1, 2, 3 fully complete. 4 Tier 4 new articles remain.
 
 ---
 
@@ -431,29 +431,18 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | 13 | `08_graphics/display_modes.md` | ✅ DONE (645 lines) |
 | 14 | `07_dos/filesystem.md` | ✅ DONE (1246 lines) |
 
-**Tier 3 — 10 pending quality boosts:**
+**Tier 3 — ALL COMPLETE ✅**
+
+All 11 items (including bonus iffparse.md) upgraded to Deep quality.
+
+**Tier 4 — 4 pending advanced topics:**
 
 | # | File | Current |
 |---|---|---|
-| 15 | `08_graphics/sprites.md` | 306 lines |
-| 16 | `08_graphics/text_fonts.md` | 215 lines |
-| 17 | `09_intuition/screens.md` | 582 lines |
-| 18 | `09_intuition/windows.md` | 370 lines |
-| 19 | `09_intuition/menus.md` | 378 lines |
-| 20 | `09_intuition/gadgets.md` | 403 lines |
-| 22 | `13_toolchain/gcc_amiga.md` | 101 lines |
-| 23 | `11_libraries/layers.md` | 224 lines |
-| 24 | `10_devices/console.md` | 244 lines |
-| 25 | `10_devices/trackdisk.md` | 178 lines |
-
-**Tier 4 — 5 pending advanced topics:**
-
-| # | File | Current |
-|---|---|---|
-| 26 | `05_reversing/custom_loaders_and_drm.md` | 500 lines — ✅ Deep: bootblock structure, 6 DRM systems, 5 antipatterns, trackloader cookbook, cracking scene history, 7 FAQ |
+| 26 | `05_reversing/custom_loaders_and_drm.md` | 500 lines — ✅ Deep |
 | 27 | `08_graphics/rtg_programming.md` | 0 lines |
 | 28 | `11_libraries/ahi_programming.md` | 0 lines |
 | 29 | `17_demoscene/README.md` | 0 lines |
 | 30 | `13_toolchain/cross_compilation_guide.md` | 0 lines |
 
-> **Progress**: 15 of 30 items complete (50%). Tier 1 and 2 fully cleared. 10 Tier 3 items and 5 Tier 4 items remain.
+> **Progress**: 26 of 30 items complete (87%). Tier 1, 2, 3 fully cleared. 4 Tier 4 new articles remain.
