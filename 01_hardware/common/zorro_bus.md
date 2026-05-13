@@ -37,99 +37,11 @@ Zorro II cards appear in the 16 MB address space. RAM cards are configured into 
 
 Zorro III extends into the 32-bit address space, allowing large RAM cards (32–128 MB) and fast peripherals. Requires a 32-bit CPU (68030+) and OS support.
 
-## AutoConfig Protocol
+## AutoConfig
 
-AutoConfig allows the OS to discover and configure cards without jumpers:
+Zorro uses **AutoConfig** — a hardware plug-and-play protocol that lets the OS discover, size, and map expansion boards at boot without jumpers. Each board presents a 256-byte ROM at the configuration address (`$E80000` for Zorro II, `$FF000000` for Zorro III) containing its manufacturer ID, product code, size, and type. The OS walks the `/CFGIN`/`/CFGOUT` daisy chain, reads each ROM, assigns a base address, and tells the board to relocate.
 
-```mermaid
-sequenceDiagram
-    participant OS as AmigaOS (expansion.library)
-    participant Card as Zorro Card
-
-    OS->>Card: Read $E80000 (config space)
-    Card-->>OS: Manufacturer ID (16-bit)
-    OS->>Card: Read $E80002
-    Card-->>OS: Product ID, flags
-    OS->>Card: Read board size, type
-    OS->>OS: AllocAbs() / ConfigBoard()
-    OS->>Card: Write base address
-    Card-->>OS: Card configured, moves off $E80000
-```
-
-**Key AutoConfig registers** (read from $E80000–$E8007F before configuration):
-
-| Offset | Content |
-|---|---|
-| $00 | er_Type (board type: RAM/IO, Zorro II/III) |
-| $02 | er_Product (product ID) |
-| $04 | er_Flags |
-| $06 | er_Reserved03 |
-| $08–$0A | er_Manufacturer (16-bit) |
-| $0C–$0F | er_SerialNumber |
-| $10–$11 | er_InitDiagVec (diagnostic ROM vector) |
-
-**Board types** (`er_Type` bits):
-```c
-#define ERT_TYPEMASK   0xC0
-#define ERT_ZORROII    0xC0   /* Zorro II card */
-#define ERT_ZORROIII   0x80   /* Zorro III card */
-#define ERTB_MEMLIST   5      /* board is RAM, add to free list */
-#define ERTB_DIAGVALID 4      /* DiagArea ROM is valid */
-#define ERTB_CHAINEDCONFIG 3  /* more boards to configure */
-```
-
-## expansion.library
-
-AmigaOS provides `expansion.library` to manage Zorro configuration:
-
-```c
-#include <libraries/expansion.h>
-#include <clib/expansion_protos.h>
-
-/* Find a configured board by manufacturer/product */
-struct ConfigDev *cd = NULL;
-while ((cd = FindConfigDev(cd, MANUF_ID, PROD_ID)) != NULL) {
-    APTR base = cd->cd_BoardAddr;
-    ULONG size = cd->cd_BoardSize;
-    /* use board at base */
-}
-```
-
-**Key structures:**
-```c
-struct ConfigDev {
-    struct Node    cd_Node;
-    UBYTE          cd_Flags;
-    UBYTE          cd_Pad;
-    struct ExpansionRom cd_Rom;   /* copy of autoconfig ROM area */
-    APTR           cd_BoardAddr;  /* configured base address */
-    ULONG          cd_BoardSize;
-    UWORD          cd_SlotAddr;
-    UWORD          cd_SlotSize;
-    APTR           cd_Driver;
-    struct ConfigDev *cd_NextCD;
-    ULONG          cd_Unused[4];
-};
-```
-
-## DiagArea — Card ROM
-
-Cards with `ERTB_DIAGVALID` have a small ROM (DiagArea) that the OS calls during boot:
-
-```c
-struct DiagArea {
-    UBYTE da_Config;     /* flags */
-    UBYTE da_Flags;
-    UWORD da_Size;
-    UWORD da_DiagPoint; /* offset to diagnostic code */
-    UWORD da_BootPoint; /* offset to boot code */
-    UWORD da_Name;      /* offset to name string */
-    UWORD da_Reserved01;
-    UWORD da_Reserved02;
-};
-```
-
-The boot vector is called by `ConfigChain()` during the early boot sequence — this is how SCSI controllers install their filesystem handlers.
+See [AutoConfig Protocol](autoconfig.md) for the full hardware-level specification — CFGIN/CFGOUT mechanics, nibble-pair ROM format, size codes, shut-up behavior, and FPGA implementation notes. See [expansion.library](../../11_libraries/expansion.md) for the software API (`FindConfigDev`, `ConfigBoard`, `ConfigDev` structure) and manufacturer ID tables.
 
 ## Real-World Performance & Bottlenecks
 

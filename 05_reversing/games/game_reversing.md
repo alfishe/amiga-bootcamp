@@ -664,9 +664,11 @@ Documenting the internal structure of unreleased or poorly documented games cont
 
 ## FAQ
 
-### Q1: IRA vs Ghidra — which should I use?
+### Q1: IRA vs Ghidra vs IDA Pro — which should I use?
 
-Use **IRA** when you need re-assemblable source code or are working with pure hand-written assembly. Use **Ghidra** when you need cross-references, decompilation, or the game was written in C. Many RE projects use both: Ghidra for exploration, IRA for final patch generation.
+Use **IRA** when you need re-assemblable source code or are working with pure hand-written assembly. Use **Ghidra** (free, open-source) when you need cross-references, decompilation, or the game was written in C. Use **IDA Pro** (commercial) when you need the best 68k processor module, advanced scripting, or are working with obfuscated or packed binaries that benefit from its debugger integration. Many RE projects use two or even all three: Ghidra or IDA for exploration, IRA for final patch generation.
+
+See [Ghidra Setup](../ghidra_setup.md) and [IDA Pro Setup](../ida_setup.md) for configuration details.
 
 ### Q2: How do I handle a game with no readable strings?
 

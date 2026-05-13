@@ -88,34 +88,9 @@ The system requires no handshake signal — once the base address is written, th
 
 The board presents its identity at the configuration address. Each logical byte is read via **two even-address accesses** (nibble-pair format): the high nibble from bits `D7–D4` at `offset`, the low nibble from bits `D7–D4` at `offset + 2`. This allows boards to use cheap 4-bit PROMs. All fields except `er_Type` are stored **inverted** in the ROM (XOR `$FF`) — an empty bus reads `$FF`, which inverts to `$00`, cleanly signaling "no more boards."
 
-See [AutoConfig Protocol — Nibble-Pair Format](../01_hardware/common/autoconfig.md#the-nibble-pair-format--logical-inversion) for the full physical-to-logical address map.
+The ROM encodes bus type (Zorro II vs III), memory vs I/O classification, board size, manufacturer ID (16-bit), product ID (8-bit), serial number (32-bit), and an optional DiagArea vector. The lower nibble of `er_Type` is a size code that maps to different byte sizes on Zorro II and Zorro III.
 
-| Offset | Register | Bits | Description |
-|---|---|---|---|
-| $00 | `er_Type` | 7:6 | Board type: `11`=Zorro II, `10`=Zorro III |
-| $00 | `er_Type` | 5 | Memory board (1) or I/O board (0) |
-| $00 | `er_Type` | 4 | Chain bit — more boards follow |
-| $00 | `er_Type` | 3:0 | Size code (see table below) |
-| $02 | `er_Product` | 7:0 | Product number (0–255) |
-| $04 | `er_Flags` | 7 | Can be shut up (mapped out) |
-| $04 | `er_Flags` | 5 | Board's memory is free (add to system pool) |
-| $04 | `er_Flags` | 4 | `er_InitDiagVec` is valid (`ERFB_DIAGVALID`) |
-| $08/$0A | `er_Manufacturer` | 15:0 | Manufacturer ID (assigned by Commodore) |
-| $0C–$12 | `er_SerialNumber` | 31:0 | Serial number (unique per board) |
-| $20/$22 | `er_InitDiagVec` | 15:0 | Offset to optional boot ROM (DiagArea) |
-
-### Size Code
-
-| Code | Zorro II Size | Zorro III Size |
-|---|---|---|
-| $0 | 8 MB | 16 MB |
-| $1 | 64 KB | 32 MB |
-| $2 | 128 KB | 64 MB |
-| $3 | 256 KB | 128 MB |
-| $4 | 512 KB | 256 MB |
-| $5 | 1 MB | 512 MB |
-| $6 | 2 MB | 1 GB |
-| $7 | 4 MB | — |
+See [AutoConfig Protocol — Data Structures & Register Tables](../01_hardware/common/autoconfig.md#data-structures--register-tables) for the complete ROM layout, size code matrix, and `er_Flags` bit definitions.
 
 ---
 
