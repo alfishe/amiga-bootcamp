@@ -359,12 +359,420 @@ If you cache a screen pointer and it becomes invalid, `OpenWindowTags()` will cr
 6. **Drain IDCMP messages** before calling `CloseWindow()`
 7. **Show a busy pointer** during long operations — it prevents user confusion
 8. **Use `WA_AutoAdjust, TRUE`** to handle cases where the window doesn't fit the screen
+9. **Use `WA_NewLookMenus, TRUE`** on OS 3.0+ for consistent 3D appearance
+10. **Never modify `struct Window` fields directly** — use the API functions
+11. **Lock the screen before opening a window** — `LockPubScreen(NULL)` prevents the screen from closing mid-open
+12. **Handle `IDCMP_CLOSEWINDOW` immediately** — don't defer shutdown if user expectations are involved
+
+---
+
+## Named Antipatterns
+
+### "The Border Collision" — Drawing at (0,0) in a Normal Window
+
+```c
+/* BAD: (0,0) is the top-left corner of the BORDER, not the content area.
+   This overwrites the title bar and close gadget. */
+Move(win->RPort, 0, 0);
+RectFill(win->RPort, 0, 0, 100, 50);
+```
+
+```c
+/* CORRECT: Offset all drawing by the border widths */
+WORD x0 = win->BorderLeft;
+WORD y0 = win->BorderTop;
+Move(win->RPort, x0, y0);
+RectFill(win->RPort, x0, y0, x0 + 100, y0 + 50);
+```
+
+> [!TIP]
+> If you find yourself adding border offsets everywhere, consider `WFLG_GIMMEZEROZERO` — the content RastPort starts at (0,0). But it costs an extra layer.
+
+### "The Unresponsive Close" — Ignoring IDCMP_CLOSEWINDOW
+
+```c
+/* BAD: No handler for IDCMP_CLOSEWINDOW — clicking close does nothing.
+   The user thinks the application is frozen. */
+ULONG signals = Wait(1L << win->UserPort->mp_SigBit);
+struct IntuiMessage *msg;
+while ((msg = (struct IntuiMessage *)GetMsg(win->UserPort)))
+{
+    /* Handle gadgets, keys, but NO close event... */
+    ReplyMsg((struct Message *)msg);
+}
+/* Window never closes. User is stuck. */
+```
+
+```c
+/* CORRECT: Always handle IDCMP_CLOSEWINDOW */
+while ((msg = (struct IntuiMessage *)GetMsg(win->UserPort)))
+{
+    ULONG class = msg->Class;
+    ReplyMsg((struct Message *)msg);  /* reply FIRST */
+
+    switch (class)
+    {
+        case IDCMP_CLOSEWINDOW:
+            running = FALSE;  /* exit the event loop */
+            break;
+        case IDCMP_GADGETUP:
+            /* ... handle gadget ... */
+            break;
+    }
+}
+```
+
+### "The Leaked Message" — Accessing IntuiMessage After ReplyMsg
+
+```c
+/* BAD: Reading fields from the message AFTER replying.
+   ReplyMsg() may free the message immediately — the pointer is stale. */
+struct IntuiMessage *msg = (struct IntuiMessage *)GetMsg(win->UserPort);
+ReplyMsg((struct Message *)msg);  /* may invalidate msg */
+UWORD code = msg->Code;  /* UNDEFINED BEHAVIOR — msg may be freed */
+APTR iaddr = msg->IAddress;  /* ALSO DANGEROUS */
+```
+
+```c
+/* CORRECT: Copy what you need BEFORE replying */
+struct IntuiMessage *msg = (struct IntuiMessage *)GetMsg(win->UserPort);
+ULONG class = msg->Class;
+UWORD code = msg->Code;
+APTR iaddr = msg->IAddress;
+WORD mouseX = msg->MouseX;
+WORD mouseY = msg->MouseY;
+ReplyMsg((struct Message *)msg);  /* NOW it's safe to reply */
+
+/* Use the saved copies */
+```
+
+### "The Refresh Loop" — Drawing Outside BeginRefresh/EndRefresh
+
+```c
+/* BAD: Drawing on every REFRESHWINDOW without BeginRefresh().
+   Drawing into the full layer (not just damaged areas) causes NEW damage,
+   which triggers another REFRESHWINDOW, which draws again... infinite loop. */
+case IDCMP_REFRESHWINDOW:
+    RedrawEverything(win);  /* redraws entire window, causes new damage */
+    break;
+```
+
+```c
+/* CORRECT: Scope the redraw to damaged regions only */
+case IDCMP_REFRESHWINDOW:
+    BeginRefresh(win);
+    RedrawEverything(win);  /* ClipRects restricted to damaged areas */
+    EndRefresh(win, TRUE);  /* TRUE = fully repaired, clear damage list */
+    break;
+```
+
+### "The Phantom Window" — Using a Screen Pointer After It Closes
+
+```c
+/* BAD: Caching a screen pointer between operations.
+   Another application can close the screen between your cache and use. */
+struct Screen *screen = LockPubScreen(NULL);
+UnlockPubScreen(NULL, screen);
+/* ... later ... */
+OpenWindowTags(NULL, WA_PubScreen, screen, TAG_DONE);  /* screen may be gone! */
+```
+
+```c
+/* CORRECT: Lock, open, unlock — all in sequence */
+struct Screen *screen = LockPubScreen(NULL);
+if (screen) {
+    struct Window *win = OpenWindowTags(NULL,
+        WA_PubScreen, screen,
+        WA_InnerWidth, 400,
+        WA_InnerHeight, 300,
+        TAG_DONE);
+    UnlockPubScreen(NULL, screen);
+    /* win is now valid — Intuition holds its own reference to the screen */
+}
+```
+
+---
+
+## Window Type Decision Guide
+
+```mermaid
+flowchart TD
+    Q{"What do you need?"} -->|"Standard app window"| STD["Standard Window\nClose + Drag + Depth + Size"]
+    Q -->|"Background / desktop"| BD["Backdrop Window\nWFLG_BACKDROP | WFLG_BORDERLESS"]
+    Q -->|"Fullscreen overlay"| BL["Borderless Window\nWA_Borderless + WA_InnerWidth/Height"]
+    Q -->|"Simple content,\nborder offset headaches"| GZZ["GimmeZeroZero\nContent RastPort at (0,0)"]
+    Q -->|"Large scrollable canvas"| SUPER["SuperBitMap\nWA_SuperBitMap + BitMap"]
+
+    STD --> REF{"Refresh mode?"}
+    REF -->|"Most apps"| SMART["Smart Refresh\n(WA_SmartRefresh)"]
+    REF -->|"Memory-critical"| SIMPLE["Simple Refresh\n(WA_SimpleRefresh)"]
+    REF -->|"Scrollable canvas"| SUPER
+
+    style STD fill:#c8e6c9,stroke:#2e7d32,color:#333
+    style BD fill:#e8f4fd,stroke:#2196f3,color:#333
+    style BL fill:#fff9c4,stroke:#f9a825,color:#333
+    style GZZ fill:#fff9c4,stroke:#f9a825,color:#333
+    style SMART fill:#c8e6c9,stroke:#2e7d32,color:#333
+```
+
+---
+
+## Practical Cookbooks
+
+### Cookbook: Resizable Window with Proper Relayout
+
+```c
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/graphics.h>
+#include <intuition/intuition.h>
+
+void RunResizableWindow(void)
+{
+    struct Screen *screen = LockPubScreen(NULL);
+    if (!screen) return;
+
+    struct Window *win = OpenWindowTags(NULL,
+        WA_PubScreen,     screen,
+        WA_InnerWidth,     400,
+        WA_InnerHeight,    300,
+        WA_Title,          "Resizable",
+        WA_IDCMP,          IDCMP_CLOSEWINDOW | IDCMP_NEWSIZE |
+                           IDCMP_REFRESHWINDOW,
+        WA_Flags,          WFLG_CLOSEGADGET | WFLG_DRAGBAR |
+                           WFLG_DEPTHGADGET | WFLG_SIZEGADGET |
+                           WFLG_SMART_REFRESH | WFLG_ACTIVATE,
+        WA_MinWidth,       200,
+        WA_MinHeight,      100,
+        WA_MaxWidth,       -1,
+        WA_MaxHeight,      -1,
+        TAG_DONE);
+    UnlockPubScreen(NULL, screen);
+
+    if (!win) return;
+
+    BOOL running = TRUE;
+    while (running)
+    {
+        ULONG sigs = Wait(1L << win->UserPort->mp_SigBit);
+        struct IntuiMessage *msg;
+
+        while ((msg = (struct IntuiMessage *)GetMsg(win->UserPort)))
+        {
+            ULONG class = msg->Class;
+            ReplyMsg((struct Message *)msg);
+
+            switch (class)
+            {
+                case IDCMP_CLOSEWINDOW:
+                    running = FALSE;
+                    break;
+
+                case IDCMP_NEWSIZE:
+                case IDCMP_REFRESHWINDOW:
+                    if (class == IDCMP_REFRESHWINDOW)
+                        BeginRefresh(win);
+
+                    /* Recalculate layout and redraw */
+                    {
+                        WORD w = win->Width - win->BorderLeft - win->BorderRight;
+                        WORD h = win->Height - win->BorderTop - win->BorderBottom;
+                        SetRast(win->RPort, 0);  /* clear */
+                        /* ... your layout code using w, h ... */
+                    }
+
+                    if (class == IDCMP_REFRESHWINDOW)
+                        EndRefresh(win, TRUE);
+                    break;
+            }
+        }
+    }
+
+    CloseWindow(win);
+}
+```
+
+### Cookbook: Full-Screen Borderless Overlay
+
+```c
+/* Open a borderless window covering the entire screen —
+   useful for games, demos, or presentations */
+struct Screen *scr = LockPubScreen(NULL);
+struct Window *overlay = OpenWindowTags(NULL,
+    WA_PubScreen,     scr,
+    WA_Left,           0,
+    WA_Top,            0,
+    WA_Width,          scr->Width,
+    WA_Height,         scr->Height,
+    WA_Borderless,     TRUE,
+    WA_SimpleRefresh,  TRUE,
+    WA_NoCareRefresh,  TRUE,
+    WA_RMBTrap,        TRUE,    /* capture right-click (no menu bar) */
+    WA_Activate,       TRUE,
+    WA_IDCMP,          IDCMP_RAWKEY | IDCMP_MOUSEBUTTONS |
+                       IDCMP_MOUSEMOVE,
+    TAG_DONE);
+UnlockPubScreen(NULL, scr);
+
+/* Draw directly at (0,0) — no borders */
+SetAPen(overlay->RPort, 1);
+RectFill(overlay->RPort, 0, 0, scr->Width - 1, scr->Height - 1);
+```
+
+### Cookbook: Multi-Window Shared Message Port
+
+```c
+/* For applications with many windows, sharing one MsgPort is more
+   efficient than creating a port per window.
+   See idcmp.md for the full explanation. */
+
+struct MsgPort *sharedPort = CreateMsgPort();
+
+/* Window A */
+struct Window *winA = OpenWindowTags(NULL,
+    WA_Title,    "Window A",
+    WA_InnerWidth,  300, WA_InnerHeight, 200,
+    WA_Flags,    WFLG_CLOSEGADGET | WFLG_DRAGBAR | WFLG_ACTIVATE,
+    WA_IDCMP,    IDCMP_CLOSEWINDOW | IDCMP_RAWKEY,
+    TAG_DONE);
+
+/* Window B */
+struct Window *winB = OpenWindowTags(NULL,
+    WA_Title,    "Window B",
+    WA_InnerWidth,  300, WA_InnerHeight, 200,
+    WA_Flags,    WFLG_CLOSEGADGET | WFLG_DRAGBAR,
+    WA_IDCMP,    IDCMP_CLOSEWINDOW | IDCMP_RAWKEY,
+    TAG_DONE);
+
+/* Redirect both to the shared port */
+winA->UserPort = sharedPort;
+winB->UserPort = sharedPort;
+ModifyIDCMP(winA, IDCMP_CLOSEWINDOW | IDCMP_RAWKEY);
+ModifyIDCMP(winB, IDCMP_CLOSEWINDOW | IDCMP_RAWKEY);
+
+/* Event loop processes both windows from one port */
+BOOL running = TRUE;
+while (running)
+{
+    Wait(1L << sharedPort->mp_SigBit);
+    struct IntuiMessage *msg;
+    while ((msg = (struct IntuiMessage *)GetMsg(sharedPort)))
+    {
+        struct Window *src = msg->IDCMPWindow;  /* which window? */
+        ULONG class = msg->Class;
+        ReplyMsg((struct Message *)msg);
+
+        if (class == IDCMP_CLOSEWINDOW)
+        {
+            if (src == winA) { CloseWindow(winA); winA = NULL; }
+            if (src == winB) { CloseWindow(winB); winB = NULL; }
+            if (!winA && !winB) running = FALSE;
+        }
+    }
+}
+DeleteMsgPort(sharedPort);
+```
+
+> [!WARNING]
+> When closing a window with a shared port, you **must** drain its messages, detach the port, and strip pending messages. See [idcmp.md](idcmp.md#multi-window-shared-port) for the full `Forbid()` protocol.
+
+---
+
+## Historical Context & Modern Analogies
+
+### Competitive Landscape
+
+| Platform | Overlapping Windows | Clipping System | Backing Store | Notes |
+|----------|---------------------|-----------------|---------------|-------|
+| **AmigaOS Intuition** | Yes — layered | layers.library ClipRect | Smart Refresh | Lightweight — just a Layer + RastPort |
+| **Mac OS (Classic)** | Yes — via Window Manager | Region-based | Window buffer (optional) | Heavyweight GrafPort per window |
+| **Windows 1.x** | No — tiled only | Rectangle clip | None | Could not overlap |
+| **Windows 2.x–3.x** | Yes — overlapping | Region clip | None (app redraws) | `WM_PAINT` driven |
+| **Atari ST GEM** | No — tiled (AES limits) | Rectangle only | None | Max 8 windows, no true overlap |
+| **X11** | Yes — server-side | Server region clip | Backing store (optional) | Remote protocol overhead |
+
+The Amiga was the **only consumer platform in 1985** with true overlapping windows backed by automatic damage repair (Smart Refresh). The Mac had overlapping windows but required the application to handle all redraw until System 7 (1991).
+
+### Modern Analogies
+
+| Amiga Concept | Modern Equivalent | Notes |
+|--------------|-------------------|-------|
+| `OpenWindowTags()` | `CreateWindowEx()` (Win32) / `NSWindow()` (macOS) / `gtk_window_new()` | Tag-based extensible API was ahead of its time |
+| `struct Window` | `NSWindow` / `GtkWidget` / `wl_surface` | Amiga's is read-only; modern objects have methods |
+| `WA_InnerWidth/Height` | `contentRect` (macOS) / `client area` (Win32) | Same concept — content area minus chrome |
+| Smart Refresh | Compositor shadow buffer (Wayland) / `CA_LAYER` (macOS) | OS saves obscured content automatically |
+| Simple Refresh | `WM_PAINT` (Win32) / `expose-event` (X11/GTK2) | App must redraw damaged areas |
+| `IDCMP_CLOSEWINDOW` | `WM_CLOSE` (Win32) / `windowWillClose:` (macOS) | User clicked the close button |
+| `IDCMP_NEWSIZE` | `WM_SIZE` (Win32) / `resize-event` (GTK) | Window dimensions changed |
+| `WA_RMBTrap` | `button-press-event` right button (GTK) | Capture right-click instead of menu activation |
+| `SetWindowTitles()` | `window.title =` (macOS/GTK) | Change title at runtime |
+| `SetWindowPointer(WA_BusyPointer)` | `NSCursor.operationSetCursor()` / `gtk_window_set_cursor(GDK_WATCH)` | Hourglass / spinning beach ball |
+
+The key architectural difference: Amiga windows are **immediate-mode** — you draw directly to the screen bitmap via the window's RastPort. Modern windows are **retained-mode** — you describe what to draw, and the compositor renders it off-screen, then presents it. This is why Amiga windows could be so lightweight — no compositor, no texture memory, just rectangle math.
+
+---
+
+## Use Cases
+
+| Software Type | Window Style | Refresh Mode | Notes |
+|--------------|-------------|--------------|-------|
+| Word processor (Final Writer) | Standard + gadgets | Smart | Full gadget toolbar, resizable |
+| Drawing program (Deluxe Paint) | Borderless or standard | SuperBitMap | Canvas in off-screen bitmap |
+| Terminal emulator (Term) | Standard | Smart | Scrollback via ClipBlit |
+| Spreadsheet (MaxiPlan) | Standard + lots of gadgets | Smart | Grid layout, cell gadgets |
+| Game (Lemmings) | Full-screen borderless | Simple | Full redraw every frame anyway |
+| Demo scene intro | Borderless + RMBTrap | Simple | No system gadgets, raw key input |
+| Workbench background | Backdrop + borderless | Simple | Behind everything, draws desktop pattern |
+| File requester (ASL) | Standard + borderless | Smart | Modal dialog pattern |
+| System monitor (SysMon) | Standard, small | Smart | Periodic timer-driven redraw |
+
+---
+
+## FAQ
+
+**Q: What happens if `OpenWindowTags()` returns `NULL`?**
+A: Either the screen is locked by another application, the system is out of memory (Chip RAM for Smart refresh), or the requested flags are contradictory. Check `IoErr()` for the specific error.
+
+**Q: Can I open a window without a screen?**
+A: No — every window must belong to a screen. Use `WA_PubScreen, NULL` for the default (Workbench) screen, or `WA_CustomScreen, myScreen` for your own.
+
+**Q: What's the minimum set of IDCMP flags I should request?**
+A: At minimum: `IDCMP_CLOSEWINDOW` (if you have a close gadget) + `IDCMP_GADGETUP` (if you have gadgets). Never request all flags — it floods your message port with mouse move events.
+
+**Q: How do I make a window that can't be moved?**
+A: Don't set `WFLG_DRAGBAR`. The window will have no title bar drag area.
+
+**Q: What is GimmeZeroZero good for?**
+A: It creates a separate layer for borders so your content RastPort starts at (0,0) — no need to add `BorderLeft`/`BorderTop` offsets to every draw call. The cost is an extra layer (memory + blitter overhead). Useful for applications with complex drawing that don't want to track border offsets.
+
+**Q: Can I change the refresh mode after opening?**
+A: No — the refresh mode is determined at open time by the `WFLG_SMART_REFRESH` / `WFLG_SIMPLE_REFRESH` / `WFLG_SUPER_BITMAP` flags. You must close and reopen the window to change it.
+
+**Q: What is `WA_AutoAdjust`?**
+A: If the requested window dimensions don't fit on the screen, `WA_AutoAdjust, TRUE` tells Intuition to shrink or reposition the window to make it fit. Without it, `OpenWindowTags()` may fail if the window is too large.
 
 ---
 
 ## References
 
-- NDK 3.9: `intuition/intuition.h`, `intuition/screens.h`
-- ADCD 2.1: `OpenWindowTagList()`, `CloseWindow()`, `ModifyIDCMP()`
-- AmigaOS Reference Manual (RKRM): Libraries, Chapter 4 — Intuition Windows
-- See also: [IDCMP](idcmp.md), [Screens](screens.md), [Gadgets](gadgets.md)
+### NDK Headers
+
+- `intuition/intuition.h` — `struct Window`, `struct NewWindow`, `WA_*` tags, `WFLG_*` flags
+- `intuition/screens.h` — `LockPubScreen()`, `UnlockPubScreen()`
+- `intuition/intuitionbase.h` — IntuitionBase
+
+### Autodocs
+
+- ADCD 2.1: `OpenWindowTagList()`, `CloseWindow()`, `MoveWindow()`, `SizeWindow()`, `ChangeWindowBox()`
+- ADCD 2.1: `SetWindowTitles()`, `SetWindowPointer()`, `WindowToFront()`, `WindowToBack()`
+- ADCD 2.1: `ModifyIDCMP()`, `RefreshWindowFrame()`
+
+### Related Knowledge Base Articles
+
+- [IDCMP](idcmp.md) — event delivery mechanism, shared message port protocol
+- [Screens](screens.md) — screen architecture, Copper-based display switching
+- [Gadgets](gadgets.md) — button, string, slider, and custom BOOPSI gadgets
+- [Menus](menus.md) — menu bar structure and event handling
+- [Layers](../11_libraries/layers.md) — the clipping engine behind every window
+- [RastPort](../08_graphics/rastport.md) — drawing context, the window's `RPort`
+- [Requesters](requesters.md) — modal and async dialog boxes

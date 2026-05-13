@@ -53,14 +53,14 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | # | File | Was | Now | Status |
 |---|---|---|---|---|
 | 15 | `08_graphics/sprites.md` | 306 | 306 | ❌ **Pending** — Named antipatterns, pitfalls comparing hardware sprites vs SimpleSprite, FPGA sprite timing |
-| 16 | `08_graphics/text_fonts.md` | 215 | 215 | ❌ **Pending** — Cookbook (bitmap vs outline fonts), pitfalls with font spacing, ColorFont memory layout |
+| 16 | `08_graphics/text_fonts.md` | 215 | 708 | ✅ **Complete** — Expanded with ColorTextFont layout, Compugraphic outlines, font scaling/aspect ratio, draw mode effects, 3 cookbooks (centered title, multi-font label, word wrap), 4 antipatterns, 4 pitfalls, historical comparison, modern analogies, 6 FAQ |
 | 17 | `09_intuition/screens.md` | 582 | 582 | ❌ **Pending** — Antipatterns, cookbook (screen flipping, borderless, PAL→NTSC handling) |
-| 18 | `09_intuition/windows.md` | 370 | 370 | ❌ **Pending** — Named antipatterns ("The Borderless Too Soon"), FAQ, cookbook (custom window dragging, backdrop to screen flip) |
-| 19 | `09_intuition/menus.md` | 378 | 378 | ❌ **Pending** — Menu render chain diagram, pitfalls with RemoveMenu/FreeMenu ordering, AmigaGuide help links |
+| 18 | `09_intuition/windows.md` | 370 | 778 | ✅ **Complete** — Added 5 named antipatterns (Border Collision, Unresponsive Close, Leaked Message, Refresh Loop, Phantom Window), window type decision guide with Mermaid, 3 cookbooks (resizable, borderless overlay, multi-window shared port), historical comparison, modern analogies, use cases, 7 FAQ |
+| 19 | `09_intuition/menus.md` | 378 | 695 | ✅ **Complete** — Added render chain sequence diagram, 5 named antipatterns (Multi-Select Ghost, Stale Menu, Cleanup Reversal, Shortcut Collision, Phantom VisualInfo), complete lifecycle cookbook, historical comparison, modern analogies, use cases, 6 FAQ |
 | 20 | `09_intuition/gadgets.md` | 403 | 403 | ❌ **Pending** — Named antipatterns, BOOPSI command flow, GadTools→BOOPSI migration guide |
 | 21 | `11_libraries/iffparse.md` | 271 | 1031 | ✅ **DONE** — Nesting & chunk hierarchy diagrams, ILBM/EHB pitfalls, PBM read patterns, cross-reference to Datatypes |
 | 22 | `13_toolchain/gcc_amiga.md` | 82 | 82 | ❌ **Pending** — Extremely thin stub. Needs full build pipeline, Docker cross-compilation guide, linker scripts, amiga-gcc specifics |
-| 23 | `11_libraries/layers.md` | 224 | 224 | ❌ **Pending** — Mermaid layer stacking diagram, pitfalls with layer ordering and damage regions |
+| 23 | `11_libraries/layers.md` | 224 | 739 | ✅ **Complete** — Expanded with ClipRect engine deep-dive, API reference with LVOs, backfill hook cookbook, refresh type decision guide, 4 named antipatterns, 4 pitfalls, ClipBlit vs ScrollRaster optimization, historical comparison table, modern analogies, 7 FAQ |
 | 24 | `10_devices/console.md` | 244 | 244 | ❌ **Pending** — Escape sequence table, cookbook for raw console I/O, pitfalls with buffering |
 | 25 | `10_devices/trackdisk.md` | 178 | 178 | ❌ **Pending** — Sector-level format diagram, MFM encoding basics, pitfalls with trackdisk vs filesystem access |
 
@@ -113,7 +113,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `cia_chips.md` | common | 218 | ✅ Adequate | 8520 CIA: timers, I/O ports, TOD clock |
 | `address_space.md` | common | 175 | ✅ Adequate | 24-bit memory map: Chip, Fast, ROM, I/O, Zorro II |
 | `m68k_cpu.md` | common | 141 | ✅ Adequate | 68000 architecture baseline: registers, exceptions |
-| `zorro_bus.md` | common | 139 | ✅ Adequate | Zorro II/III expansion bus: AutoConfig, bus arbitration |
+| `zorro_bus.md` | common | 110 | ✅ Adequate | Zorro II/III expansion bus: electrical specs, bandwidth, Buster, PCI bridges; links to autoconfig.md for protocol details |
 | `autoconfig.md` | common | 662 | ✅ Deep | AutoConfig protocol: CFGIN/CFGOUT chain, ExpansionRom encoding, nibble-pair map, size codes, shut-up mechanism, Z2/Z3 differences, antipatterns, FPGA notes, boot sequence positioning |
 | `dma_architecture.md` | common | 581 | ✅ Deep | Scanline slot allocation, even/odd interleaving, DMA channel priority, bitplane DMA budget (DDFSTRT/DDFSTOP/BPLxMOD), bus arbitration (Agnus as bus master, DTACK, wait states), Blitter-Nasty/BLTPRI, per-model bus table (A1000→CD32), Buster/Ramsey/SDMAC/Gayle glue chips, AGA FMODE bandwidth equation, alignment requirements, FPGA implementation notes (Minimig state machine, SDRAM timing, common bugs), bandwidth calculation cookbook with 4 worked examples, best practices, FAQ |
 | `video_timing.md` | common | 736 | ✅ Deep | Crystal-to-CPU clock tree (PAL/NTSC), scanline anatomy, frame structure, interlace LOF/SHF, beam counters (VPOSR/VHPOSR), BEAMCON0 programmable sync, 23-pin video connector pinout, analog/digital RGB output, video slot (A2000/A3000/A4000), genlock/XCLK/PIXELSW overlay, Video Toaster, scandoublers/flicker fixers (historical + modern Indivision/RGB2HDMI/OSSC), sync→async CPU evolution, per-frame time budgets, best practices, FAQ |
@@ -256,7 +256,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `copper_programming.md` | 319 | ✅ Deep | Copper deep dive: copper list construction, gradient, raster effects |
 | `sprites.md` | 582 | ✅ Deep | Tier 3 #15 upgrade: DMA timing, CLXCON/CLXDAT collision, V39 ExtSprite API, decision flowchart, 5 named antipatterns, multiplexing techniques, real-world use cases, FPGA notes, competitive landscape |
 | `gfx_base.md` | 237 | ✅ Adequate | GfxBase, chipset detection, display pipeline overview |
-| `text_fonts.md` | 215 | ❌ Pending | Tier 3 #16: needs cookbook (bitmap vs outline), font spacing pitfalls, ColorFont layout |
+| `text_fonts.md` | 708 | ✅ Deep | ColorFont layout, Compugraphic outlines, font scaling/aspect, 3 cookbooks, 4 antipatterns, 4 pitfalls, historical + modern analogies |
 | `copper.md` | 124 | ✅ Adequate | Copper coprocessor basics, instruction format, UCopList |
 | `blitter.md` | 109 | ✅ Adequate | Blitter DMA engine basics, minterms, BltBitMap |
 
@@ -270,8 +270,8 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `screens.md` | 582 | ❌ Pending | Tier 3 #17: needs antipatterns, cookbook (screen flipping, borderless, PAL→NTSC) |
 | `boopsi.md` | 505 | ✅ Adequate | OOP dispatcher, ICA interconnection, custom class tutorial |
 | `gadgets.md` | 403 | ❌ Pending | Tier 3 #20: needs antipatterns, BOOPSI command flow, GadTools→BOOPSI guide |
-| `menus.md` | 378 | ❌ Pending | Tier 3 #19: needs menu render chain diagram, RemoveMenu/FreeMenu pitfalls |
-| `windows.md` | 370 | ❌ Pending | Tier 3 #18: needs antipatterns ("The Borderless Too Soon"), FAQ, cookbook |
+| `menus.md` | 695 | ✅ Deep | Render chain diagram, 5 antipatterns, lifecycle cookbook, historical + modern analogies, use cases, 6 FAQ |
+| `windows.md` | 778 | ✅ Deep | 5 named antipatterns, window type decision guide, 3 cookbooks (resizable, borderless, shared port), historical + modern analogies, use cases, 7 FAQ |
 | `requesters.md` | 370 | ✅ Adequate | EasyRequest, ASL file/font/screenmode dialogs |
 | `intuition_base.md` | 267 | ✅ Adequate | IntuitionBase, ViewLord, LockIBase |
 
@@ -319,8 +319,8 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `translator.md` | 536 | ✅ Deep | Tier 1 creation: phonetic translation, narrator.device |
 | `mathffp.md` | 468 | ✅ Adequate | Motorola FFP and IEEE 754 floating point formats |
 | `locale.md` | 265 | ✅ Adequate | .cd/.ct catalog system, locale-aware formatting |
-| `layers.md` | 224 | ❌ Pending | Tier 3 #23: needs Mermaid layer stacking diagram, damage region pitfalls |
-| `expansion.md` | 806 | ✅ Deep | Zorro II/III, AutoConfig ROM layout, FPGA/Emulator implementation guide, firmware complexity tiers, SCSI boot use-case walkthrough (Phase 1-4) |
+| `layers.md` | 739 | ✅ Deep | ClipRect engine, LVO API reference, backfill hooks, refresh decision guide, 4 antipatterns, ClipBlit vs ScrollRaster, historical + modern analogies |
+| `expansion.md` | 781 | ✅ Deep | Zorro II/III, expansion.library API, ConfigDev/ExpansionRom structs, DiagArea boot ROM execution, manufacturer IDs, FPGA/Emulator implementation guide, firmware complexity tiers, SCSI boot use-case walkthrough (Phase 1-4) |
 | `utility.md` | 203 | ✅ Adequate | TagItem lists, callback hooks, date/time utilities |
 | `workbench.md` | 194 | ✅ Adequate | WBStartup, AppWindow, AppIcon, AppMenuItem |
 | `icon.md` | 188 | ✅ Adequate | .info format, DiskObject, ToolTypes, true-color icons |

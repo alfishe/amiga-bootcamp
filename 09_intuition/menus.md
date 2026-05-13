@@ -367,12 +367,329 @@ Intuition automatically intercepts Right-Amiga+key combinations matching menu sh
 6. **Disable items** with `OffMenu()` when they don't apply — don't hide them
 7. **Clean up in order**: `ClearMenuStrip()` → `CloseWindow()` → `FreeMenus()` → `FreeVisualInfo()`
 8. **Use `GTMN_NewLookMenus, TRUE`** for the modern 3D menu appearance (OS 3.0+)
+9. **Keep menus shallow** — max 3 levels (menu → item → sub-item); deeper nesting confuses users
+10. **Disable rather than remove** — users learn where commands live; removing them breaks spatial memory
+11. **Use keyboard shortcuts for the top 10 commands** — the rest don't need them
+12. **Never modify menu structs while attached** — always `ClearMenuStrip()` first
+
+---
+
+## Menu Render Chain
+
+When the user presses the right mouse button, Intuition renders the menu system through a specific pipeline:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Intuition
+    participant MenuStrip
+    participant RastPort
+    participant Layer
+
+    Note over User,Layer: Right mouse button pressed
+    User->>Intuition: RMB down event
+    Intuition->>Intuition: Freeze window input (menu mode)
+    Intuition->>Layer: Lock screen layers
+    Intuition->>RastPort: Render menu strip across screen top
+    Note over RastPort: All menu titles rendered in title bar area
+
+    User->>Intuition: Mouse moves to "Edit" title
+    Intuition->>RastPort: Highlight "Edit" title
+    Intuition->>RastPort: Render dropdown box with Edit items
+    Note over RastPort: Items drawn with checkmarks, shortcuts, separators
+
+    User->>Intuition: Mouse moves to "Copy" item
+    Intuition->>RastPort: Highlight "Copy" (invert/complement)
+
+    Note over User,Layer: Right mouse button released
+    User->>Intuition: RMB up event
+    Intuition->>RastPort: Erase all menu rendering
+    Intuition->>Layer: Unlock screen layers
+    Intuition->>Intuition: Send IDCMP_MENUPICK to window
+    Note over Intuition: Code = packed menu/item/sub numbers
+```
+
+### Render Details
+
+| Phase | What Intuition Does | Memory Impact |
+|-------|--------------------|---------------|
+| **Strip rendering** | Draws all menu titles across the screen title bar | Backing store saved for Smart Refresh windows obscured by strip |
+| **Dropdown** | Draws a filled rectangle with items inside | Obscures part of the window beneath |
+| **Highlight** | `HIGHCOMP` = XOR complement, `HIGHBOX` = draw rectangle | Non-destructive — can be undone by same operation |
+| **Cleanup** | Restores all obscured content from backing store | Smart refresh handles this automatically |
+
+> [!NOTE]
+> While the menu is active, Intuition **freezes input** to the window. No `IDCMP_RAWKEY`, `IDCMP_MOUSEBUTTONS`, or gadget events are delivered until the menu closes. The application cannot draw during menu mode because Intuition holds the layer lock.
+
+---
+
+## Named Antipatterns
+
+### "The Multi-Select Ghost" — Ignoring NextSelect
+
+```c
+/* BAD: Only processes the first item selected.
+   If the user multi-selects (hold RMB, click several items),
+   only the first one is handled — the rest silently vanish. */
+case IDCMP_MENUPICK:
+{
+    struct MenuItem *item = ItemAddress(menuStrip, code);
+    HandleCommand(GTMENUITEM_USERDATA(item));
+    break;  /* BUG: drops all subsequent selections */
+}
+```
+
+```c
+/* CORRECT: Walk the NextSelect chain */
+case IDCMP_MENUPICK:
+{
+    UWORD menuCode = code;
+    while (menuCode != MENUNULL)
+    {
+        struct MenuItem *item = ItemAddress(menuStrip, menuCode);
+        HandleCommand(GTMENUITEM_USERDATA(item));
+        menuCode = item->NextSelect;
+    }
+    break;
+}
+```
+
+### "The Stale Menu" — Modifying Items While Attached
+
+```c
+/* BAD: Modifying MenuItem flags while the menu strip is active.
+   If the user opens the menu at exactly this moment, Intuition
+   reads partially-modified state — corrupted rendering or crash. */
+struct MenuItem *item = ItemAddress(menuStrip, FULLMENUNUM(0, 2, NOSUB));
+item->Flags |= CHECKED;  /* RACE CONDITION */
+```
+
+```c
+/* CORRECT: Detach, modify, reattach */
+ClearMenuStrip(win);
+struct MenuItem *item = ItemAddress(menuStrip, FULLMENUNUM(0, 2, NOSUB));
+item->Flags |= CHECKED;
+SetMenuStrip(win, menuStrip);
+```
+
+> [!TIP]
+> For simple enable/disable or check/uncheck, use `OnMenu()`/`OffMenu()` instead — these are safe to call while the menu is attached.
+
+### "The Cleanup Reversal" — Wrong Free Order
+
+```c
+/* BAD: Freeing menus before clearing from window — Intuition
+   may access freed memory on the next menu open attempt. */
+FreeMenus(menuStrip);      /* freed while still attached */
+ClearMenuStrip(win);       /* too late — dangling pointer */
+CloseWindow(win);
+```
+
+```c
+/* CORRECT: ClearMenuStrip → CloseWindow → FreeMenus */
+ClearMenuStrip(win);
+CloseWindow(win);
+FreeMenus(menuStrip);      /* now safe — no window references it */
+FreeVisualInfo(vi);
+UnlockPubScreen(NULL, scr);
+```
+
+### "The Shortcut Collision" — Duplicate CommKey Letters
+
+```c
+/* BAD: Two items in the same menu share shortcut "S".
+   Only the first match fires — "Save As" is unreachable via keyboard. */
+{  NM_ITEM,  "Save",       "S",  0, 0, (APTR)MENU_SAVE },
+{  NM_ITEM,  "Save As...", "S",  0, 0, (APTR)MENU_SAVEAS },
+```
+
+```c
+/* CORRECT: Each shortcut must be unique within its menu */
+{  NM_ITEM,  "Save",       "S",  0, 0, (APTR)MENU_SAVE },
+{  NM_ITEM,  "Save As...", "A",  0, 0, (APTR)MENU_SAVEAS },
+```
+
+### "The Phantom VisualInfo" — Wrong Screen
+
+```c
+/* BAD: Getting VisualInfo from one screen, opening window on another.
+   LayoutMenus calculates positions for the wrong font/resolution. */
+struct Screen *scr1 = LockPubScreen(NULL);
+APTR vi = GetVisualInfo(scr1, TAG_DONE);
+/* ... later, open window on a DIFFERENT screen ... */
+struct Screen *scr2 = /* custom screen */;
+struct Window *win = OpenWindowTags(NULL, WA_CustomScreen, scr2, TAG_DONE);
+SetMenuStrip(win, menuStrip);  /* WRONG VI — menu positions are for scr1 */
+```
+
+```c
+/* CORRECT: Get VisualInfo from the SAME screen the window uses */
+struct Screen *scr = /* the screen your window is on */;
+APTR vi = GetVisualInfo(scr, TAG_DONE);
+```
+
+---
+
+## Practical Cookbook: Complete Menu Lifecycle
+
+```c
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/gadtools.h>
+#include <libraries/gadtools.h>
+
+enum { MENU_QUIT = 1, MENU_NEW, MENU_OPEN, MENU_CUT, MENU_COPY, MENU_PASTE };
+
+struct NewMenu menuDef[] = {
+    { NM_TITLE,  "Project",     NULL, 0, 0, NULL },
+    {  NM_ITEM,  "New",         "N",  0, 0, (APTR)MENU_NEW },
+    {  NM_ITEM,  "Open...",     "O",  0, 0, (APTR)MENU_OPEN },
+    {  NM_ITEM,  NM_BARLABEL,   NULL, 0, 0, NULL },
+    {  NM_ITEM,  "Quit",        "Q",  0, 0, (APTR)MENU_QUIT },
+    { NM_TITLE,  "Edit",        NULL, 0, 0, NULL },
+    {  NM_ITEM,  "Cut",         "X",  0, 0, (APTR)MENU_CUT },
+    {  NM_ITEM,  "Copy",        "C",  0, 0, (APTR)MENU_COPY },
+    {  NM_ITEM,  "Paste",       "V",  0, 0, (APTR)MENU_PASTE },
+    { NM_END,    NULL,           NULL, 0, 0, NULL }
+};
+
+struct Menu *CreateAndAttachMenus(struct Window *win)
+{
+    struct Screen *scr = win->WScreen;
+    APTR vi = GetVisualInfo(scr, TAG_DONE);
+    if (!vi) return NULL;
+
+    struct Menu *menuStrip = CreateMenus(menuDef, TAG_DONE);
+    if (!menuStrip) { FreeVisualInfo(vi); return NULL; }
+
+    if (!LayoutMenus(menuStrip, vi,
+        GTMN_NewLookMenus, TRUE,
+        TAG_DONE))
+    {
+        FreeMenus(menuStrip);
+        FreeVisualInfo(vi);
+        return NULL;
+    }
+
+    SetMenuStrip(win, menuStrip);
+    FreeVisualInfo(vi);  /* safe to free after LayoutMenus + SetMenuStrip */
+    return menuStrip;
+}
+
+void ProcessMenuPick(struct Window *win, struct Menu *menuStrip, UWORD code)
+{
+    while (code != MENUNULL)
+    {
+        struct MenuItem *item = ItemAddress(menuStrip, code);
+        ULONG cmd = (ULONG)GTMENUITEM_USERDATA(item);
+
+        switch (cmd)
+        {
+            case MENU_NEW:    NewDocument();   break;
+            case MENU_OPEN:   OpenDocument();  break;
+            case MENU_CUT:    CutSelection();  break;
+            case MENU_COPY:   CopySelection(); break;
+            case MENU_PASTE:  PasteClipboard(); break;
+            case MENU_QUIT:   /* signal main loop to exit */ break;
+        }
+        code = item->NextSelect;
+    }
+}
+
+void CleanupMenus(struct Window *win, struct Menu *menuStrip)
+{
+    ClearMenuStrip(win);
+    FreeMenus(menuStrip);
+}
+```
+
+---
+
+## Historical Context & Modern Analogies
+
+### Competitive Landscape
+
+| Platform | Menu System | Keyboard Shortcuts | Dynamic Modification | Sub-Menus | Notes |
+|----------|------------|-------------------|---------------------|-----------|-------|
+| **AmigaOS Intuition** | Right-click pull-down | Right-Amiga+key | `OnMenu()`/`OffMenu()`, `SetMenuStrip()` | 1 level only | Multi-select is unique — no other platform supports it |
+| **Mac OS (Classic)** | Click-and-hold in menu bar | Command+key | `EnableMenuItem()`/`DisableMenuItem()` | Cascading | First platform with standard menu bar |
+| **Windows 3.x** | Click on menu bar | Alt+letter, Ctrl+key | `EnableMenuItem()` | Cascading | Menu bar in each window |
+| **Atari ST GEM** | Click on menu bar | Alt+key | Limited | No | Very basic — no checkmarks, no radio groups |
+| **X11/Motif** | Click on menu bar | Alt+key (motif) | `XtSetSensitive()` | Cascading | Server-side rendering |
+
+The Amiga's **right-click-to-activate** menu system was unique. Every other platform used a left-click menu bar. The right-click approach meant menus never interfered with left-click window operations, but it confused users coming from Mac/Windows.
+
+**Multi-select** (holding right button while clicking multiple items) was an Amiga-exclusive feature. No other platform supported selecting Cut, Copy, and Paste in a single menu interaction.
+
+### Modern Analogies
+
+| Amiga Concept | Modern Equivalent | Notes |
+|--------------|-------------------|-------|
+| Right-click menu activation | Right-click context menu (all platforms) | Amiga: right-click = global menu bar; Modern: right-click = context menu |
+| `struct NewMenu[]` array | XUL `<menubar>` / GTK `GtkUIManager` / Qt `QMenuBar` | Declarative menu definition |
+| `CreateMenus()` + `LayoutMenus()` | `gtk_menu_bar_new_from_model()` / Qt Designer | Build + layout in one step |
+| `SetMenuStrip()` | `gtk_application_set_menubar()` / macOS `NSMenu` | Attach to window |
+| `GTMENUITEM_USERDATA()` | `gtk_buildable_get_name()` / Qt `QObject::property()` | User data for dispatch |
+| `IDCMP_MENUPICK` | `activate` signal (GTK) / `triggered` (Qt) / `@IBAction` (macOS) | Selection event |
+| `MENUNUM/ITEMNUM/SUBNUM` | None — modern APIs pass the menu item object directly | Amiga packs 3 levels into one UWORD |
+| `NextSelect` chain | None — modern menus fire one event per selection | Amiga's multi-select is unique |
+| `OnMenu()`/`OffMenu()` | `gtk_widget_set_sensitive()` / `NSMenuItem.enabled` | Enable/disable |
+| `NM_BARLABEL` separator | GTK `gtk_separator_menu_item_new()` / Qt `addSeparator()` | Visual divider |
+
+---
+
+## Use Cases
+
+| Application | Menu Structure | Notable Features |
+|-------------|---------------|-----------------|
+| **Workbench** | System (disk operations), Special (snapshot, cleanup) | Backdrop menu — menus available from Workbench screen |
+| **Word processors (Final Writer, WordWorth)** | Project, Edit, Format, Tools, Print | Mutual exclusion for font size, toggle for bold/italic |
+| **Image editors (Deluxe Paint)** | Picture, Brush, Mode,Prefs | Dynamic menus — mode options change with tool |
+| **Terminal emulators** | Connect, Edit, Settings | Menu-only commands — no toolbar |
+| **IDE / dev tools (SAS/C, DevPac)** | Project, Edit, Search, Run, Debug, Options | Extensive menus with many disabled states |
+| **Games with GUI frontends** | Game, Options, Help | Simple 2-3 menu strip; menus disabled during gameplay |
+| **File managers (Directory Opus)** | File, Edit, View, Tools, Settings | Heavily customized menus with gadget-driven alternatives |
+
+---
+
+## FAQ
+
+**Q: Can I have more than 31 menus?**
+A: No — the menu number is packed into 5 bits (0–31). In practice, no application needs more than 10–12 top-level menus. The Mac's Human Interface Guidelines recommend 5–7.
+
+**Q: Can menus use custom fonts?**
+A: No — Intuition renders menus using the screen's default font (set via Font Preferences). GadTools' `LayoutMenus()` uses the screen's `Font` field for sizing. There is no per-menu font override.
+
+**Q: What happens if the user opens a menu while I'm drawing?**
+A: Intuition freezes input and locks the screen's layers during menu mode. Your drawing calls will block until the menu interaction completes (user releases right mouse button). This is why long drawing operations should be done in a separate task.
+
+**Q: Can I add images/icons to menu items?**
+A: Yes — by manually constructing `struct MenuItem` with `ItemFill` pointing to a `struct Image`. GadTools' `CreateMenus()` does not support image items. This is rarely done in practice.
+
+**Q: How do I detect keyboard shortcuts in my event loop?**
+A: Intuition automatically handles Right-Amiga+key combinations matching `nm_CommKey` and generates `IDCMP_MENUPICK`. You do NOT need to handle them in `IDCMP_RAWKEY` — in fact, Intuition intercepts those key combinations before your window sees them.
+
+**Q: What is `NOSUB` in `FULLMENUNUM`?**
+A: `NOSUB` (value 0) indicates that the item has no sub-item. Use it when constructing menu numbers for `OnMenu()`/`OffMenu()` on regular (non-sub) items.
 
 ---
 
 ## References
 
-- NDK 3.9: `intuition/intuition.h`, `libraries/gadtools.h`
+### NDK Headers
+
+- `intuition/intuition.h` — `struct Menu`, `struct MenuItem`, `MENUNUM/ITEMNUM/SUBNUM` macros
+- `libraries/gadtools.h` — `struct NewMenu`, `NM_*` types/flags, `GTMENUITEM_USERDATA()`
+
+### Autodocs
+
 - ADCD 2.1: `CreateMenus()`, `LayoutMenus()`, `SetMenuStrip()`, `ClearMenuStrip()`, `FreeMenus()`
-- AmigaOS Reference Manual (RKRM): Libraries, Chapter 6 — Menus
-- See also: [IDCMP](idcmp.md), [Windows](windows.md), [GadTools (Gadgets)](gadgets.md)
+- ADCD 2.1: `ItemAddress()`, `OnMenu()`, `OffMenu()`, `GetVisualInfoA()`, `FreeVisualInfo()`
+
+### Related Knowledge Base Articles
+
+- [IDCMP](idcmp.md) — `IDCMP_MENUPICK` event delivery
+- [Windows](windows.md) — windows host menu strips
+- [Gadgets](gadgets.md) — GadTools creates both gadgets and menus
+- [Screens](screens.md) — menu bar renders in the screen title area
+- [Intuition Base](intuition_base.md) — Intuition's global state

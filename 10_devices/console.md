@@ -2,14 +2,10 @@
 
 # console.device — Text Terminal I/O
 
-## Overview
+Every CLI/Shell window on the Amiga is powered by `console.device`. It is a software terminal emulator that sits between raw keyboard input and Intuition window rendering: it translates keycodes into ASCII characters, parses ANSI escape sequences for cursor control and color, and renders text through the window's RastPort. If you need a text interface in an Intuition window — a debugger console, a text editor, a terminal emulator — console.device is the foundation.
 
-`console.device` provides an ANSI-compatible text terminal within Intuition windows. It handles:
-- **Input**: translating raw keycodes from `input.device` into ASCII/ANSI characters
-- **Output**: rendering text, parsing escape sequences for cursor control, color, and formatting
-- **Clipboard**: cut/copy/paste integration
-
-Every CLI/Shell window is backed by a console.device unit. Applications can open their own console units in any Intuition window for text I/O without implementing their own keyboard translation or cursor rendering.
+> [!NOTE]
+> For simple file I/O, use [dos.library](../07_dos/file_io.md) with `CON:` windows instead of opening console.device directly. The `CON:` and `RAW:` handlers wrap console.device and provide buffered line editing, window management, and automatic cleanup.
 
 ```mermaid
 flowchart LR
@@ -238,7 +234,237 @@ BPTR raw = Open("RAW:0/0/640/200/Raw Input", MODE_OLDFILE);
 
 ## References
 
-- NDK39: `devices/conunit.h`, `devices/console.h`
+### NDK Headers
+
+- `devices/conunit.h` — unit type constants (`CONU_STANDARD`, etc.)
+- `devices/console.h` — console-specific structures
+
+### Documentation
+
 - ADCD 2.1: console.device autodocs
-- See also: [keyboard.md](keyboard.md) — raw keycode to console.device pipeline
-- See also: [input.md](input.md) — input handler chain
+- *Amiga ROM Kernel Reference Manual: Devices* — console chapter
+
+### Related Knowledge Base Articles
+
+- [keyboard.md](keyboard.md) — raw keycode to console.device pipeline
+- [input.md](input.md) — input handler chain
+- [cli_shell.md](../07_dos/cli_shell.md) — Shell architecture built on console.device
+- [windows.md](../09_intuition/windows.md) — Intuition window management
+
+---
+
+## Decision Guide: How to Render Text
+
+```mermaid
+flowchart TD
+    START{"Need text output?"} --> WHERE{"Where?"}
+    WHERE -->|"Shell window"| CON{"Use CON: handler<br>via dos.library"}
+    WHERE -->|"Own Intuition window"| COMPLEX{"Need cursor, colors,<br>line editing?"}
+    COMPLEX -->|Yes| CD{"Use console.device"}
+    COMPLEX -->|No| RP{"Use RastPort text<br>functions directly"}
+    WHERE -->|"Full-screen TUI"| CD
+    WHERE -->|"Custom text editor"| CD
+```
+
+| Approach | Use When | Pros | Cons |
+|----------|----------|------|------|
+| **CON: / RAW:** | Simple text I/O in a window | Easiest — just `Open()` / `Write()` | Limited control over rendering |
+| **console.device** | Full-screen TUI, text editor | ANSI escape sequences, cursor, colors | Must manage I/O requests manually |
+| **RastPort text** | Custom text rendering, game UI | Full pixel-level control | No built-in cursor, scrolling, or input handling |
+| **Intuition gadgets** | Forms, menus, buttons | Standard UI elements | Not suitable for free-form text |
+
+---
+
+## Use-Case Cookbook
+
+### Full-Screen Text UI (Status Display)
+
+```c
+/* con_tui.c — full-screen TUI using console.device */
+#include <proto/exec.h>
+#include <proto/intuition.h>
+#include <proto/dos.h>
+
+void ConPuts(struct IOStdReq *con, const char *str)
+{
+    con->io_Command = CMD_WRITE;
+    con->io_Data    = (APTR)str;
+    con->io_Length  = -1;
+    DoIO((struct IORequest *)con);
+}
+
+void run_tui(struct Window *win, struct IOStdReq *con)
+{
+    /* Clear screen and draw a frame */
+    ConPuts(con, "\033[2J");          /* clear screen */
+    ConPuts(con, "\033[1;1H");        /* home cursor */
+    ConPuts(con, "\033[7m Status Monitor \033[0m\n");  /* inverse title */
+    ConPuts(con, "\033[3;1H\033[33mCPU:  \033[32m7.14 MHz\033[0m");
+    ConPuts(con, "\033[4;1H\033[33mChip: \033[32m512 KB\033[0m");
+    ConPuts(con, "\033[20;1H\033[7m Press ESC to exit \033[0m");
+
+    /* Main loop — wait for keypress */
+    char buf[8];
+    con->io_Command = CMD_READ;
+    con->io_Data    = (APTR)buf;
+    con->io_Length  = sizeof(buf);
+    DoIO((struct IORequest *)con);
+    /* Check if ESC was pressed (0x1B) */
+}
+```
+
+### Progress Bar Using Escape Sequences
+
+```c
+void DrawProgressBar(struct IOStdReq *con, int row, int percent)
+{
+    char buf[80];
+    int bar_width = 40;
+    int filled = (percent * bar_width) / 100;
+
+    /* Move to row, column 10 */
+    RawDoFmt("\033[%ld;10H", (RAWARG)&row, NULL, buf);
+    ConPuts(con, buf);
+
+    /* Draw filled portion in green, empty in black */
+    ConPuts(con, "\033[42m");  /* green background */
+    for (int i = 0; i < filled; i++) ConPuts(con, " ");
+    ConPuts(con, "\033[40m");  /* black background */
+    for (int i = filled; i < bar_width; i++) ConPuts(con, " ");
+    ConPuts(con, "\033[0m");   /* reset */
+
+    /* Percentage text */
+    RawDoFmt(" %ld%%", (RAWARG)&percent, NULL, buf);
+    ConPuts(con, buf);
+}
+```
+
+---
+
+## Best Practices
+
+1. Use `CON:` via dos.library for simple text I/O — avoid opening console.device directly unless you need escape sequence control
+2. Always save/restore cursor position around multi-step output operations
+3. Reset all text attributes (`\033[0m`) at the end of every output operation — stale attributes cause rendering bugs
+4. Use `CONU_SNIPMAP` (OS 3.0+) for clipboard support in text editors
+5. Set scroll margins with `\033[t` / `\033[b` for status bars that stay fixed
+6. Always abort pending reads before closing the device — see Proper Shutdown above
+7. Handle both ASCII and escape-sequence input when reading — cursor keys arrive as `\033[A` etc.
+
+---
+
+## Named Antipatterns
+
+### "The Leaking Read" — Pending I/O on Shutdown
+
+```c
+/* BAD: Pending async read never completed */
+con->io_Command = CMD_READ;
+con->io_Data    = (APTR)buffer;
+con->io_Length  = 256;
+SendIO((struct IORequest *)con);
+
+/* ... user closes window ... */
+CloseDevice((struct IORequest *)con);  /* CRASH: pending I/O */
+```
+
+```c
+/* CORRECT: Abort pending I/O before closing */
+if (!CheckIO((struct IORequest *)con))
+{
+    AbortIO((struct IORequest *)con);
+    WaitIO((struct IORequest *)con);
+}
+CloseDevice((struct IORequest *)con);
+```
+
+### "The Attribute Leak" — Stale Colors After Output
+
+```c
+/* BAD: Set color but never reset — next output inherits it */
+ConPuts(con, "\033[31mError!");
+/* Next write is still red! */
+ConPuts(con, "Normal text");  /* Still red! */
+```
+
+```c
+/* CORRECT: Always reset attributes */
+ConPuts(con, "\033[31mError!\033[0m");
+ConPuts(con, "Normal text");  /* Correctly default color */
+```
+
+### "The Blocking Shell" — DoIO Read Freezes UI
+
+```c
+/* BAD: DoIO on CMD_READ blocks forever if no input comes */
+con->io_Command = CMD_READ;
+con->io_Length  = 1;
+DoIO((struct IORequest *)con);  /* Frozen — can't handle IDCMP events */
+```
+
+```c
+/* CORRECT: Use SendIO + Wait with IDCMP signals */
+con->io_Command = CMD_READ;
+con->io_Length  = 1;
+SendIO((struct IORequest *)con);
+
+ULONG conSig  = 1 << conPort->mp_SigBit;
+ULONG winSig  = 1 << window->UserPort->mp_SigBit;
+ULONG sigs = Wait(conSig | winSig);
+
+if (sigs & winSig) {
+    /* Handle IDCMP event (close window, etc.) */
+    AbortIO((struct IORequest *)con);
+    WaitIO((struct IORequest *)con);
+}
+if (sigs & conSig) {
+    WaitIO((struct IORequest *)con);
+    /* Process input character */
+}
+```
+
+---
+
+## Pitfalls & Common Mistakes
+
+### 1. Console Position is 1-Based, Not 0-Based
+
+**Symptom:** Text appears one row/column off from expected position.
+
+**Cause:** ANSI `H` command uses 1-based coordinates: `\033[1;1H` is the top-left corner, not `\033[0;0H`.
+
+**Fix:** Always add 1 to your 0-based coordinates.
+
+### 2. Writing to a Closed Window
+
+**Symptom:** Guru meditation or silent crash.
+
+**Cause:** Console.device renders through the window's RastPort. If the window is closed (user clicked close gadget), writing to the console device dereferences a stale window pointer.
+
+**Fix:** Monitor `IDCMP_CLOSEWINDOW` and abort all console I/O before closing.
+
+### 3. Buffer Overrun on Read
+
+**Symptom:** Memory corruption.
+
+**Cause:** `CMD_READ` returns up to `io_Length` bytes. If you allocated a smaller buffer, the device writes past the end.
+
+**Fix:** Always ensure `io_Length <= sizeof(buffer)`.
+
+---
+
+## FAQ
+
+**Q: What is the difference between CON: and RAW:?**
+A: `CON:` is line-buffered — input is collected until the user presses Enter, with line editing (backspace, cursor keys). `RAW:` delivers each keypress immediately with no editing. Use `RAW:` for games and interactive TUIs; use `CON:` for command-line tools.
+
+**Q: Can I use console.device without an Intuition window?**
+A: Yes — open with `CONU_LIBRARY` unit type. This gives access to the keymap translation without rendering. Useful for translating raw keycodes to ASCII.
+
+**Q: How do I create a console with a specific font size?**
+A: Open the window with the desired font, then open console.device on that window. The console uses the window's RastPort font. Set the font with `SetFont(window->RPort, myFont)` before opening the console.
+
+**Q: Why does my text look wrong after a screen drag?**
+A: Console.device renders into the window's RastPort. When the screen is dragged, the console does not automatically redraw. You must handle `IDCMP_NEWSIZE` and redraw the console content.
+
+---
