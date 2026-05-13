@@ -85,19 +85,19 @@ Each sprite is stored as a contiguous block in Chip RAM:
 
 ```
 ┌──────────────────────────────────────────┐
-│ Header Word 0: VSTART/HSTART            │  Position control
-│ Header Word 1: VSTOP/Control/ATTACH     │
+│ Header Word 0: VSTART/HSTART             │  Position control
+│ Header Word 1: VSTOP/Control/ATTACH      │
 ├──────────────────────────────────────────┤
-│ Line 0: DATA word (bit 0 of each pixel) │  ← 16 pixels per line
-│ Line 0: DATB word (bit 1 of each pixel) │
+│ Line 0: DATA word (bit 0 of each pixel)  │  ← 16 pixels per line
+│ Line 0: DATB word (bit 1 of each pixel)  │
 ├──────────────────────────────────────────┤
-│ Line 1: DATA word                       │
-│ Line 1: DATB word                       │
+│ Line 1: DATA word                        │
+│ Line 1: DATB word                        │
 ├──────────────────────────────────────────┤
-│ ...repeat for each line...              │
+│ ...repeat for each line...               │
 ├──────────────────────────────────────────┤
-│ Terminator: 0x0000                      │  End marker
-│ Terminator: 0x0000                      │
+│ Terminator: 0x0000                       │  End marker
+│ Terminator: 0x0000                       │
 └──────────────────────────────────────────┘
 ```
 
