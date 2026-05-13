@@ -24,7 +24,7 @@ This section provides a systematic methodology for reverse engineering AmigaOS e
 | [static/code_vs_data_disambiguation.md](static/code_vs_data_disambiguation.md) | Distinguishing code bytes from data — IDA/Ghidra workflows |
 | [patching_techniques.md](patching_techniques.md) | Surgical binary patching methods |
 | [unpacking_and_decrunching.md](unpacking_and_decrunching.md) | Executable unpacking, decruncher architecture, and manual extraction |
-| [custom_loaders_and_drm.md](custom_loaders_and_drm.md) | Bypassing DOS, Trackloaders, and physical DRM tricks |
+| [custom_loaders_and_drm.md](custom_loaders_and_drm.md) | Custom bootblocks, trackloader architecture (raw MFM/Paula DMA), 6 DRM systems (Copylock, Psygnosis, EA, Gremlin), bootblock checksum, 5 antipatterns, trackloader identification cookbook, cracking scene history, modern analogies, 7 FAQ |
 | [anti_debugging.md](anti_debugging.md) | The Cracker vs. Developer arms race: Trace vector abuse, NMI defeat, CIA timers |
 | [games/whdload_architecture.md](games/whdload_architecture.md) | WHDLoad internals, slaves, resload_DiskLoad, and runtime memory patching |
 | [case_studies/](case_studies/) | Real-world RE walkthroughs |

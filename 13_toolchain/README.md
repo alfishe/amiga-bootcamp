@@ -8,7 +8,7 @@ Development tools for building Amiga software, from native compilers to modern c
 
 | File | Description |
 |---|---|
-| [gcc_amiga.md](gcc_amiga.md) | m68k-amigaos-gcc cross-compiler: bebbo's toolchain, Docker setup, CPU targets, libnix/ixemul startup |
+| [gcc_amiga.md](gcc_amiga.md) | m68k-amigaos-gcc cross-compiler: bebbo's toolchain, Docker setup, platform-specific builds (Linux/macOS/Windows), CPU targets, libnix/ixemul startup, flags, antipatterns, FAQ |
 | [vbcc.md](vbcc.md) | **VBCC: Volker Barthelmann's portable C compiler — `__reg()` storage class, AmigaOS/MorphOS/AROS targets, vlink integration, cross-compilation** |
 | [sasc.md](sasc.md) | SAS/C 6.x: pragma format with register encoding, compiler/linker flags, __saveds/__asm idioms, SAS/C vs GCC comparison |
 | [stormc.md](stormc.md) | StormC native IDE: C/C++ with exceptions, integrated debugger, PowerPC support, version history |

@@ -9,10 +9,10 @@ Intuition is the AmigaOS windowing system and user interface manager. It sits be
 | File | Description |
 |---|---|
 | [intuition_base.md](intuition_base.md) | IntuitionBase — library versioning, global state fields, ViewLord, LockIBase, function overview |
-| [screens.md](screens.md) | Screens — Copper mechanics, display modes (OCS/ECS/AGA/RTG), dragging, resolution tables |
-| [windows.md](windows.md) | Windows — WA_ tags, refresh modes, window types, coordinate system, lifecycle |
-| [gadgets.md](gadgets.md) | Gadgets — GadTools creation, raw struct Gadget, prop/string gadgets, runtime updates |
-| [menus.md](menus.md) | Menus — GadTools NewMenu, event handling, multi-select, checkmarks, keyboard shortcuts |
+| [screens.md](screens.md) | Screens — Copper mechanics, display modes (OCS/ECS/AGA/RTG), dragging, resolution tables, screen type decision guide, 5 antipatterns, screen flipping/borderless/PAL-NTSC cookbooks, modern analogies, 7 FAQ |
+| [windows.md](windows.md) | Windows — WA_ tags, refresh modes, window types, coordinate system, lifecycle, 5 antipatterns, decision guide, 3 cookbooks, modern analogies, 7 FAQ |
+| [gadgets.md](gadgets.md) | Gadgets — GadTools creation, raw struct Gadget, prop/string gadgets, runtime updates, 5 antipatterns, GadTools→BOOPSI migration guide, form cookbook, historical timeline, 6 FAQ |
+| [menus.md](menus.md) | Menus — GadTools NewMenu, event handling, multi-select, checkmarks, keyboard shortcuts, render chain diagram, 5 antipatterns, lifecycle cookbook, 6 FAQ |
 | [requesters.md](requesters.md) | Requesters — EasyRequest, ASL file/font/screenmode dialogs, non-blocking pattern |
 | [idcmp.md](idcmp.md) | IDCMP — event architecture, class reference, shared ports, antipatterns, use-case cookbook |
 | [boopsi.md](boopsi.md) | BOOPSI — OOP dispatcher model, ICA interconnection, custom class tutorial, class hierarchy |

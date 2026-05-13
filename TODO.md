@@ -54,7 +54,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 |---|---|---|---|---|
 | 15 | `08_graphics/sprites.md` | 306 | 306 | ❌ **Pending** — Named antipatterns, pitfalls comparing hardware sprites vs SimpleSprite, FPGA sprite timing |
 | 16 | `08_graphics/text_fonts.md` | 215 | 708 | ✅ **Complete** — Expanded with ColorTextFont layout, Compugraphic outlines, font scaling/aspect ratio, draw mode effects, 3 cookbooks (centered title, multi-font label, word wrap), 4 antipatterns, 4 pitfalls, historical comparison, modern analogies, 6 FAQ |
-| 17 | `09_intuition/screens.md` | 582 | 582 | ❌ **Pending** — Antipatterns, cookbook (screen flipping, borderless, PAL→NTSC handling) |
+| 17 | `09_intuition/screens.md` | 582 | 992 | ✅ **Complete** — Added screen type decision guide (Mermaid), 5 named antipatterns (Orphan Screen, Hardcoded Mode, Stale Pointer, Forced Close, Layer Lock Trap), 3 cookbooks (screen flipping, borderless fullscreen, PAL/NTSC safe), historical comparison, modern analogies, use cases, 7 FAQ |
 | 18 | `09_intuition/windows.md` | 370 | 778 | ✅ **Complete** — Added 5 named antipatterns (Border Collision, Unresponsive Close, Leaked Message, Refresh Loop, Phantom Window), window type decision guide with Mermaid, 3 cookbooks (resizable, borderless overlay, multi-window shared port), historical comparison, modern analogies, use cases, 7 FAQ |
 | 19 | `09_intuition/menus.md` | 378 | 695 | ✅ **Complete** — Added render chain sequence diagram, 5 named antipatterns (Multi-Select Ghost, Stale Menu, Cleanup Reversal, Shortcut Collision, Phantom VisualInfo), complete lifecycle cookbook, historical comparison, modern analogies, use cases, 6 FAQ |
 | 20 | `09_intuition/gadgets.md` | 403 | 804 | ✅ **Complete** — Added 5 named antipatterns (Invisible Gadget, Message Mangler, Orphaned Chain, Hot-Swap Hazard, Silent Button), GadTools→BOOPSI migration guide with comparison table, form cookbook, historical timeline, modern analogies, use cases, 6 FAQ |
@@ -267,7 +267,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 | `idcmp.md` | 1060 | ✅ Deep | Event architecture, shared ports, antipatterns, cookbook — exemplary |
 | `input_events.md` | 850 | ✅ Deep | Handler chain, QoS/priority, Commodities, latency analysis |
 | `commodities.md` | 769 | ✅ Deep | Tier 1 creation: Exchange, hotkeys, CxObjects, brokers |
-| `screens.md` | 582 | ❌ Pending | Tier 3 #17: needs antipatterns, cookbook (screen flipping, borderless, PAL→NTSC) |
+| `screens.md` | 992 | ✅ Deep | Decision guide, 5 antipatterns, 3 cookbooks (flipping, borderless, PAL/NTSC), historical + modern analogies, use cases, 7 FAQ |
 | `boopsi.md` | 505 | ✅ Adequate | OOP dispatcher, ICA interconnection, custom class tutorial |
 | `gadgets.md` | 804 | ✅ Deep | 5 antipatterns, GadTools→BOOPSI migration, form cookbook, timeline, modern analogies, use cases, 6 FAQ |
 | `menus.md` | 695 | ✅ Deep | Render chain diagram, 5 antipatterns, lifecycle cookbook, historical + modern analogies, use cases, 6 FAQ |
@@ -450,7 +450,7 @@ Articles were scored against [AGENTS.md](../amiga/AGENTS.md) "Deep" criteria:
 
 | # | File | Current |
 |---|---|---|
-| 26 | `05_reversing/custom_loaders_and_drm.md` | 168 lines |
+| 26 | `05_reversing/custom_loaders_and_drm.md` | 500 lines — ✅ Deep: bootblock structure, 6 DRM systems, 5 antipatterns, trackloader cookbook, cracking scene history, 7 FAQ |
 | 27 | `08_graphics/rtg_programming.md` | 0 lines |
 | 28 | `11_libraries/ahi_programming.md` | 0 lines |
 | 29 | `17_demoscene/README.md` | 0 lines |

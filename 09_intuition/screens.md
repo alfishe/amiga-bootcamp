@@ -558,6 +558,395 @@ if (modeID != INVALID_ID)
 
 ---
 
+## Screen Type Decision Guide
+
+```mermaid
+graph TD
+    START["Need a screen?"] --> Q1{"Need specific\nresolution/depth?"}
+    Q1 -->|No| Q2{"Other apps should\nshare this screen?"}
+    Q1 -->|Yes| CUSTOM["CUSTOMSCREEN\nOwn resolution, palette, lifetime"]
+    Q2 -->|Yes| PUBLIC["PUBLICSCREEN\nNamed, discoverable by other apps"]
+    Q2 -->|No| WB["WBENCHSCREEN\nUse Workbench, no extra memory"]
+
+    CUSTOM --> Q3{"Need true-color\nor > 256 colors?"}
+    Q3 -->|Yes| RTG["RTG mode\nCyberGraphX / Picasso96"]
+    Q3 -->|No| NATIVE["Native chipset mode\nBestModeID() to pick"]
+
+    style WB fill:#e8f5e9,stroke:#4caf50,color:#333
+    style PUBLIC fill:#e8f4fd,stroke:#2196f3,color:#333
+    style CUSTOM fill:#fff3e0,stroke:#ff9800,color:#333
+    style RTG fill:#fce4ec,stroke:#e91e63,color:#333
+```
+
+| Choice | Memory Cost | Flexibility | When to Use |
+|--------|------------|-------------|-------------|
+| **Workbench** | None (shared) | Constrained to user's WB mode | Tools, utilities, simple apps |
+| **Public Screen** | ~200–600 KB | Moderate — fixed at creation | Multi-app suites (MUI, email + browser) |
+| **Custom Screen** | ~200–600 KB | Full — you own everything | Games, paint programs, video tools |
+| **RTG Custom** | 1–4 MB | Full + true color | High-end graphics on gfx-card systems |
+
+---
+
+## Named Antipatterns
+
+### "The Orphan Screen" — Leaking a Custom Screen
+
+```c
+/* BAD: Opening a custom screen but losing the pointer.
+   The screen stays open, consuming hundreds of KB of chip RAM,
+   and there's no way to close it without resetting. */
+void ShowSplash(void)
+{
+    OpenScreenTags(NULL,
+        SA_Type,  CUSTOMSCREEN,
+        SA_Depth, 5,
+        SA_Title, "Splash",
+        TAG_DONE);
+    /* No pointer saved — screen is now a memory leak! */
+}
+```
+
+```c
+/* CORRECT: Always store and eventually close */
+struct Screen *splashScr = NULL;
+
+void ShowSplash(void)
+{
+    splashScr = OpenScreenTags(NULL,
+        SA_Type,  CUSTOMSCREEN,
+        SA_Depth, 5,
+        SA_Title, "Splash",
+        TAG_DONE);
+}
+
+void HideSplash(void)
+{
+    if (splashScr)
+    {
+        CloseScreen(splashScr);
+        splashScr = NULL;
+    }
+}
+```
+
+### "The Hardcoded Mode" — Assuming Display IDs
+
+```c
+/* BAD: Hardcoded PAL HiRes display ID.
+   On an NTSC Amiga, or one without ECS, this mode may not exist.
+   OpenScreenTags returns NULL — silent failure. */
+struct Screen *scr = OpenScreenTags(NULL,
+    SA_DisplayID, 0x00029000,  /* PAL HiRes — may not exist */
+    SA_Width,     640,
+    SA_Height,    256,
+    SA_Depth,     4,
+    TAG_DONE);
+```
+
+```c
+/* CORRECT: Query the display database */
+ULONG modeID = BestModeID(
+    BIDTAG_NominalWidth,  640,
+    BIDTAG_NominalHeight, 256,
+    BIDTAG_Depth,         4,
+    TAG_DONE);
+
+if (modeID == INVALID_ID)
+{
+    /* No suitable mode — fall back to Workbench */
+    modeID = INVALID_ID;  /* OpenScreen on WB */
+}
+
+struct Screen *scr = OpenScreenTags(NULL,
+    SA_DisplayID, modeID,
+    SA_Width,     640,
+    SA_Height,    256,
+    SA_Depth,     4,
+    SA_Type,      CUSTOMSCREEN,
+    TAG_DONE);
+```
+
+### "The Stale Pointer" — Using Screen After Close
+
+```c
+/* BAD: Caching a public screen pointer across operations.
+   If the screen owner closes it between your Lock and use,
+   you dereference freed memory — crash. */
+struct Screen *scr = LockPubScreen("MYAPP");
+UnlockPubScreen(NULL, scr);
+/* ... 100ms passes, owner closes "MYAPP" screen ... */
+DrawSomething(scr->RastPort);  /* USE AFTER FREE */
+```
+
+```c
+/* CORRECT: Re-lock immediately before each use */
+struct Screen *scr = LockPubScreen("MYAPP");
+if (scr)
+{
+    DrawSomething(&scr->RastPort);
+    UnlockPubScreen(NULL, scr);
+}
+```
+
+### "The Forced Close" — CloseScreen with Windows Open
+
+```c
+/* BAD: Closing a screen while visitor windows still exist.
+   CloseScreen() returns FALSE — the screen stays open.
+   But you've already freed your own window — confusion. */
+CloseWindow(myWin);
+CloseScreen(myScreen);  /* May return FALSE — visitors still here */
+```
+
+```c
+/* CORRECT: For public screens, go private first */
+PubScreenStatus(myScreen, PSNF_PRIVATE);  /* block new visitors */
+
+/* Wait for remaining visitor windows to close */
+while (myScreen->FirstWindow)
+    Delay(10);
+
+CloseScreen(myScreen);  /* now guaranteed to succeed */
+```
+
+### "The Layer Lock Trap" — Calling Intuition Inside LockLayerInfo
+
+```c
+/* BAD: Locking LayerInfo then calling any Intuition function.
+   Intuition needs LayerInfo internally — instant deadlock. */
+LockLayerInfo(&scr->LayerInfo);
+RefreshWindowFrame(win);  /* DEADLOCK */
+UnlockLayerInfo(&scr->LayerInfo);
+```
+
+```c
+/* CORRECT: Never hold LayerInfo across Intuition calls.
+   If you need layer info, copy what you need, unlock, then proceed. */
+LONG clipX = scr->Width;   /* just read directly — it's atomic */
+LONG clipY = scr->Height;
+/* No lock needed for simple reads */
+```
+
+---
+
+## Practical Cookbooks
+
+### Cookbook 1: Screen Flipping (Game Double-Buffer)
+
+Games often flip between two screens — the visible one and the hidden one being rendered:
+
+```c
+#include <proto/graphics.h>
+#include <proto/intuition.h>
+
+struct Screen *gameScreens[2];
+int currentScreen = 0;
+
+void InitGameScreens(void)
+{
+    ULONG modeID = BestModeID(
+        BIDTAG_NominalWidth,  320,
+        BIDTAG_NominalHeight, 256,
+        BIDTAG_Depth,         5,   /* 32 colors */
+        TAG_DONE);
+
+    for (int i = 0; i < 2; i++)
+    {
+        gameScreens[i] = OpenScreenTags(NULL,
+            SA_Width,     320,
+            SA_Height,    256,
+            SA_Depth,     5,
+            SA_DisplayID, modeID,
+            SA_Type,      CUSTOMSCREEN,
+            SA_Quiet,     TRUE,   /* no title bar — full screen */
+            SA_Behind,    (i == 1), /* second screen opens behind */
+            TAG_DONE);
+    }
+}
+
+void FlipScreen(void)
+{
+    currentScreen = 1 - currentScreen;
+    ScreenToFront(gameScreens[currentScreen]);
+}
+
+struct Screen *GetRenderScreen(void)
+{
+    return gameScreens[1 - currentScreen];  /* the hidden one */
+}
+
+void CleanupGameScreens(void)
+{
+    for (int i = 0; i < 2; i++)
+        CloseScreen(gameScreens[i]);
+}
+```
+
+> [!NOTE]
+> `ScreenToFront()` / `ScreenToBack()` work on the screen depth arrangement, not the Copper list. Both screens are always being displayed — only the stacking order changes.
+
+### Cookbook 2: Borderless Fullscreen Application
+
+```c
+/* Full-screen utility or game — no drag bar, no system gadgets,
+   every pixel belongs to the application. */
+struct Screen *scr = OpenScreenTags(NULL,
+    SA_Width,     320,
+    SA_Height,    256,
+    SA_Depth,     5,
+    SA_Type,      CUSTOMSCREEN,
+    SA_Quiet,     TRUE,    /* no title bar */
+    SA_ShowTitle, FALSE,   /* redundant with SA_Quiet, but explicit */
+    SA_Pens,      (ULONG)~0,
+    TAG_DONE);
+
+/* Full-screen window (no borders, fills entire screen) */
+struct Window *win = OpenWindowTags(NULL,
+    WA_CustomScreen, scr,
+    WA_Left,         0,
+    WA_Top,          0,
+    WA_Width,        scr->Width,
+    WA_Height,       scr->Height,
+    WA_Borderless,   TRUE,
+    WA_Activate,     TRUE,
+    WA_RMBTrap,      TRUE,  /* we handle right-click ourselves */
+    WA_IDCMP,        IDCMP_RAWKEY | IDCMP_MOUSEBUTTONS |
+                     IDCMP_MOUSEMOVE,
+    WA_Backdrop,     TRUE,  /* behind title bar area (irrelevant here) */
+    TAG_DONE);
+
+/* Use scr->RastPort or win->RPort for full-screen drawing */
+```
+
+### Cookbook 3: PAL/NTSC Safe Screen Opening
+
+```c
+/* Open a screen that works on both PAL and NTSC machines.
+   Strategy: query the display database for the best available mode. */
+
+#include <proto/graphics.h>
+#include <graphics/displayinfo.h>
+
+struct Screen *OpenSafeScreen(ULONG width, ULONG height, ULONG depth)
+{
+    /* Step 1: Find the best matching mode */
+    ULONG modeID = BestModeID(
+        BIDTAG_NominalWidth,  width,
+        BIDTAG_NominalHeight, height,
+        BIDTAG_Depth,         depth,
+        TAG_DONE);
+
+    if (modeID == INVALID_ID)
+    {
+        /* Fallback: try the Workbench screen's mode */
+        struct Screen *wb = LockPubScreen(NULL);
+        if (wb)
+        {
+            modeID = GetVPModeID(&wb->ViewPort);
+            UnlockPubScreen(NULL, wb);
+        }
+    }
+
+    if (modeID == INVALID_ID)
+        return NULL;  /* no usable display mode at all */
+
+    /* Step 2: Query actual dimensions for this mode */
+    struct DimensionInfo di;
+    if (GetDisplayInfoData(NULL, (UBYTE *)&di, sizeof(di),
+        DTAG_DIMS, modeID))
+    {
+        /* Use the mode's actual dimensions, not our requested ones */
+        return OpenScreenTags(NULL,
+            SA_DisplayID, modeID,
+            SA_Width,     di.Nominal.MaxX - di.Nominal.MinX + 1,
+            SA_Height,    di.Nominal.MaxY - di.Nominal.MinY + 1,
+            SA_Depth,     depth,
+            SA_Type,      CUSTOMSCREEN,
+            SA_Pens,      (ULONG)~0,
+            TAG_DONE);
+    }
+
+    return NULL;
+}
+```
+
+---
+
+## Historical Context & Modern Analogies
+
+### Competitive Landscape
+
+| Platform | Multiple Resolutions | Screen Dragging | Independent Palettes | Notes |
+|----------|---------------------|-----------------|---------------------|-------|
+| **AmigaOS** | Yes — each screen independent | Yes — real-time drag | Yes — per-screen palette | Unique — no other platform does this |
+| **Mac OS (Classic)** | No — one resolution globally | N/A | No — one global palette | Switchable via Monitors control panel (reboot) |
+| **Windows 3.x** | No — one resolution globally | N/A | No — 16-color global palette | ALT+TAB switches between apps, not screens |
+| **Atari ST** | No — fixed 640×400 (mono) or 320×200 (color) | N/A | No — fixed ST palette | Resolution requires hardware dip switches |
+| **X11** | Yes — per-screen (Xinerama/XRandR) | No — virtual desktop instead | Yes — per-colormap | "Screen" means X screen, not Amiga screen |
+
+The Amiga's multi-resolution coexistence was possible because the Copper could change display parameters mid-frame at zero CPU cost. Every other platform required the entire display to use one mode.
+
+**Screen dragging** was Amiga-exclusive. The Mac had "window shuffling" (front/back), Windows had ALT+TAB, and X11 had virtual desktops — but none allowed dragging one resolution's display area to reveal a completely different resolution underneath, in real time.
+
+### Modern Analogies
+
+| Amiga Concept | Modern Equivalent | Notes |
+|--------------|-------------------|-------|
+| `OpenScreenTags()` | macOS `NSScreen` + `NSWindow` / X11 `XCreateWindow` | Amiga screens are independent display contexts |
+| `CUSTOMSCREEN` | Fullscreen exclusive mode (DirectX / Vulkan) | Application owns the entire display |
+| `PUBLICSCREEN` | Shared desktop / virtual desktop | Multiple apps share one display surface |
+| `WBENCHSCREEN` | Primary display / main monitor | Default shared screen |
+| Screen dragging | Virtual desktop panning / Spaces (macOS) | Amiga: physical drag; Modern: key-combo switch |
+| `ScreenToFront()` / `ScreenToBack()` | `SetForegroundWindow()` / `NSWindow.orderFront` | Depth arrangement |
+| Copper mid-frame mode switch | Not possible on modern GPUs | GPUs scan from a single framebuffer |
+| `BestModeID()` | `EnumDisplaySettings()` / `CGDisplayAvailableModes()` | Query available modes |
+| `LockPubScreen()` | `CGWindowListCopyWindowInfo()` / X11 `_NET_CLIENT_LIST` | Discover shared screens |
+| `ViewPort` + `ColorMap` | `CRTC` + `LUT` on VGA / modern monitor | Hardware display timing |
+| `SA_Overscan` | Overscan / underscan in GPU control panel | Edge-of-screen area usage |
+| Interlaced flicker | N/A — modern displays are progressive | Amiga-specific CRT artifact |
+
+---
+
+## Use Cases
+
+| Application | Screen Type | Resolution | Notable Pattern |
+|-------------|------------|------------|-----------------|
+| **Workbench** | WBENCHSCREEN | User-configured (default HiRes) | Persistent system screen |
+| **Games (most)** | CUSTOMSCREEN, SA_Quiet | LoRes 320×256, 4–5 bitplanes | Borderless fullscreen, no drag bar |
+| **Deluxe Paint** | CUSTOMSCREEN | LoRes or HAM depending on mode | Own palette, own resolution, screen dragging to access WB |
+| **Word processors** | WBENCHSCREEN or PUBLICSCREEN | HiRes interlaced 640×512 | Share Workbench to save chip RAM |
+| **Video tools (OPALVision, Video Toaster)** | CUSTOMSCREEN + genlock | Specific to video standard (NTSC/PAL) | Genlock overlay compositing |
+| **DTP (PageStream)** | CUSTOMSCREEN, SA_AutoScroll | HiRes interlaced with virtual scroll | Screen larger than display, autoscroll |
+| **MUI applications** | PUBLICSCREEN | User-configured | Named public screen shared by MUI apps |
+| **Terminal emulators** | WBENCHSCREEN | HiRes 640×256+ | Open on Workbench to multitask |
+
+---
+
+## FAQ
+
+**Q: Can I have two screens at different color depths on screen at the same time?**
+A: Yes — this is one of the Amiga's signature features. Each screen has its own ViewPort with its own ColorMap. The Copper switches palette registers mid-frame. You can have a 4-color Workbench screen above a 32-color game screen, both fully visible.
+
+**Q: How much chip RAM does a screen consume?**
+A: It depends on resolution and depth. A 640×256 4-bitplane screen uses 640 × 256 × 4 / 8 = 81,920 bytes for bitplanes, plus ~5–10 KB for structures, color tables, and the Copper list. A 320×256 5-bitplane screen uses ~51,200 bytes. Interlaced screens double the height, doubling the cost.
+
+**Q: Can I prevent the user from dragging my custom screen?**
+A: Not easily. Screen dragging is handled by Intuition at a level above applications. Setting `SA_Quiet` removes the title bar (making it harder to grab), but Left-Amiga + mouse drag still works. Games typically just handle `IDCMP_CHANGEWINDOW` / `IDCMP_SCREENPOSITION` to detect and respond to unexpected moves.
+
+**Q: What happens to my window when the user drags my screen behind another?**
+A: Your window continues to exist and receive events normally. However, it's no longer visible. Keyboard events still route to the active window on your screen. Mouse events route to whichever screen the pointer is over.
+
+**Q: Can I open a window on a screen owned by another process?**
+A: Yes — if the screen is a public screen (opened with `SA_PubName`). Use `LockPubScreen("name")` to get the screen pointer, open your window with `WA_PubScreen`, then `UnlockPubScreen()`. You cannot open windows on another process's `CUSTOMSCREEN`.
+
+**Q: How do I enumerate all open screens?**
+A: Walk the `IntuitionBase->FirstScreen` linked list. Each screen's `NextScreen` field points to the next. You must lock Intuition with `LockIBase()` / `UnlockIBase()` to prevent the list from changing while you traverse it.
+
+**Q: Why does `BestModeID()` return `INVALID_ID` on my A500?**
+A: `BestModeID()` requires ECS or later to support queries beyond the basic modes. On OCS machines, use the known OCS mode constants (`LORES_KEY`, `HIRES_KEY`, etc.) directly, or fall back to `WBENCHSCREEN` if the query fails.
+
+---
+
 ## Best Practices
 
 1. **Prefer public screens** over custom screens — saves memory and lets users consolidate
@@ -570,13 +959,34 @@ if (modeID != INVALID_ID)
 8. **Never hold layer locks** while calling Intuition functions
 9. **Use Right-Amiga** for application shortcuts — Left-Amiga is reserved for system use
 10. **Test with multiple screens** at different resolutions to verify your input handling works correctly
+11. **Use `SA_Quiet` for games** — removes title bar for immersive fullscreen
+12. **Always check `OpenScreenTags()` return** — `NULL` means the mode is unavailable or memory is exhausted
 
 ---
 
 ## References
 
-- NDK 3.9: `intuition/screens.h`, `intuition/intuition.h`
-- ADCD 2.1: `OpenScreenTagList()`, `CloseScreen()`, `LockPubScreen()`, `PubScreenStatus()`
-- AmigaOS Reference Manual (RKRM): Libraries, Chapter 3 — Intuition Screens
-- AmigaOS Reference Manual (RKRM): Libraries, Chapter 5 — Intuition Input and IDCMP
-- Hardware Reference Manual: Custom Chip Register Map, Copper List Programming
+### NDK Headers
+
+- `intuition/screens.h` — `struct Screen`, `SA_*` tag definitions, `CUSTOMSCREEN`/`PUBLICSCREEN`/`WBENCHSCREEN`
+- `intuition/intuition.h` — `struct Window`, `WA_*` tags, IDCMP flags
+- `graphics/displayinfo.h` — Display IDs, `DimensionInfo`, `BestModeID()`
+- `graphics/gfxbase.h` — `GfxBase->DisplayFirst` for display database traversal
+
+### Autodocs
+
+- ADCD 2.1: `OpenScreenTagList()`, `CloseScreen()`, `ScreenToFront()`, `ScreenToBack()`
+- ADCD 2.1: `LockPubScreen()`, `UnlockPubScreen()`, `PubScreenStatus()`, `LockIBase()`
+- ADCD 2.1: `BestModeID()`, `NextDisplayInfo()`, `GetDisplayInfoData()`
+- ADCD 2.1: `GetScreenDrawInfo()`, `FreeScreenDrawInfo()`, `GetVPModeID()`
+
+### Related Knowledge Base Articles
+
+- [Copper](../08_graphics/copper.md) — the hardware mechanism that makes multi-screen possible
+- [Copper Programming](../08_graphics/copper_programming.md) — writing Copper lists
+- [Views](../08_graphics/views.md) — View/ViewPort/ViewPortExtra hierarchy
+- [Bitmap](../08_graphics/bitmap.md) — screen bitmap layout and bitplane organization
+- [Windows](windows.md) — windows live on screens
+- [IDCMP](idcmp.md) — input event delivery to windows
+- [Display Modes](../08_graphics/display_modes.md) — resolution, color depth, and special modes
+- [RTG Programming](../08_graphics/rtg_programming.md) — graphics card screens
