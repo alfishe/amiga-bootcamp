@@ -725,7 +725,7 @@ A: **Blitter-CPU interleaving**. On a stock A500, the Blitter and CPU share the 
 - [Bus Architecture](../01_hardware/common/bus_architecture.md) — CPU/DMA bus sharing, wait states
 - [Cache Management](../15_fpu_mmu_cache/cache_management.md) — CACR, CacheClearU, coherency
 - [68040/68060 Libraries](../15_fpu_mmu_cache/68040_68060_libraries.md) — Line-F trap handlers, FPU emulation
-- [Blitter Programming](../08_graphics/blitter_programming.md) — Fill mode, line draw, Blitter timing
+- [Blitter Programming](../08_graphics/blitter/blitter_programming.md) — Fill mode, line draw, Blitter timing
 - [3D Rendering](3d_rendering.md) — Fixed-point math, C2P costs
 - [Copper Effects](copper_effects.md) — Copper list timing, DMA budgets
 

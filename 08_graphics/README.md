@@ -12,10 +12,10 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [bitmap.md](bitmap.md) | BitMap structure, planar layout, allocation |
 | [display_modes.md](display_modes.md) | Full chipset comparison, ModeID selection flowchart, CRT vs flat-panel, interlace/progressive tradeoffs, named antipatterns, FPGA/MiSTer impact, historical context, modern analogies, FAQ |
 | [ham_ehb_modes.md](ham_ehb_modes.md) | HAM6/HAM8 encoding pipeline, EHB half-brite, fringing, palette programming, FPGA decoder logic |
-| [copper.md](copper.md) | Copper coprocessor, instruction format, UCopList |
-| [copper_programming.md](copper_programming.md) | Copper deep dive: architecture, copper list construction, gradient and raster effects |
-| [blitter.md](blitter.md) | Blitter DMA engine, minterms, BltBitMap |
-| [blitter_programming.md](blitter_programming.md) | Blitter deep dive: minterms, cookie-cut masking, line draw, fill mode |
+| [copper.md](copper/copper.md) | Copper coprocessor, instruction format, UCopList |
+| [copper_programming.md](copper/copper_programming.md) | Copper deep dive: architecture, copper list construction, gradient and raster effects |
+| [blitter.md](blitter/blitter.md) | Blitter DMA engine, minterms, BltBitMap |
+| [blitter_programming.md](blitter/blitter_programming.md) | Blitter deep dive: minterms, cookie-cut masking, line draw, fill mode |
 | [sprites.md](sprites.md) | Hardware sprites: DMA engine, data format, attached 15-color sprites, multiplexing, AGA enhancements, priority control |
 | [rastport.md](rastport.md) | RastPort drawing context: draw modes, patterns, layer clipping, text pipeline, blitter minterms |
 | [views.md](views.md) | View + ViewPort pipeline: 3-stage Mermaid diagram, ViewPort chaining (split screens), ColorMap/LoadRGB4, named antipatterns, Copper vs Views decision flowchart, modern GPU analogies |

@@ -857,8 +857,8 @@ A: A voxel (volume pixel) display renders 3D data as a grid of points. On the Am
 ### Related Knowledge Base Articles
 
 - [Pixel Conversion](../08_graphics/pixel_conversion.md) — C2P algorithms (Kalms, Blitter, Akiko)
-- [Blitter Programming](../08_graphics/blitter_programming.md) — Fill mode, line draw, minterms
-- [Blitter](../08_graphics/blitter.md) — Blitter hardware architecture
+- [Blitter Programming](../08_graphics/blitter/blitter_programming.md) — Fill mode, line draw, minterms
+- [Blitter](../08_graphics/blitter/blitter.md) — Blitter hardware architecture
 - [Bitmap](../08_graphics/bitmap.md) — Bitplane memory layout, interleaving
 - [Copper Effects](copper_effects.md) — Copper-driven display effects
 - [Timing Optimization](timing_optimization.md) — Cycle counting, Blitter-CPU interleaving

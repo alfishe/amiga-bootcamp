@@ -400,4 +400,4 @@ rp->Mask = 0xFF;  /* restore */
 - See also: [bitmap.md](bitmap.md) — BitMap structure and allocation
 - See also: [layers.md](../../11_libraries/layers.md) — layers.library detailed reference
 - See also: [text_fonts.md](text_fonts.md) — font loading and rendering
-- See also: [blitter.md](blitter.md) — hardware Blitter used by BltBitMap
+- See also: [blitter.md](blitter/blitter.md) — hardware Blitter used by BltBitMap

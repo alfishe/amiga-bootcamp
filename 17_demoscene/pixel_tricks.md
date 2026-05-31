@@ -656,7 +656,7 @@ A: EHB is a 6-bitplane mode where the 32nd palette entry is automatically genera
 - [Copper Effects](copper_effects.md) — Copper bars, gradients, raster splits
 - [Display Modes](../08_graphics/display_modes.md) — ModeID, BPLCON0 settings
 - [Video Timing](../01_hardware/common/video_timing.md) — Scanline structure, beam position
-- [Blitter Programming](../08_graphics/blitter_programming.md) — Blitter fill for HAM rendering
+- [Blitter Programming](../08_graphics/blitter/blitter_programming.md) — Blitter fill for HAM rendering
 
 ### External Resources
 

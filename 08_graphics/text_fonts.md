@@ -703,6 +703,6 @@ A: `OpenFont()` (graphics.library) only finds fonts already loaded in memory. `O
 - [diskfont.md](../11_libraries/diskfont.md) — font file format, disk loading pipeline, ColorFont memory layout
 - [rastport.md](rastport.md) — RastPort text rendering context and drawing modes
 - [bitmap.md](bitmap.md) — BitMap structure (font glyph data is a BitMap)
-- [blitter.md](blitter.md) — hardware that performs the actual glyph blitting
+- [blitter.md](blitter/blitter.md) — hardware that performs the actual glyph blitting
 - [console.md](../10_devices/console.md) — console text rendering uses these fonts
 - [utility.md](../11_libraries/utility.md) — `Hook` structure (used by font enumeration)

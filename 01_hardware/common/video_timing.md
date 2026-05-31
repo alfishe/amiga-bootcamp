@@ -15,7 +15,7 @@ This article documents **the complete signal path** from crystal to screen — t
 > - **Clock derivation and signal generation** — primary coverage here
 > - **DMA slot allocation and bandwidth** — see [DMA Architecture](dma_architecture.md)
 > - **ModeID selection and OS display API** — see [Display Modes](../../08_graphics/display_modes.md)
-> - **Copper instruction programming** — see [Copper Programming](../../08_graphics/copper_programming.md)
+> - **Copper instruction programming** — see [Copper Programming](../../08_graphics/copper/copper_programming.md)
 
 ---
 
@@ -732,8 +732,8 @@ A: For basic display, ±10 ns per clock edge is sufficient. For genlock compatib
 
 - [DMA Architecture](dma_architecture.md) — scanline slot allocation, bus arbitration, bandwidth calculations
 - [Display Modes](../../08_graphics/display_modes.md) — ModeID system, OS display API, chipset comparison
-- [Copper Programming](../../08_graphics/copper_programming.md) — beam-synchronized register writes
-- [Copper — UCopList](../../08_graphics/copper.md) — system copper list management
+- [Copper Programming](../../08_graphics/copper/copper_programming.md) — beam-synchronized register writes
+- [Copper — UCopList](../../08_graphics/copper/copper.md) — system copper list management
 - [ECS Productivity Modes](../ecs_a600_a3000/productivity_modes.md) — BEAMCON0 programming examples
 - [CIA Chips](cia_chips.md) — E-clock, timers, TOD counter
 - [Memory Types](memory_types.md) — Chip RAM vs Fast RAM, DMA visibility

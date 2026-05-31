@@ -38,7 +38,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 |---|---|
 | **New to Amiga** | [History & chipsets](00_overview/history.md) → [Boot sequence](02_boot_sequence/cold_boot.md) → [Exec kernel](06_exec_os/exec_base.md) |
 | **Writing code** | [Toolchain setup](13_toolchain/gcc_amiga.md) → [Calling conventions](04_linking_and_libraries/register_conventions.md) → [.fd files](04_linking_and_libraries/fd_files.md) |
-| **Doing hardware** | [Address space](01_hardware/common/address_space.md) → [Memory types](01_hardware/common/memory_types.md) → [Custom registers](01_hardware/ocs_a500/custom_registers.md) → [Copper programming](08_graphics/copper_programming.md) |
+| **Doing hardware** | [Address space](01_hardware/common/address_space.md) → [Memory types](01_hardware/common/memory_types.md) → [Custom registers](01_hardware/ocs_a500/custom_registers.md) → [Copper programming](08_graphics/copper/copper_programming.md) |
 | **Reverse engineering** | [RE methodology](05_reversing/methodology.md) → [Game RE](05_reversing/games/game_reversing.md) → [IDA/Ghidra setup](05_reversing/ida_setup.md) |
 | **Building an FPGA core** | [Hardware models](00_overview/hardware_models.md) → [AGA chipset](01_hardware/aga_a1200_a4000/chipset_aga.md) → [68040/060 libs](15_fpu_mmu_cache/68040_68060_libraries.md) |
 
@@ -208,10 +208,10 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 |---|---|
 | [gfx_base.md](08_graphics/gfx_base.md) | GfxBase, chip detection, PAL/NTSC |
 | [bitmap.md](08_graphics/bitmap.md) | Planar BitMap, pixel layout, allocation |
-| [copper.md](08_graphics/copper.md) | Copper coprocessor, MOVE/WAIT/SKIP, UCopList |
-| [copper_programming.md](08_graphics/copper_programming.md) | Copper deep dive: architecture, system diagram, examples |
-| [blitter.md](08_graphics/blitter.md) | Blitter DMA, minterms, BltBitMap |
-| [blitter_programming.md](08_graphics/blitter_programming.md) | Blitter deep dive: cookie-cut, fill, line draw |
+| [copper.md](08_graphics/copper/copper.md) | Copper coprocessor, MOVE/WAIT/SKIP, UCopList |
+| [copper_programming.md](08_graphics/copper/copper_programming.md) | Copper deep dive: architecture, system diagram, examples |
+| [blitter.md](08_graphics/blitter/blitter.md) | Blitter DMA, minterms, BltBitMap |
+| [blitter_programming.md](08_graphics/blitter/blitter_programming.md) | Blitter deep dive: cookie-cut, fill, line draw |
 | [sprites.md](08_graphics/sprites.md) | Hardware sprites, SimpleSprite |
 | [display_modes.md](08_graphics/display_modes.md) | ModeID selection flowchart, CRT vs flat-panel, interlace/progressive tradeoffs, named antipatterns, FPGA/MiSTer impact, historical context, modern analogies, FAQ |
 | [ham_ehb_modes.md](08_graphics/ham_ehb_modes.md) | HAM6/HAM8 encoding pipeline, EHB half-brite, fringing, palette programming, FPGA decoder logic |

@@ -6,7 +6,7 @@
 
 The Copper is the single most important tool in the demoscene coder's arsenal. With only three instructions — `WAIT`, `MOVE`, and `SKIP` — it can repaint the entire screen 50 times per second, changing color registers, bitplane pointers, scroll offsets, and sprite positions at exact scanline boundaries. Every iconic Amiga demo effect, from the rainbow copper bars in [Red Sector's **Megademo**](https://www.pouet.net/prod.php?which=3119) (1989) to the sinus-scrolling message waves in [**Desert Dream**](https://www.pouet.net/prod.php?which=1483) (1993, [Demozoo](https://demozoo.org/productions/142/)), traces back to someone figuring out how to make the Copper do something Commodore's engineers never intended.
 
-This article covers the specific techniques demoscene coders developed for the Copper: classic copper bars, raster splits for multi-resolution screens, gradient shading, sine-based color cycling, and advanced tricks like copper-generated chunky pixels and mid-frame copper list swaps. For the Copper's hardware architecture and basic programming model, see [Copper](../08_graphics/copper.md) and [Copper Programming](../08_graphics/copper_programming.md).
+This article covers the specific techniques demoscene coders developed for the Copper: classic copper bars, raster splits for multi-resolution screens, gradient shading, sine-based color cycling, and advanced tricks like copper-generated chunky pixels and mid-frame copper list swaps. For the Copper's hardware architecture and basic programming model, see [Copper](../08_graphics/copper/copper.md) and [Copper Programming](../08_graphics/copper/copper_programming.md).
 
 ```mermaid
 graph TB
@@ -807,7 +807,7 @@ See [pixel_tricks.md](pixel_tricks.md) for the full technique.
 A: Yes, with caveats. AGA adds an 8-bit horizontal position (vs OCS 7-bit), controlled by the `BPC` bit in `FMODE`. AGA also has 256-color registers (`COLOR00`–`COLOR255`) instead of 32, allowing much more complex copper effects. However, the higher bandwidth of AGA bitplane DMA leaves fewer slots for the Copper.
 
 **Q: Can I use copper effects from AmigaOS?**
-A: Yes, via `UCopList` — the user copper list attached to a `ViewPort`. Intuition merges your copper instructions with its own. See [Copper Programming](../08_graphics/copper_programming.md) for the OS-friendly approach. For full copper control (demos), you take over the hardware directly.
+A: Yes, via `UCopList` — the user copper list attached to a `ViewPort`. Intuition merges your copper instructions with its own. See [Copper Programming](../08_graphics/copper/copper_programming.md) for the OS-friendly approach. For full copper control (demos), you take over the hardware directly.
 
 **Q: What happens if the Copper runs past the end of a scanline before finishing?**
 A: The Copper simply continues executing on the next scanline. There is no error or trap. The WAIT instruction's purpose is to synchronize — if you don't WAIT, the Copper runs as fast as DMA allows. Effects that don't need per-line synchronization can skip WAITs entirely.
@@ -818,8 +818,8 @@ A: The Copper simply continues executing on the next scanline. There is no error
 
 ### Related Knowledge Base Articles
 
-- [Copper](../08_graphics/copper.md) — Copper coprocessor hardware: instruction format, UCopList
-- [Copper Programming](../08_graphics/copper_programming.md) — Building copper lists, gradients, raster effects
+- [Copper](../08_graphics/copper/copper.md) — Copper coprocessor hardware: instruction format, UCopList
+- [Copper Programming](../08_graphics/copper/copper_programming.md) — Building copper lists, gradients, raster effects
 - [Pixel Conversion](../08_graphics/pixel_conversion.md) — Copper chunky technique, C2P algorithms
 - [Sprites](../08_graphics/sprites.md) — Sprite multiplexing (Copper repositions sprites)
 - [Video Timing](../01_hardware/common/video_timing.md) — Scanline anatomy, beam counters

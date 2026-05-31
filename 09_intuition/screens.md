@@ -12,7 +12,7 @@ This is one of the defining features of the Amiga. No other mainstream personal 
 
 ## How Screens Work — The Copper Connection
 
-The hardware trick that makes Amiga screens possible is the **[Copper](../08_graphics/copper.md)** (coprocessor), a DMA-driven programmable sequencer inside the Agnus/Alice chip. The Copper executes a list of instructions synchronized to the CRT electron beam position (see also: [Copper Programming](../08_graphics/copper_programming.md), [OCS Copper](../01_hardware/ocs_a500/copper.md), [AGA Copper](../01_hardware/aga_a1200_a4000/aga_copper.md)):
+The hardware trick that makes Amiga screens possible is the **[Copper](../08_graphics/copper/copper.md)** (coprocessor), a DMA-driven programmable sequencer inside the Agnus/Alice chip. The Copper executes a list of instructions synchronized to the CRT electron beam position (see also: [Copper Programming](../08_graphics/copper/copper_programming.md), [OCS Copper](../01_hardware/ocs_a500/copper.md), [AGA Copper](../01_hardware/aga_a1200_a4000/aga_copper.md)):
 
 | Instruction | Action |
 |---|---|
@@ -982,8 +982,8 @@ A: `BestModeID()` requires ECS or later to support queries beyond the basic mode
 
 ### Related Knowledge Base Articles
 
-- [Copper](../08_graphics/copper.md) — the hardware mechanism that makes multi-screen possible
-- [Copper Programming](../08_graphics/copper_programming.md) — writing Copper lists
+- [Copper](../08_graphics/copper/copper.md) — the hardware mechanism that makes multi-screen possible
+- [Copper Programming](../08_graphics/copper/copper_programming.md) — writing Copper lists
 - [Views](../08_graphics/views.md) — View/ViewPort/ViewPortExtra hierarchy
 - [Bitmap](../08_graphics/bitmap.md) — screen bitmap layout and bitplane organization
 - [Windows](windows.md) — windows live on screens

@@ -567,7 +567,7 @@ A: `CLXCON` (`$DFF098`) configures which sprite and bitplane bits are included i
 - [AGA Sprites](../01_hardware/aga_a1200_a4000/aga_sprites.md) — AGA sprite enhancements: 32/64px, FMODE, color banks
 - [Copper Effects](copper_effects.md) — Copper-driven sprite repositioning
 - [Pixel Tricks](pixel_tricks.md) — Chunky pixel techniques using sprites
-- [Blitter Programming](../08_graphics/blitter_programming.md) — BOB rendering (sprite alternative)
+- [Blitter Programming](../08_graphics/blitter/blitter_programming.md) — BOB rendering (sprite alternative)
 - [Animation](../08_graphics/animation.md) — GEL system: VSprites (software sprites)
 - [DMA Architecture](../01_hardware/common/dma_architecture.md) — DMA slot allocation
 

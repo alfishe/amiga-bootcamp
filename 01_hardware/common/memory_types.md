@@ -6,7 +6,7 @@
 
 The Amiga's memory architecture is fundamentally different from any other home computer of its era. Rather than treating all RAM as equal, the system divides memory into **distinct classes** based on which hardware can access it. This division exists because the custom chipset (Agnus/Alice, Denise/Lisa, Paula) has its own DMA engine that operates on a dedicated bus — and that bus only reaches certain RAM.
 
-Understanding this distinction is not optional. It determines where screen buffers live, why games run faster with expansion RAM, why the [Blitter](../../08_graphics/blitter_programming.md) can't touch Fast RAM, and why a $50 accelerator card with 8 MB of Fast RAM can feel like a new machine.
+Understanding this distinction is not optional. It determines where screen buffers live, why games run faster with expansion RAM, why the [Blitter](../../08_graphics/blitter/blitter_programming.md) can't touch Fast RAM, and why a $50 accelerator card with 8 MB of Fast RAM can feel like a new machine.
 
 > [!WARNING]
 > The 68000 is **Big-Endian**. All multi-byte values in memory (pointers, word-sized registers, structure fields) are stored most-significant byte first. Modern developers working with Amiga memory dumps or binary formats will misread data if they assume little-endian layout.
@@ -419,7 +419,7 @@ A: WHDLoad patches old games that assume all memory is Chip RAM. It redirects al
 - See also: [address_space.md](address_space.md) — full 24-bit/32-bit address map
 - See also: [chip_ram_expansion.md](../ecs_a600_a3000/chip_ram_expansion.md) — 2 MB Chip RAM with Super Agnus
 - See also: [zorro_bus.md](zorro_bus.md) — Zorro II/III expansion bus (Fast RAM cards)
-- See also: [blitter_programming.md](../../08_graphics/blitter_programming.md) — Blitter DMA (Chip RAM only)
+- See also: [blitter_programming.md](../../08_graphics/blitter/blitter_programming.md) — Blitter DMA (Chip RAM only)
 - See also: [exec_memory.md](../../06_exec_os/exec_memory.md) — AmigaOS memory management API
 - See also: [dma_architecture.md](dma_architecture.md) — DMA slot allocation, bus arbitration, why Chip RAM bandwidth matters
 - See also: [bus_architecture.md](bus_architecture.md) — Bus hierarchy, Chip↔Fast RAM transfer techniques, cache coherency

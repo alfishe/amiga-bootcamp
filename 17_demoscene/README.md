@@ -121,10 +121,10 @@ The key insight of demoscene coding: **the Copper, Blitter, Sprites, and Audio a
 
 ### Related Knowledge Base Articles
 
-- [Copper](../08_graphics/copper.md) — Copper coprocessor hardware: instruction format, UCopList
-- [Copper Programming](../08_graphics/copper_programming.md) — Building copper lists, gradients, raster effects
-- [Blitter](../08_graphics/blitter.md) — Blitter DMA engine: channels, minterms
-- [Blitter Programming](../08_graphics/blitter_programming.md) — Cookie-cut masking, line draw, fill mode
+- [Copper](../08_graphics/copper/copper.md) — Copper coprocessor hardware: instruction format, UCopList
+- [Copper Programming](../08_graphics/copper/copper_programming.md) — Building copper lists, gradients, raster effects
+- [Blitter](../08_graphics/blitter/blitter.md) — Blitter DMA engine: channels, minterms
+- [Blitter Programming](../08_graphics/blitter/blitter_programming.md) — Cookie-cut masking, line draw, fill mode
 - [Sprites](../08_graphics/sprites.md) — Hardware sprites: DMA, attached sprites, multiplexing
 - [Pixel Conversion](../08_graphics/pixel_conversion.md) — Chunky↔Planar: Kalms, Copper Chunky, Akiko
 - [Video Timing](../01_hardware/common/video_timing.md) — Scanline anatomy, beam counters, per-frame budgets

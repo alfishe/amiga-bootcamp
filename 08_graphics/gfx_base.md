@@ -233,5 +233,5 @@ for (node = GfxBase->TextFonts.lh_Head;
 - NDK39: `graphics/gfxbase.h`
 - ADCD 2.1: graphics.library autodocs
 - See also: [views.md](views.md) — View/ViewPort construction
-- See also: [copper.md](copper.md) — Copper coprocessor
+- See also: [copper.md](copper/copper.md) — Copper coprocessor
 - See also: [display_modes.md](display_modes.md) — display mode database

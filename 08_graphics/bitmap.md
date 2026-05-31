@@ -592,8 +592,8 @@ For MiSTer and emulator developers, planar BitMap emulation has specific require
 - ADCD 2.1: `AllocBitMap()`, `FreeBitMap()`, `InitBitMap()`, `InitRastPort()`, `BltBitMap()`
 - *Amiga Hardware Reference Manual* — Bitplane DMA chapter
 - See also: [memory_types.md](../01_hardware/common/memory_types.md) — Chip RAM requirements for DMA-visible BitMaps
-- See also: [blitter.md](blitter.md) — Blitter DMA operations on BitMaps
-- See also: [blitter_programming.md](blitter_programming.md) — Advanced Blitter minterms and cookie-cut
+- See also: [blitter.md](blitter/blitter.md) — Blitter DMA operations on BitMaps
+- See also: [blitter_programming.md](blitter/blitter_programming.md) — Advanced Blitter minterms and cookie-cut
 - See also: [views.md](views.md) — Attaching BitMaps to ViewPorts for display
 - See also: [rastport.md](rastport.md) — RastPort drawing context and primitives
 - See also: [dma_architecture.md](../01_hardware/common/dma_architecture.md) — bitplane DMA slot budget, DDFSTRT/DDFSTOP registers, bandwidth calculations

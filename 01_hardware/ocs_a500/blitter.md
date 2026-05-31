@@ -156,5 +156,5 @@ WaitBlit();   /* graphics.library — waits and resets to safe state */
 ## See Also
 
 - [DMA Architecture](../common/dma_architecture.md) — Blitter-Nasty (BLTPRI), bus arbitration, CPU starvation mechanics
-- [Blitter Programming](../../08_graphics/blitter_programming.md) — Advanced minterms, cookie-cut, area fill
+- [Blitter Programming](../../08_graphics/blitter/blitter_programming.md) — Advanced minterms, cookie-cut, area fill
 - [AGA Blitter](../aga_a1200_a4000/aga_blitter.md) — 64-bit FMODE blitter

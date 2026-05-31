@@ -366,6 +366,6 @@ AGA has 256 colors but still only 32 color registers visible at a time. To load 
 ## References
 
 - HRM: *Copper* chapter — authoritative register descriptions
-- [copper.md](../../08_graphics/copper.md) — graphics.library UCopList API
-- [copper_programming.md](../../08_graphics/copper_programming.md) — additional examples
+- [copper.md](../../08_graphics/copper/copper.md) — graphics.library UCopList API
+- [copper_programming.md](../../08_graphics/copper/copper_programming.md) — additional examples
 - [copper.md](../ocs_a500/copper.md) — OCS-level register reference

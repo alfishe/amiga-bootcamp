@@ -1014,7 +1014,7 @@ else
 - UAE RTG source: `uaegfx.card` — reference virtual card implementation
 - Village Tronic Picasso IV documentation — scan doubler and video scaler internals
 - See also: [display_modes.md](../08_graphics/display_modes.md) — native display modes
-- See also: [blitter.md](../08_graphics/blitter.md) — native Blitter (not RTG blitter)
+- See also: [blitter.md](../08_graphics/blitter/blitter.md) — native Blitter (not RTG blitter)
 - See also: [device_driver_basics.md](device_driver_basics.md) — general Amiga device driver framework
 - See also: [screens.md](../09_intuition/screens.md) — Intuition screen management
 

@@ -735,5 +735,5 @@ A: No — layers manage overlapping regions on a single `BitMap`. For off-screen
 - [Screens](../09_intuition/screens.md) — Intuition screen layer management, LayerInfo deadlock
 - [Windows](../09_intuition/windows.md) — every window is a layer
 - [Bitmaps](../08_graphics/bitmap.md) — the pixel storage that layers clip onto
-- [Blitter](../08_graphics/blitter.md) — hardware that performs the actual copy operations for layers
+- [Blitter](../08_graphics/blitter/blitter.md) — hardware that performs the actual copy operations for layers
 - [Utility](utility.md) — `Hook` structure used by backfill hooks

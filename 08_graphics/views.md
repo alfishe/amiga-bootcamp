@@ -462,8 +462,8 @@ The Amiga shipped with a hardware-composited, multi-resolution desktop in 1985. 
 - ADCD 2.1: `InitView`, `InitVPort`, `MakeVPort`, `MrgCop`, `LoadView`, `LoadRGB4`, `FreeVPortCopLists`, `FreeCprList`, `GetColorMap`, `FreeColorMap`
 - HRM: *Amiga Hardware Reference Manual* — Display Construction chapter, Copper chapter
 - See also: [GfxBase — Graphics Library Global State](gfx_base.md) — View lifecycle, ActiView, system Copper lists
-- See also: [Copper — Coprocessor Instructions and UCopList](copper.md) — `CMOVE`/`CWAIT` macros, UCopList construction, instruction format
-- See also: [Copper Programming — Deep Dive](copper_programming.md) — gradient effects, raster bars, mid-frame palette changes
+- See also: [Copper — Coprocessor Instructions and UCopList](copper/copper.md) — `CMOVE`/`CWAIT` macros, UCopList construction, instruction format
+- See also: [Copper Programming — Deep Dive](copper/copper_programming.md) — gradient effects, raster bars, mid-frame palette changes
 - See also: [Display Modes](display_modes.md) — ModeID system, resolution/color-depth combinations, DMA slot budget
 - See also: [BitMap](bitmap.md) — planar allocation, interleaved layout, `BMF_DISPLAYABLE`
 - See also: [Screens — Intuition](screens.md) — OS-managed screen lifecycle built on Views
