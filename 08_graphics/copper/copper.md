@@ -6,6 +6,8 @@
 
 The **Copper** is a simple coprocessor in the Amiga custom chips that executes a list of instructions synchronized to the video beam. It can write to any custom chip register at any beam position, enabling per-scanline color changes, split screens, and hardware-level display effects without CPU intervention.
 
+For the complete ISA reference with full bit-level encoding, beam position details, control registers, timing, and debugging guidance, see **[copper_reference.md](copper_reference.md)** — the Copper ISA Complete Reference Manual.
+
 ---
 
 ## Instruction Format
@@ -15,8 +17,9 @@ The Copper has only three instructions, each 32 bits (one longword):
 ### MOVE — Write a Register
 
 ```
-[register_offset (9 bits)] [value (16 bits)]
-Bit layout: 0RRRRRRRR00000000 VVVVVVVVVVVVVVVV
+[register_offset] [value (16 bits)]
+Word 1: 0000000R RRRRRRR0 (Offset)
+Word 2: VVVVVVVV VVVVVVVV (Data)
 ```
 
 - Register offset is relative to `$DFF000` (custom chip base)
@@ -26,8 +29,11 @@ Bit layout: 0RRRRRRRR00000000 VVVVVVVVVVVVVVVV
 ### WAIT — Wait for Beam Position
 
 ```
-[vpos (8 bits)] [hpos (7 bits)] [1] [vmask (7 bits)] [hmask (7 bits)] [0]
-Bit layout: VVVVVVVVHHHHHH01 vvvvvvvvhhhhhhh0
+[vpos (8 bits)] [hpos (7 bits)] [1]
+Word 1: VVVVVVVV HHHHHHH1
+
+[BFD (1 bit)] [vmask (7 bits)] [hmask (7 bits)] [0]
+Word 2: Bvvvvvvv hhhhhhh0
 ```
 
 - Pauses until the beam reaches at least the specified (vpos, hpos)
@@ -86,13 +92,16 @@ The OS manages copper lists through `GfxBase`:
 Applications can inject copper instructions into the system list via `UCopList`:
 
 ```c
+#include <hardware/custom.h>
+extern struct Custom custom;
+
 struct UCopList *ucl = AllocMem(sizeof(struct UCopList), MEMF_PUBLIC|MEMF_CLEAR);
 
 CINIT(ucl, 100);                    /* init, max 100 instructions */
 CWAIT(ucl, 44, 0);                  /* wait for line 44 */
-CMOVE(ucl, *((UWORD *)0xDFF180), 0x0F00); /* COLOR00 = red */
+CMOVE(ucl, custom.color[0], 0x0F00); /* COLOR00 = red */
 CWAIT(ucl, 100, 0);
-CMOVE(ucl, *((UWORD *)0xDFF180), 0x000F); /* COLOR00 = blue */
+CMOVE(ucl, custom.color[0], 0x000F); /* COLOR00 = blue */
 CEND(ucl);                          /* end of list */
 
 viewport->UCopIns = ucl;

@@ -61,7 +61,7 @@ graph LR
 | No branching/loops | Executes linearly top-to-bottom; no jumps or calls |
 | No memory read | Can only WRITE to registers — cannot read anything |
 | No CPU memory access | Writes only to custom chip registers (`$DFF000`+), not RAM or CIA |
-| No sub-pixel timing | Horizontal resolution: 4 color clocks (~8 low-res pixels) |
+| No sub-pixel timing | Horizontal resolution: 2 color clocks (~4 low-res pixels) |
 | V counter wraps at 255 | PAL lines 256–311 require a double-WAIT trick |
 | Chip RAM only | The copper list itself must reside in Chip RAM (DMA-accessible) |
 
@@ -82,7 +82,7 @@ The Copper has exactly **3 instructions**, each 32 bits (2 words):
 ### MOVE — Write to Register
 
 ```
-Word 1:  RRRRRRRR R0000000     R = register address (9 bits)
+Word 1:  0000000R RRRRRRR0     R = register offset (bits 8-1)
 Word 2:  DDDDDDDD DDDDDDDD    D = 16-bit data value
 
 Constraints:
@@ -275,8 +275,8 @@ FreeCopList(ucl);
 
 | Item | Cycles |
 |---|---|
-| Each Copper instruction | 4 color clocks (= 8 low-res pixels) |
-| WAIT resolution (horizontal) | 4 color clocks minimum |
+| Each Copper instruction | 2 color clocks (= 4 low-res pixels) |
+| WAIT resolution (horizontal) | 2 color clocks minimum |
 | Maximum instructions per line | ~112 (NTSC) / ~114 (PAL) |
 | PAL visible lines | 256 (lines 44–300) |
 | NTSC visible lines | 200 (lines 44–244) |
@@ -315,6 +315,7 @@ Reposition sprites mid-frame to display more than 8 sprites:
 ## References
 
 - HRM: *Copper* chapter — complete instruction encoding
+- **[copper_reference.md](copper_reference.md)** — Copper ISA Complete Reference Manual (full encoding, control registers, timing, register map, debugging)
 - [copper.md](../../01_hardware/ocs_a500/copper.md) — register-level reference
 - [copper.md](copper.md) — graphics.library UCopList API
 - [Video Signal & Timing](../../01_hardware/common/video_timing.md) — beam counters, scanline anatomy, clock tree

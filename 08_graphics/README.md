@@ -14,6 +14,7 @@ The Amiga graphics system is built on custom DMA-driven hardware (Agnus/Alice + 
 | [ham_ehb_modes.md](ham_ehb_modes.md) | HAM6/HAM8 encoding pipeline, EHB half-brite, fringing, palette programming, FPGA decoder logic |
 | [copper.md](copper/copper.md) | Copper coprocessor, instruction format, UCopList |
 | [copper_programming.md](copper/copper_programming.md) | Copper deep dive: architecture, copper list construction, gradient and raster effects |
+| [copper_reference.md](copper/copper_reference.md) | Copper ISA complete reference: full encoding, control registers, timing, register map, debugging |
 | [blitter.md](blitter/blitter.md) | Blitter DMA engine, minterms, BltBitMap |
 | [blitter_programming.md](blitter/blitter_programming.md) | Blitter deep dive: minterms, cookie-cut masking, line draw, fill mode |
 | [sprites.md](sprites.md) | Hardware sprites: DMA engine, data format, attached 15-color sprites, multiplexing, AGA enhancements, priority control |
