@@ -122,10 +122,10 @@ These colors appear momentarily during a healthy boot, each signaling successful
 
 | Constant | Value | Color | Meaning | When Set |
 |---|---|---|---|---|
-| `OK_HARDWARE` | `$0111` | <span style="display:inline-block;width:28px;height:14px;background:#111111;vertical-align:middle;border:1px solid #666"></span> Dark Grey | First software action after RESET | After disabling interrupts/DMA |
-| `OK_SOFTWARE` | `$0888` | <span style="display:inline-block;width:28px;height:14px;background:#888888;vertical-align:middle;border:1px solid #666"></span> Mid Grey | Chip RAM tests passed | After exception vector verify |
-| `OK_RESLIST` | `$0AAA` | <span style="display:inline-block;width:28px;height:14px;background:#AAAAAA;vertical-align:middle;border:1px solid #666"></span> Light Grey | All resident modules found | After `FindCodeBefore` |
-| `OK_RESSTART` | `$0CCC` | <span style="display:inline-block;width:28px;height:14px;background:#CCCCCC;vertical-align:middle;border:1px solid #666"></span> Bright Grey | About to start resident chain | Just before `InitCode` |
+| `OK_HARDWARE` | `$0111` | ![Dark Grey](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAE0lEQVR4nGMQJBowjCodVUq8UgDuGScNZGLeJwAAAABJRU5ErkJggg==) Dark Grey | First software action after RESET | After disabling interrupts/DMA |
+| `OK_SOFTWARE` | `$0888` | ![Mid Grey](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAE0lEQVR4nGPoIBowjCodVUq8UgBguzhwKgIx/wAAAABJRU5ErkJggg==) Mid Grey | Chip RAM tests passed | After exception vector verify |
+| `OK_RESLIST` | `$0AAA` | ![Light Grey](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAE0lEQVR4nGNYRTRgGFU6qpR4pQA4V4aIW9VymwAAAABJRU5ErkJggg==) Light Grey | All resident modules found | After `FindCodeBefore` |
+| `OK_RESSTART` | `$0CCC` | ![Bright Grey](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAE0lEQVR4nGM4QzRgGFU6qpR4pQAP89SgTtuJZgAAAABJRU5ErkJggg==) Bright Grey | About to start resident chain | Just before `InitCode` |
 
 > **Design note:** In the production V40 ROM, only `OK_HARDWARE` survives — the intermediate grey stages (`OK_SOFTWARE`, `OK_RESLIST`, `OK_RESSTART`) were present in earlier revisions (visible in the RCS history of `constants.i`) but consolidated. The screen transitions from dark grey directly through to whatever the boot menu or Workbench draws. On a healthy machine, the grey flash is barely perceptible — lasting only the time it takes to checksum 512KB of ROM and verify chip RAM.
 
@@ -135,17 +135,17 @@ When any test fails, the color is loaded into `D0` and execution branches to `co
 
 | Constant | Value | Color | Failure | Source Test |
 |---|---|---|---|---|
-| `CC_BADROMSUM` | `$0F00` | <span style="display:inline-block;width:28px;height:14px;background:#FF0000;vertical-align:middle;border:1px solid #666"></span> **Red** | Kickstart ROM checksum invalid | Additive wraparound-carry sum ≠ $FFFFFFFF |
-| `CC_BADRAM` | `$00F0` | <span style="display:inline-block;width:28px;height:14px;background:#00FF00;vertical-align:middle;border:1px solid #666"></span> **Green** | Chip memory not writable | Exception vector write-back verify failed |
-| `CC_EXCEPTION` | `$0FE5` | <span style="display:inline-block;width:28px;height:14px;background:#FFEE55;vertical-align:middle;border:1px solid #666"></span> **Yellow** | CPU exception before software setup | Bus/Address error or illegal instruction |
-| `CC_NOMODULES` | `$0F0F` | <span style="display:inline-block;width:28px;height:14px;background:#FF00FF;vertical-align:middle;border:1px solid #666"></span> **Purple** | `InitCode(RTF_COLDSTART)` returned | No bootable resident modules found |
-| `CC_BADCHIPS` | `$000F` | <span style="display:inline-block;width:28px;height:14px;background:#0000FF;vertical-align:middle;border:1px solid #666"></span> **Blue** | Custom chip register test failed | *(Commented out in V40 — was for early hardware)* |
+| `CC_BADROMSUM` | `$0F00` | ![Red](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFklEQVR4nGP4z8BAJCJW3ajSUaVABABgnMM9HFMEPwAAAABJRU5ErkJggg==) **Red** | Kickstart ROM checksum invalid | Additive wraparound-carry sum ≠ $FFFFFFFF |
+| `CC_BADRAM` | `$00F0` | ![Green](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFElEQVR4nGNg+M9ALBpVOqqUeKUAnVHDPej5AoMAAAAASUVORK5CYII=) **Green** | Chip memory not writable | Exception vector write-back verify failed |
+| `CC_EXCEPTION` | `$0FE5` | ![Yellow](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFUlEQVR4nGP4/y6USMQwqnRUKfFKAfTiupj7Z2kkAAAAAElFTkSuQmCC) **Yellow** | CPU exception before software setup | Bus/Address error or illegal instruction |
+| `CC_NOMODULES` | `$0F0F` | ![Purple](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFUlEQVR4nGP4z/CfSMQwqnRUKfFKAThXhog5DbO4AAAAAElFTkSuQmCC) **Purple** | `InitCode(RTF_COLDSTART)` returned | No bootable resident modules found |
+| `CC_BADCHIPS` | `$000F` | ![Blue](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFElEQVR4nGNgYPhPNBpVOqqUaKUA2gbDPcbo5VMAAAAASUVORK5CYII=) **Blue** | Custom chip register test failed | *(Commented out in V40 — was for early hardware)* |
 
 ### 2.3 Special Modes
 
 | Constant | Value | Color | Meaning |
 |---|---|---|---|
-| `OK_DEBUG` | `$000F` | <span style="display:inline-block;width:28px;height:14px;background:#0000FF;vertical-align:middle;border:1px solid #666"></span> Blue | Debug/development mode — fire button held at boot |
+| `OK_DEBUG` | `$000F` | ![Blue](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAIAAACQKrqGAAAAFElEQVR4nGNgYPhPNBpVOqqUaKUA2gbDPcbo5VMAAAAASUVORK5CYII=) Blue | Debug/development mode — fire button held at boot |
 | `COLORON` | `$0200` | *(control)* | Written to `BPLCON0` to enable color burst output |
 
 ### 2.4 Color Progression Diagram
