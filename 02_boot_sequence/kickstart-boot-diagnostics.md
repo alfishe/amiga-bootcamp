@@ -93,16 +93,39 @@ ExecOrigin:  DC.W  BIG_ROMS        ; ROM identification ($1114)
 
 All diagnostic color constants are defined in `exec/constants.i` (lines 13–23). They use the Amiga's native 12-bit RGB format (`$0RGB`), written directly to the COLOR00 register at `$DFF180`.
 
+#### 12-bit to 24-bit Color Conversion
+
+The Amiga stores color as a 16-bit word, but only the low 12 bits are used in OCS/ECS: four bits per channel (`$0RGB`). To convert each 4-bit nibble (0–F) to its 8-bit equivalent (0–255), multiply by 17:
+
+| 4-bit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **8-bit** | `00` | `11` | `22` | `33` | `44` | `55` | `66` | `77` | `88` | `99` | `AA` | `BB` | `CC` | `DD` | `EE` | `FF` |
+
+The formula: `8bit_value = nibble × $11` (or `nibble × 17` in decimal). For example:
+
+| Amiga `$0RGB` | Breakdown | 24-bit `#RRGGBB` | Approximate Color |
+|---|---|---|---|
+| `$0000` | R=0, G=0, B=0 | `#000000` | Black |
+| `$0111` | R=1, G=1, B=1 | `#111111` | Dark Grey |
+| `$0F00` | R=F, G=0, B=0 | `#FF0000` | Red |
+| `$00F0` | R=0, G=F, B=0 | `#00FF00` | Green |
+| `$0FE5` | R=F, G=E, B=5 | `#FFEE55` | Yellow |
+| `$0F0F` | R=F, G=0, B=F | `#FF00FF` | Magenta |
+| `$000F` | R=0, G=0, B=F | `#0000FF` | Blue |
+| `$0FFF` | R=F, G=F, B=F | `#FFFFFF` | White |
+
+> **AGA note:** The AGA chipset (A1200/A4000) extends COLOR00 to 24-bit (8 bits per channel) when `BPLCON3` bit `LOCT` = 1. In that mode the 12-bit conversion table above does not apply — each channel uses its full 8-bit value directly. Kickstart diagnostics always run in 12-bit mode since they execute before any AGA-specific setup.
+
 ### 2.1 Progress Indicators (Normal Boot)
 
 These colors appear momentarily during a healthy boot, each signaling successful completion of a test phase. The grey intensifies as boot progresses — a deliberate design choice that gives the power-on sequence a visible "warming up" feel.
 
 | Constant | Value | Color | Meaning | When Set |
 |---|---|---|---|---|
-| `OK_HARDWARE` | `$0111` | 🟫 Dark Grey | First software action after RESET | After disabling interrupts/DMA |
-| `OK_SOFTWARE` | `$0888` | ⬜ Mid Grey | Chip RAM tests passed | After exception vector verify |
-| `OK_RESLIST` | `$0AAA` | ⬜ Light Grey | All resident modules found | After `FindCodeBefore` |
-| `OK_RESSTART` | `$0CCC` | ⬜ Bright Grey | About to start resident chain | Just before `InitCode` |
+| `OK_HARDWARE` | `$0111` | <span style="display:inline-block;width:28px;height:14px;background:#111111;vertical-align:middle;border:1px solid #666"></span> Dark Grey | First software action after RESET | After disabling interrupts/DMA |
+| `OK_SOFTWARE` | `$0888` | <span style="display:inline-block;width:28px;height:14px;background:#888888;vertical-align:middle;border:1px solid #666"></span> Mid Grey | Chip RAM tests passed | After exception vector verify |
+| `OK_RESLIST` | `$0AAA` | <span style="display:inline-block;width:28px;height:14px;background:#AAAAAA;vertical-align:middle;border:1px solid #666"></span> Light Grey | All resident modules found | After `FindCodeBefore` |
+| `OK_RESSTART` | `$0CCC` | <span style="display:inline-block;width:28px;height:14px;background:#CCCCCC;vertical-align:middle;border:1px solid #666"></span> Bright Grey | About to start resident chain | Just before `InitCode` |
 
 > **Design note:** In the production V40 ROM, only `OK_HARDWARE` survives — the intermediate grey stages (`OK_SOFTWARE`, `OK_RESLIST`, `OK_RESSTART`) were present in earlier revisions (visible in the RCS history of `constants.i`) but consolidated. The screen transitions from dark grey directly through to whatever the boot menu or Workbench draws. On a healthy machine, the grey flash is barely perceptible — lasting only the time it takes to checksum 512KB of ROM and verify chip RAM.
 
@@ -112,17 +135,17 @@ When any test fails, the color is loaded into `D0` and execution branches to `co
 
 | Constant | Value | Color | Failure | Source Test |
 |---|---|---|---|---|
-| `CC_BADROMSUM` | `$0F00` | 🟥 **Red** | Kickstart ROM checksum invalid | Additive wraparound-carry sum ≠ $FFFFFFFF |
-| `CC_BADRAM` | `$00F0` | 🟩 **Green** | Chip memory not writable | Exception vector write-back verify failed |
-| `CC_EXCEPTION` | `$0FE5` | 🟨 **Yellow** | CPU exception before software setup | Bus/Address error or illegal instruction |
-| `CC_NOMODULES` | `$0F0F` | 🟪 **Purple** | `InitCode(RTF_COLDSTART)` returned | No bootable resident modules found |
-| `CC_BADCHIPS` | `$000F` | 🟦 **Blue** | Custom chip register test failed | *(Commented out in V40 — was for early hardware)* |
+| `CC_BADROMSUM` | `$0F00` | <span style="display:inline-block;width:28px;height:14px;background:#FF0000;vertical-align:middle;border:1px solid #666"></span> **Red** | Kickstart ROM checksum invalid | Additive wraparound-carry sum ≠ $FFFFFFFF |
+| `CC_BADRAM` | `$00F0` | <span style="display:inline-block;width:28px;height:14px;background:#00FF00;vertical-align:middle;border:1px solid #666"></span> **Green** | Chip memory not writable | Exception vector write-back verify failed |
+| `CC_EXCEPTION` | `$0FE5` | <span style="display:inline-block;width:28px;height:14px;background:#FFEE55;vertical-align:middle;border:1px solid #666"></span> **Yellow** | CPU exception before software setup | Bus/Address error or illegal instruction |
+| `CC_NOMODULES` | `$0F0F` | <span style="display:inline-block;width:28px;height:14px;background:#FF00FF;vertical-align:middle;border:1px solid #666"></span> **Purple** | `InitCode(RTF_COLDSTART)` returned | No bootable resident modules found |
+| `CC_BADCHIPS` | `$000F` | <span style="display:inline-block;width:28px;height:14px;background:#0000FF;vertical-align:middle;border:1px solid #666"></span> **Blue** | Custom chip register test failed | *(Commented out in V40 — was for early hardware)* |
 
 ### 2.3 Special Modes
 
 | Constant | Value | Color | Meaning |
 |---|---|---|---|
-| `OK_DEBUG` | `$000F` | 🟦 Blue | Debug/development mode — fire button held at boot |
+| `OK_DEBUG` | `$000F` | <span style="display:inline-block;width:28px;height:14px;background:#0000FF;vertical-align:middle;border:1px solid #666"></span> Blue | Debug/development mode — fire button held at boot |
 | `COLORON` | `$0200` | *(control)* | Written to `BPLCON0` to enable color burst output |
 
 ### 2.4 Color Progression Diagram
@@ -131,7 +154,7 @@ When any test fails, the color is loaded into `D0` and execution branches to `co
 graph LR
     subgraph "Normal Boot Path"
         direction LR
-        A["RESET<br/>⬛ Black"] --> B["OK_HARDWARE<br/>$0111<br/>🟫 Dark Grey"]
+        A["RESET<br/>Black"] --> B["OK_HARDWARE<br/>$0111<br/>Dark Grey"]
         B --> C["ROM Checksum<br/>Computing..."]
         C --> D["Vector Verify<br/>Writing + Reading"]
         D --> E["ExecBase Built<br/>Modules Found"]
@@ -139,13 +162,13 @@ graph LR
     end
 
     subgraph "Failure Branches"
-        C -->|"Bad checksum"| R["CC_BADROMSUM<br/>$0F00<br/>🟥 RED"]
-        D -->|"Write failed"| G["CC_BADRAM<br/>$00F0<br/>🟩 GREEN"]
-        F -->|"No modules"| P["CC_NOMODULES<br/>$0F0F<br/>🟪 PURPLE"]
+        C -->|"Bad checksum"| R["CC_BADROMSUM<br/>$0F00<br/>RED"]
+        D -->|"Write failed"| G["CC_BADRAM<br/>$00F0<br/>GREEN"]
+        F -->|"No modules"| P["CC_NOMODULES<br/>$0F0F<br/>PURPLE"]
     end
 
     subgraph "Exception Path"
-        B -->|"CPU fault"| Y["CC_EXCEPTION<br/>$0FE5<br/>🟨 YELLOW"]
+        B -->|"CPU fault"| Y["CC_EXCEPTION<br/>$0FE5<br/>YELLOW"]
     end
 
     R --> CRASH["coldCrash<br/>LED blink ×10<br/>→ RESET"]
@@ -541,13 +564,13 @@ This section maps observable symptoms to the specific source code paths that pro
 ```mermaid
 flowchart TD
     subgraph "Observable Symptoms"
-        BLACK["⬛ Black Screen<br/>No brightness change"]
-        GREY["🟫 Grey Flash → Black"]
-        GREEN["🟩 Solid Green Screen<br/>+ LED blinks"]
-        RED["🟥 Solid Red Screen<br/>+ LED blinks"]
-        YELLOW["🟨 Yellow Screen<br/>+ LED blinks"]
-        PURPLE["🟪 Purple Screen<br/>Hangs"]
-        REDSYS["🟥 Red Screen with<br/>device listing + text"]
+        BLACK["Black Screen<br/>No brightness change"]
+        GREY["Grey Flash → Black"]
+        GREEN["Solid Green Screen<br/>+ LED blinks"]
+        RED["Solid Red Screen<br/>+ LED blinks"]
+        YELLOW["Yellow Screen<br/>+ LED blinks"]
+        PURPLE["Purple Screen<br/>Hangs"]
+        REDSYS["Red Screen with<br/>device listing + text"]
     end
 
     subgraph "Source Code Path"
