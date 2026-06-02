@@ -659,25 +659,7 @@ The Amiga's color-code POST system was designed in 1985 — an era when every ho
 
 ---
 
-## 10. Source File Map
-
-All files are relative to `os-source/v40_src/kickstart/exec/`.
-
-| File | Role in Diagnostics |
-|---|---|
-| `coldstart.asm` | **Primary.** Contains `ColdStart`, `coldCrash`, `coldExcept`, ROM checksum, chip RAM test, chip RAM sizing, ExecBase allocation, and `InitCode` dispatch. |
-| `constants.i` | Defines all `CC_*` and `OK_*` color constants, `TEMP_SUP_STACK`, cookie values. |
-| `romconstants.i` | Machine-specific parameters: `ROM_SIZE`, `CHECKSUM_ROM`, memory bounds, ROM ID codes (`DIAG_CART`, `BIG_ROMS`, etc). |
-| `startexec.asm` | Second-stage init. Contains the `RTF_COLDSTART` `InitCode` call and the second `CC_NOMODULES` purple-screen fallback. |
-| `alert.asm` | Post-boot alert system (Guru Meditation). Architecturally separate from ColdStart diagnostics. |
-| `errors.i` | Defines `IOERR_SELFTEST` (`-7`) for device-level self-test failures. |
-| `../bootmenu/old/syscheck/init.c` | Expansion board diagnostic screen (red screen with device listing). |
-| `../bootmenu/old/syscheck/syscheck.doc` | Documentation for the System Expansion Board Check display. |
-| `../kickmenu/source/makekick/sumrom.asm` | `SumROM` — standalone ROM checksum utility + `ColdReboot` for soft-kick. |
-
----
-
-## 11. References
+## 10. References
 
 ### Cross-References
 
