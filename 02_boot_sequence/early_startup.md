@@ -251,3 +251,4 @@ On Amiga 1000 (no right mouse button connector) or when mouse is unavailable:
 - OS 3.2 Release Notes: new ESC menu options
 - See also: [DOS Boot](dos_boot.md) — what happens after device selection
 - See also: [Cold Boot](cold_boot.md) — hardware init before ESC menu
+- See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — POST color codes if boot fails before ESC menu

@@ -88,6 +88,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [dos_boot.md](02_boot_sequence/dos_boot.md) | strap module, boot block format and execution, MountList, Startup-Sequence walkthrough |
 | [floppy_vs_hdd_physical_boot.md](02_boot_sequence/floppy_vs_hdd_physical_boot.md) | Physical hardware mechanisms: floppy MFM streaming, HDD RDB scanning, DMA transfers, failure modes |
 | [early_startup.md](02_boot_sequence/early_startup.md) | Early Startup Control menu: device selection, display mode, recovery scenarios |
+| [kickstart-boot-diagnostics.md](02_boot_sequence/kickstart-boot-diagnostics.md) | **Kickstart POST: color-screen self-test, 7-phase ColdStart, coldCrash handler, diagnostic cartridge, troubleshooting** |
 
 ### 03 — Executable Loader & HUNK Format
 | File | Topic |

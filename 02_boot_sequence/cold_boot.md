@@ -497,4 +497,5 @@ On a 68040/50 MHz (A4000): checksum is ~10× faster, total boot ~2–4 s to Work
 - RKRM: *Hardware Reference Manual* — reset chapter
 - NDK39: `exec/execbase.h` — ColdCapture, CoolCapture, WarmCapture fields
 - See also: [Kickstart Init](kickstart_init.md) — ExecBase creation and resident module init
+- See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — color-screen self-test architecture, ROM checksum, chip RAM test, coldCrash handler
 - See also: [Address Space](../01_hardware/common/address_space.md) — memory map

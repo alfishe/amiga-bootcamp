@@ -315,6 +315,7 @@ Enforcer doesn't prevent the crash — it just reports it with enough context to
 - Motorola: *MC68040 User's Manual* — exception stack frame formats
 - NDK39: `exec/alerts.h`, `exec/tasks.h` (tc_ExceptCode), `exec/execbase.h`
 - ADCD 2.1: `Supervisor`, `SetExcept`, `Alert`
+- See also: [Kickstart Boot Diagnostics](../02_boot_sequence/kickstart-boot-diagnostics.md) — exception vector write-verify test (Phase 5), coldExcept handler (CC_EXCEPTION yellow screen)
 - See also: [Interrupts](interrupts.md) — auto-vector interrupt handling
 - See also: [Multitasking](multitasking.md) — how debuggers use TRAP for breakpoints
 - *Amiga ROM Kernel Reference Manual: Exec* — exception handling chapter

@@ -442,5 +442,6 @@ print(f'Checksum: \${ s:08X}', '✓' if s == 0xFFFFFFFF else '✗ BAD')
 - NDK39: `exec/resident.h`, `exec/execbase.h`
 - amitools: `romtool` — https://github.com/cnvogelg/amitools
 - See also: [Cold Boot](cold_boot.md) — boot sequence using the ROM
+- See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — ROM checksum algorithm, CC_BADROMSUM red screen
 - See also: [Kickstart Init](kickstart_init.md) — how residents are initialized
 - See also: [Resident Modules](../06_exec_os/resident_modules.md) — RomTag structure

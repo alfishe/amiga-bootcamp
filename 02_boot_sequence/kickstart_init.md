@@ -400,6 +400,7 @@ See [DOS Boot](dos_boot.md) for the complete boot block and startup-sequence flo
 - NDK39: `exec/resident.h`, `exec/execbase.h`
 - ADCD 2.1: `InitResident`, `FindResident`, `AddLibrary`
 - See also: [Cold Boot](cold_boot.md) — hardware init before this phase
+- See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — ColdStart POST color codes, ROM checksum, chip RAM test
 - See also: [ExecBase](../06_exec_os/exec_base.md) — structure reference
 - See also: [Resident Modules](../06_exec_os/resident_modules.md) — RomTag structure
 - See also: [Kickstart ROM](kickstart_rom.md) — ROM binary format and module layout

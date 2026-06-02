@@ -247,4 +247,5 @@ After loading Kickstart ROM:
 - ADCD 2.1: exec.library autodoc
 - See also: [Library System](library_system.md) — how libraries relate to ExecBase
 - See also: [Multitasking](multitasking.md) — TaskReady/TaskWait and scheduler internals
+- See also: [Kickstart Boot Diagnostics](../02_boot_sequence/kickstart-boot-diagnostics.md) — ColdStart ExecBase allocation, chip RAM sizing
 - *Amiga ROM Kernel Reference Manual: Exec* — ExecBase chapter

@@ -215,6 +215,7 @@ Standard 2-button Atari joysticks ignore the clock signal and remain fully compa
 - ADCD 2.1 Hardware Manual — CIA chapter: http://amigadev.elowar.com/read/ADCD_2.1/Hardware_Manual_guide/
 - NDK39: `hardware/cia.h`, `resources/cia.h`
 - Autodocs: `cia` resource — http://amigadev.elowar.com/read/ADCD_2.1/Includes_and_Autodocs_3._guide/node00C7.html
+- See also: [Kickstart Boot Diagnostics](../../02_boot_sequence/kickstart-boot-diagnostics.md) — CIA-A LED blink pattern (coldCrash handler), overlay bit in PRA
 
 ## See Also
 

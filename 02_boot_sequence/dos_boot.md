@@ -446,6 +446,7 @@ SetKeyboard usa1
 - NDK39: `dos/dosextens.h`, `dos/filehandler.h`
 - ADCD 2.1: `BootStrap`, `AddBootNode`, `MakeDosEntry`
 - See also: [Kickstart Init](kickstart_init.md) — what happens before strap
+- See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — CC_NOMODULES purple screen if InitCode fails
 - See also: [Early Startup](early_startup.md) — boot menu options
 - See also: [Filesystem](../07_dos/filesystem.md) — FFS/OFS block layout
 - *Amiga ROM Kernel Reference Manual: Exec* — boot chapter
