@@ -883,3 +883,4 @@ No — each mount entry (`CD0:`, `CD1:`, etc.) uses one handler. You can have di
 - [Locks & Examine](locks_examine.md) — lock semantics used by CDFS handlers for directory traversal
 - [File I/O](file_io.md) — Open/Read/Write/Seek used by applications to access CD-ROM files
 - [DOS Boot](../02_boot_sequence/dos_boot.md) — boot device selection, BootPri, filesystem loading from RDB
+- [ATA/ATAPI Protocol](../10_devices/atapi.md) — ATAPI packet commands used by CD-ROM drives, SFF-8020i/MMC command reference, IDE driver ecosystem

@@ -861,6 +861,7 @@ For 68040/060 systems:
 | [Gary (OCS)](../ocs_a500/gary_system_controller.md) | Detailed address decode logic and bus timeout |
 | [Fat Gary (ECS)](../ecs_a600_a3000/gary_system_controller.md) | 32-bit decode, SCSI, Zorro III glue |
 | [cia_chips.md](cia_chips.md) | CIA register semantics, timer programming |
+| [ATA/ATAPI Protocol](../../10_devices/atapi.md) | IDE register access at `$DA0000` (Gayle), task file operations, PIO transfer mechanics |
 
 ### Primary Sources
 

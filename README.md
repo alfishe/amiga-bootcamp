@@ -244,6 +244,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 |---|---|
 | [trackdisk.md](10_devices/trackdisk.md) | Floppy I/O, geometry |
 | [scsi.md](10_devices/scsi.md) | Hard disk, HD_SCSICMD |
+| [atapi.md](10_devices/atapi.md) | ATA/ATAPI wire protocol, packet commands, CF, removable media |
 | [serial.md](10_devices/serial.md) | RS-232 serial |
 | [parallel.md](10_devices/parallel.md) | Centronics parallel |
 | [timer.md](10_devices/timer.md) | Timing, delays, E-clock |

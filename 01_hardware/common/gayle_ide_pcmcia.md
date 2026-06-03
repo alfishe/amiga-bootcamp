@@ -218,3 +218,4 @@ The A600 uses `scsi.device` from Kickstart ROM. The A1200 uses `ata.device` (als
 - [Gary — A3000 System Controller](../ecs_a600_a3000/gary_system_controller.md) — A3000 bus controller (no IDE)
 - [CIA Chips](cia_chips.md) — Gayle routes interrupts through CIA-A
 - [Memory Types](memory_types.md) — IDE storage as expansion path
+- [ATA/ATAPI Protocol](../../10_devices/atapi.md) — ATA task file registers, ATAPI packet commands, driver ecosystem, CompactFlash

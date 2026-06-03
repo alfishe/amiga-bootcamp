@@ -281,3 +281,6 @@ The CDTV runs standard AmigaOS 1.3 software from CD or external floppy. The Exte
 - [Memory Types](../common/memory_types.md) — CDTV memory configuration
 - [Address Space](../common/address_space.md) — CDTV address map with Extended ROM and NVRAM regions
 - [CIA Chips](../common/cia_chips.md) — CIA A/B (shared across all models)
+- [scsi.device](../../10_devices/scsi.md) — AmigaOS device driver API used by CDTV's DMAC/WD33C93 SCSI controller
+- [ATA/ATAPI Protocol](../../10_devices/atapi.md) — ATA/ATAPI wire protocol (CDTV uses SCSI, not ATAPI, but shares the SCSI command vocabulary via ATAPI tunneling)
+- [CD-ROM Filesystems](../../07_dos/cdfs.md) — ISO 9660, Rock Ridge, Joliet, CDTV CD filesystem internals

@@ -290,3 +290,4 @@ DoIO((struct IORequest *)diskReq);
 - See also: [Gayle IDE & PCMCIA](../01_hardware/common/gayle_ide_pcmcia.md) — A600/A1200 IDE controller
 - See also: [Gary — A3000](../01_hardware/ecs_a600_a3000/gary_system_controller.md) — A3000 SDMAC/WD33C93 SCSI integration
 - See also: [CD-ROM Filesystems](../07_dos/cdfs.md) — CDFS handler deep-dive: ISO 9660, Rock Ridge, Joliet, UDF, handler comparison
+- See also: [ATA/ATAPI Protocol](atapi.md) — ATA task file registers, ATAPI packet commands, driver ecosystem (IDE-fix, Buddha, FastATA), CompactFlash, removable media

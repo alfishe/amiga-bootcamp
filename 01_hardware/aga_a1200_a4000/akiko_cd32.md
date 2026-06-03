@@ -384,3 +384,6 @@ BOOL is_cd32(void)
 - [AGA Chipset Internals](chipset_aga.md) — Alice and Lisa (shared with CD32)
 - [Memory Types](../common/memory_types.md) — CD32 memory configuration
 - [Address Space](../common/address_space.md) — CD32 address map with Akiko region
+- [scsi.device](../../10_devices/scsi.md) — AmigaOS device driver API shared with CDTV SCSI and IDE hard drives
+- [ATA/ATAPI Protocol](../../10_devices/atapi.md) — IDE/ATAPI wire protocol (CD32 uses Akiko, not ATAPI, but SX-1/SX-32 IDE uses ATA)
+- [CD-ROM Filesystems](../../07_dos/cdfs.md) — ISO 9660, Rock Ridge, Joliet, handler comparison
