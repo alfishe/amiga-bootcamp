@@ -238,9 +238,13 @@ DoIO((struct IORequest *)diskReq);
 
 | Driver | Type | Features |
 |---|---|---|
-| **AmiCDFS** | Commodore (stock) | Basic ISO 9660, slow |
-| **CacheCDFS** | Third-party (popular) | ISO 9660 + Joliet + RockRidge, caching, fast |
-| **AsimCDFS** | Third-party | Similar to CacheCDFS, commercial |
+| **AmiCDFS** | Free (Aminet) | ISO 9660, Rock Ridge, HFS, circular cache |
+| **CacheCDFS** | OS 3.5+ / IDE-fix | ISO 9660, Rock Ridge, Joliet, HFS, LRU cache — de facto standard |
+| **AsimCDFS** | Commercial | ISO 9660, High Sierra, Rock Ridge, HFS, CD-DA ripping, CDTV/CD32 emulation |
+| **AllegroCDFS** | Elbox-bundled | ISO 9660 L1–3, Rock Ridge, Joliet, UDF, fastest benchmarks |
+| **ODFileSystem** | Open source | ISO 9660, Rock Ridge, Joliet, UDF, HFS, HFS+ — modern replacement |
+
+See [CD-ROM Filesystems](../07_dos/cdfs.md) for the full deep-dive: format coverage matrix, handler architecture, mount configuration, and decision guide.
 
 ---
 
@@ -285,3 +289,4 @@ DoIO((struct IORequest *)diskReq);
 - See also: [Akiko — CD32](../01_hardware/aga_a1200_a4000/akiko_cd32.md) — CD32 CD-ROM controller (Akiko PIO, not SCSI)
 - See also: [Gayle IDE & PCMCIA](../01_hardware/common/gayle_ide_pcmcia.md) — A600/A1200 IDE controller
 - See also: [Gary — A3000](../01_hardware/ecs_a600_a3000/gary_system_controller.md) — A3000 SDMAC/WD33C93 SCSI integration
+- See also: [CD-ROM Filesystems](../07_dos/cdfs.md) — CDFS handler deep-dive: ISO 9660, Rock Ridge, Joliet, UDF, handler comparison

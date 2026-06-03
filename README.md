@@ -200,6 +200,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [process_management.md](07_dos/process_management.md) | CreateNewProc, SystemTagList |
 | [packet_system.md](07_dos/packet_system.md) | DosPacket, ACTION_* codes |
 | [filesystem.md](07_dos/filesystem.md) | FFS/OFS block layout, hash, checksum |
+| [cdfs.md](07_dos/cdfs.md) | **CD-ROM filesystems**: ISO 9660, Rock Ridge, Joliet, UDF, HFS; 7 handler implementations; architecture; hardware platforms |
 | [environment.md](07_dos/environment.md) | GetVar/SetVar, local/global env variables |
 | [error_handling.md](07_dos/error_handling.md) | IoErr, error codes, PrintFault |
 | [cli_shell.md](07_dos/cli_shell.md) | CLI/Shell deep dive: architecture, pipes & I/O redirection, script cookbook (7 patterns), ReadArgs API, built-in commands, named antipatterns, TRIPOS heritage |
