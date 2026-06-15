@@ -251,6 +251,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [audio.md](10_devices/audio.md) | DMA audio channels |
 | [keyboard.md](10_devices/keyboard.md) | Keycodes, key matrix |
 | [gameport.md](10_devices/gameport.md) | Joystick and mouse |
+| [mouse.md](10_devices/mouse.md) | Mouse hardware: quadrature decoding, VERTB polling, button demultiplexing, access layers |
 | [input.md](10_devices/input.md) | Event stream merging |
 | [console.md](10_devices/console.md) | Text terminal, escape sequences |
 

@@ -916,8 +916,8 @@ Before 1990, there were few practical alternatives to assembly for Amiga softwar
 - [api_call_identification.md](api_call_identification.md) — Library call recognition
 - [exe_crunchers.md](../../03_loader_and_exec_format/exe_crunchers.md) — Decruncher identification and unpacking
 - [code_vs_data_disambiguation.md](code_vs_data_disambiguation.md) — distinguishing code bytes from data/variables
-- [copper_programming.md](../../08_graphics/copper_programming.md) — Copper list format and programming
-- [blitter_programming.md](../../08_graphics/blitter_programming.md) — Blitter operation reference
+- [copper_programming.md](../../08_graphics/copper/copper_programming.md) — Copper list format and programming
+- [blitter_programming.md](../../08_graphics/blitter/blitter_programming.md) — Blitter operation reference
 - [paula_audio.md](../../01_hardware/ocs_a500/paula_audio.md) — Audio hardware register reference
 - [custom_registers.md](../../01_hardware/ocs_a500/custom_registers.md) — Complete custom chip register map
 - *M68000 Family Programmer's Reference Manual* — Instruction set and timing

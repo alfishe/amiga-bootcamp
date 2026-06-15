@@ -17,5 +17,6 @@ Amiga devices are shared libraries with an exec I/O request interface. They prov
 | [audio.md](audio.md) | 4-channel DMA audio: Paula architecture, DMA slot budget, named antipatterns, use-case cookbook, decision flowchart (audio.device vs direct HW), FPGA/MiSTer impact, cross-platform comparison |
 | [keyboard.md](keyboard.md) | CIA-A serial handshake, raw key codes, key matrix, reset sequence, FPGA protocol notes |
 | [gameport.md](gameport.md) | Joystick/mouse port: quadrature decoding, XOR state, fire buttons, controller types |
+| [mouse.md](mouse.md) | Mouse hardware deep dive: quadrature decoding in Denise/Lisa, JOY0DAT delta math, branchless VERTB polling (RE), button demultiplexing (CIA-A + POTINP), connector pinout, 3 access layers, diagnostic patterns, antipatterns, FPGA/emulation notes |
 | [input.md](input.md) | Input handler chain: priority dispatch, event classes, key remapping, Commodities Exchange |
 | [console.md](console.md) | Text terminal I/O: ANSI escape sequences, cursor/color control, raw key events, CON:/RAW: handlers, decision guide, TUI/progress bar cookbooks, antipatterns, pitfalls, 6 FAQ |

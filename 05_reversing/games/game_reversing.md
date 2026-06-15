@@ -704,8 +704,8 @@ Emulators are more forgiving of timing violations. Your patch may have altered c
 - [Ghidra Setup](../ghidra_setup.md) — Ghidra + ghidra-amiga extension configuration
 - [Anti-Debugging](../anti_debugging.md) — Trace vector abuse, NMI defeat, checksum loops
 - [WHDLoad Architecture](../whdload_architecture.md) — Slave authoring and snooping
-- [Copper Programming](../../08_graphics/copper_programming.md) — Copper list format
-- [Blitter Programming](../../08_graphics/blitter_programming.md) — Blitter register sequences
+- [Copper Programming](../../08_graphics/copper/copper_programming.md) — Copper list format
+- [Blitter Programming](../../08_graphics/blitter/blitter_programming.md) — Blitter register sequences
 - [Paula Audio](../../01_hardware/ocs_a500/paula_audio.md) — Audio DMA registers
 - *Amiga Hardware Reference Manual* — Custom chip register reference
 - *M68000 Programmer's Reference Manual* — Instruction set and cycle timing
