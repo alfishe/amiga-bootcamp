@@ -10,6 +10,8 @@ The Kickstart ROM is a single binary image containing the entire AmigaOS kernel 
 
 ## ROM Types
 
+The Amiga's Kickstart ROM underwent significant evolution throughout the machine's lifespan, growing from a lean 256 KB firmware in the early days to a packed 512 KB kernel in the later 32-bit era. Understanding the physical constraints and memory mapping of these different versions is critical when modifying or swapping ROMs across different Amiga models. 
+
 | Kickstart | Size | Base Address | Models | ROM Chips |
 |---|---|---|---|---|
 | 1.0–1.1 | 256 KB | `$FC0000` | A1000 (WCS) | 2× 128 KB |
@@ -28,6 +30,8 @@ The Kickstart ROM is a single binary image containing the entire AmigaOS kernel 
 ## Binary Structure
 
 ### Memory Layout (512 KB Kickstart)
+
+The Kickstart binary is not a filesystem; it is a meticulously structured, flat memory image. Because the 68000 CPU must boot directly from this address space, the ROM begins with hardcoded architectural vectors. Following this boot stub, the ROM is simply a sequential concatenation of resident modules (libraries and device drivers), bounded by a final checksum. 
 
 ```
 $F80000 ┌──────────────────────────────────┐
@@ -80,6 +84,8 @@ $FFFFFF └───────────────────────
 
 ### ROM Header
 
+Immediately following the CPU reset vectors sits the ROM Header. This 16-byte structure is the first piece of metadata that system diagnostics and expansion tools inspect to verify the integrity, size, and version of the OS payload.
+
 ```c
 /* At ROM_BASE + 8 */
 struct KickstartHeader {
@@ -96,7 +102,28 @@ struct KickstartHeader {
 | `$1111` | 256 KB ROM (Kickstart 1.x) |
 | `$1114` | 512 KB ROM (Kickstart 2.0+) |
 
+### Physical ROM Interleaving (32-bit Architectures)
+
+While a Kickstart ROM image (e.g., `kick31.rom`) is distributed as a single, contiguous 512 KB file, the physical reality on 32-bit Amigas (A1200, A3000, A4000) is different. 
+
+The 68020/030/040 CPUs fetch instructions over a **32-bit data bus**. Because standard EPROMs of the era (like the 27C400 or 27C800) only have a **16-bit data bus**, the Amiga motherboard achieves 32-bit throughput by pairing two 16-bit ROM chips side-by-side and reading them simultaneously:
+- **ROM 0 (U314 on A1200)**: Connected to data lines **D31–D16** (the upper 16 bits).
+- **ROM 1 (U315 on A1200)**: Connected to data lines **D15–D0** (the lower 16 bits).
+
+To make this work, the logical 512 KB Kickstart file must be **word-interleaved** (sometimes confusingly called "byteswapped") when burned to physical EPROMs. 
+Since the image is just a linear sequence of 16-bit words, the split works like this:
+- **Word 0** (offset `$0000`) goes to **ROM 0**
+- **Word 1** (offset `$0002`) goes to **ROM 1**
+- **Word 2** (offset `$0004`) goes to **ROM 0**
+- **Word 3** (offset `$0006`) goes to **ROM 1**
+
+When the CPU reads a 32-bit longword from `$F80000`, the hardware selects both chips. ROM 0 outputs Word 0 onto the high half of the bus, and ROM 1 outputs Word 1 onto the low half. The CPU sees the perfectly reassembled 32-bit longword.
+
+When burning custom ROMs, modern EPROM programmers usually have an "Interleave" or "Word Split" function to handle this automatically. Alternatively, command-line tools like `srec_cat` can pre-split the single `.rom` file into `.hi` and `.lo` binary halves before burning.
+
 ### Checksum Complement
+
+To ensure the ROM image is uncorrupted, the entire memory block is checksummed by the early boot code. However, instead of storing the final calculated sum, the ROM stores a **complement** value near its physical end. This clever design ensures that if you sum every 32-bit longword in the entire ROM (including the complement itself), the final mathematical result is always `0xFFFFFFFF`.
 
 The checksum complement is located at a fixed offset near the end of the ROM:
 
@@ -138,7 +165,28 @@ Module N:
     ← rt_EndSkip points here
 ```
 
+### How Exec Discovers and Initializes Modules
+
+During the system cold start, `exec.library` (which is always the first module executed) scans the ROM address space looking for the `$4AFC` magic word that signifies a `RomTag`. To make this scan nearly instantaneous, `exec` uses the `rt_EndSkip` pointer: when it finds a valid `RomTag`, it reads the module's metadata, and then jumps its scanning pointer directly to the address contained in `rt_EndSkip`, skipping the entire body of the module.
+
+As `exec` discovers valid modules, it sorts them into an array called `ResModules` based on their `rt_Pri` (Priority) and `rt_Version`. Higher priority modules will be initialized first. 
+
+Once the ROM scan is complete, `exec` calls its internal `InitCode` function. This function iterates through the `ResModules` array and initializes each module by inspecting its `rt_Flags`.
+
+#### The AUTOINIT Flag
+
+If a module's `RomTag` does **not** have the `AUTOINIT` flag set, `exec` simply performs a `JMP` to the address specified in `rt_Init`, leaving the module to initialize itself entirely from scratch.
+
+However, if the `AUTOINIT` flag **is** set (which is true for almost all standard libraries and devices), `exec` performs an elegant automated initialization:
+1. It treats the `rt_Init` pointer not as code, but as a pointer to a structured initialization table (containing the library's size, its function vectors, and its data structure initializers).
+2. `exec` automatically calls `MakeLibrary` on this table, dynamically allocating and populating the module's Base Structure in RAM.
+3. `exec` then examines the module's `rt_Type` (e.g., `NT_LIBRARY` or `NT_DEVICE`) and automatically calls `AddLibrary`, `AddDevice`, or `AddResource` to permanently register the module in the system's public lists.
+
+This means a developer can write a complete device driver or library in C or Assembly, set the `AUTOINIT` flag, and let the OS handle the memory allocation and list registration automatically.
+
 ### Kickstart 3.1 (40.068) Module Inventory
+
+To illustrate the sheer density of the Kickstart ROM, below is the standard module inventory for AmigaOS 3.1. Notice how the core `exec.library` commands the highest priority to ensure it initializes the system lists before any other device attempts to register itself. Conversely, the `strap` module (the bootstrap that displays the insert disk screen) runs at a negative priority, guaranteeing it only executes after all hardware and filesystems have fully initialized.
 
 | Module | Type | Size (approx) | Init Priority |
 |---|---|---|---|
@@ -175,6 +223,8 @@ The remaining ~112 KB contains fonts, boot code, ROM entry, padding, and the che
 ## Extracting Modules from a ROM
 
 ### Using Python (romtool from amitools)
+
+For cross-platform development (macOS, Linux, Windows), the open-source `amitools` suite is the gold standard. Its `romtool` utility provides an elegant, non-destructive way to parse, split, and rebuild Kickstart ROMs directly from the command line.
 
 ```bash
 # Install amitools
@@ -275,15 +325,76 @@ romtool split kick31.rom modules/
 cp my_patched_dos.library modules/dos.library
 
 # Rebuild:
+# Rebuild:
 romtool build modules/ custom_kick.rom
 # romtool automatically:
-#   1. Packs all modules sequentially
-#   2. Builds the ResModules pointer table
-#   3. Calculates and inserts checksum complement
-#   4. Verifies the final image
+#   1. Packs all modules sequentially (concatenating their binaries)
+#   2. Ensures the $4AFC RomTag magic words remain word-aligned
+#   3. Re-calculates and updates all rt_EndSkip pointers to span the concatenated binaries
+#   4. Calculates and inserts the global checksum complement at the end of the ROM
+#   5. Verifies the final image
 
 # Verify:
 romtool info custom_kick.rom
+```
+
+### Adding Custom Auto-Initializing Modules
+
+If you write a custom module (e.g., a modern IDE driver or a new filesystem) and want it to be automatically loaded and initialized when the Amiga boots, you simply need to build it as a standard AmigaOS Resident Module.
+
+1. **Structure your code:** Ensure your compiled binary begins with a valid `RomTag` structure (magic word `$4AFC`).
+2. **Set the correct flags:** Set the `AUTOINIT` bit in `rt_Flags` and point `rt_Init` to your auto-init table so `exec` handles the `MakeLibrary`/`AddDevice` boilerplate.
+3. **Choose a priority:** Set your `rt_Pri` carefully. If your module replaces a standard ROM module (like `scsi.device`), it must have a higher priority than the original so it initializes first and takes over the device name. If it's a completely new driver, standard priority (usually 0 to 50) is fine.
+4. **Pack it into the ROM:** Add your compiled binary to the `romtool` build directory and list it in `index.txt`. When `romtool` builds the ROM, your module is physically appended. On the next boot, `exec`'s cold start scan will discover your `$4AFC` tag, add it to `ResModules`, and auto-initialize it.
+
+#### Wrapping Disk-Based Devices (e.g., ehide.device)
+
+Often, you will want to add a third-party driver to your ROM that was distributed as a standard AmigaDOS disk executable (Hunk format), such as the TerribleFire `ehide.device`. These files **do not have a RomTag** and contain relocations that must be resolved in RAM; they will crash if executed directly from the ROM address space.
+
+To pack them into a Kickstart ROM, you must wrap them using a **ROM Wrapper** (often called a *RomHeader* or *RomModule* loader).
+
+**How a ROM Wrapper works:**
+1. The wrapper is a tiny snippet of assembly containing a valid `$4AFC` `RomTag`.
+2. The original `ehide.device` file is embedded as a binary payload immediately following the wrapper.
+3. During cold boot, `exec` finds the wrapper's `RomTag` and jumps to its `rt_Init` routine.
+4. The wrapper's init routine allocates RAM (using `AllocMem`), unpacks the embedded Hunk payload into that RAM, applies all memory relocations (acting like a miniature `LoadSeg`), and finally jumps to the device's true initialization vector in RAM.
+
+**Tools & Projects:**
+* **Remus:** The Amiga-native GUI tool Remus has a built-in feature to wrap standard AmigaDOS executables. If you drag `ehide.device` into the build list, Remus automatically prepends a wrapper and pre-calculates relocations.
+* **DoRom / RomModule:** Classic command-line utilities found on Aminet that take a disk-based `.device` and output a `.rom` module ready to be packed by `romtool`.
+* **BlizKick / rommodule:** Toni Wilen and other developers have written standard open-source wrappers (often referred to as `rommodule`) originally designed for BlizKick and WinUAE, which are perfectly suited for building custom physical ROMs.
+
+**Illustrative Wrapper Snippet:**
+```m68k
+RomTag:
+        ; 1. Standard RomTag points to the loader
+        DC.W    $4AFC           ; rt_MatchWord
+        DC.L    RomTag          ; rt_MatchTag
+        DC.L    EndSkip         ; rt_EndSkip
+        DC.B    $81             ; rt_Flags (RTF_AUTOINIT | RTF_COLDSTART)
+        DC.B    $25             ; rt_Version
+        DC.B    $03             ; rt_Type (NT_DEVICE)
+        DC.B    $40             ; rt_Pri (High priority to replace standard IDE)
+        DC.L    NameString      ; "ehide.device"
+        DC.L    IdString
+        DC.L    InitRoutine     ; Jumps here on boot
+
+InitRoutine:
+        ; 2. Allocate RAM for the payload
+        move.l  #PayloadSize, d0
+        move.l  #MEMF_PUBLIC, d1
+        jsr     _LVOAllocMem(a6)
+        
+        ; 3. Copy and relocate the embedded Hunk payload into RAM
+        ; ... (Mini-LoadSeg logic goes here) ...
+
+        ; 4. Jump to the uncompressed/relocated device init in RAM
+        jmp     (a0)            
+
+        ; 5. The actual ehide.device hunk executable payload is appended here
+PayloadStart:
+        INCBIN  "ehide.device"
+EndSkip:
 ```
 
 ### Using Remus (Amiga-native)
@@ -348,6 +459,8 @@ def build_rom(modules, rom_size=524288):
 
 ### Extended ROMs (CD32, A4000T)
 
+As the Amiga architecture evolved, the 512 KB `$F80000` space became too small to house all the necessary drivers—especially for specialized hardware like the CD32 console or the A4000T's SCSI controllers. Commodore solved this by mapping a secondary "Extension ROM" into the `$E00000` address space.
+
 Some systems have a secondary ROM mapped at `$E00000`:
 
 | System | Main ROM | Extension ROM |
@@ -356,32 +469,59 @@ Some systems have a secondary ROM mapped at `$E00000`:
 | A4000T | `$F80000` (512 KB) | (None — all in main ROM) |
 | A1000 | WCS (256 KB) | Loaded from floppy into WCS RAM |
 
-### MapROM / Soft-Kickstart
+## MapROM, WCS, and Shadow RAM Architectures
 
-Many accelerator boards support **MapROM** — loading a Kickstart image into Fast RAM and remapping the ROM address range:
+While modern Amiga users associate "MapROM" with accelerator cards speeding up ROM access or soft-loading custom Kickstart images, the concept of mapping a disk-loaded OS into RAM was actually invented by Commodore out of sheer necessity. 
 
-```
-1> LoadModule ROM:68040.library     ; Load replacement module
-1> MapROM kick32.rom                ; Copy to Fast RAM, remap $F80000
-1> Reset                            ; Warm reset — boots from RAM copy
-```
+### Historical Origins: A1000 and A3000
 
-This allows running newer Kickstart versions without burning EPROMs.
+Commodore utilized RAM-mapped ROMs twice in the Amiga's history when hardware launch dates preceded the completion of the operating system:
 
-### 1 MB ROM Images
+1. **The Amiga 1000 WCS (1985):** The original Amiga 1000 shipped without a Kickstart ROM chip. Instead, it contained a tiny 8KB boot ROM and 256KB of dedicated RAM called the **Writable Control Store (WCS)**. When powered on, the boot ROM prompted the user for a Kickstart floppy disk. It loaded the 256KB OS into the WCS RAM, triggered a hardware register to write-protect that RAM, and mapped it to the ROM address space (`$FC0000`). This allowed Commodore to ship the A1000 while Kickstart 1.0/1.1 was still heavily in beta.
+2. **The Amiga 3000 "SuperKickstart" (1990):** When the Amiga 3000 was ready to launch, AmigaOS 2.0 was not finished. Commodore shipped early A3000s with physical **Kickstart 1.4** ROMs. These were not a complete OS; they were essentially a bootloader. Kickstart 1.4 read a file named `DEVS:kickstart` (containing OS 1.3 or a 2.0 beta) from the hard drive into Fast RAM. It then used the 68030 processor's internal **MMU (Memory Management Unit)** to transparently map that Fast RAM to the `$F80000` ROM address space. 
 
-Some setups combine a 512 KB Kickstart with a 512 KB extension ROM:
+It was only later that third-party accelerator manufacturers (like Phase5 and Apollo) co-opted and branded this concept as **"MapROM"**, realizing it was the perfect solution for both overcoming the 16-bit physical ROM speed bottleneck and allowing users to upgrade to Kickstart 3.1 without buying physical chips.
+
+### Why Accelerators Use MapROM
+
+Because the physical Kickstart ROMs on the Amiga motherboard reside on a relatively slow 16-bit data bus (even on 32-bit machines, ROM access is significantly slower than Fast RAM), executing OS routines directly from ROM creates a bottleneck. MapROM solves this by copying the Kickstart image into fast 32-bit RAM, and redirecting all CPU reads for the ROM address space (`$F80000`) to that RAM.
+
+### How the Remap Physically Happens
+
+The Amiga must always begin its initial power-on sequence using the physical ROM chips, because the MapROM redirect is not yet active. The remap happens in a multi-stage process:
+
+1. **Cold Boot:** The Amiga powers on. The CPU fetches its initial PC from the physical ROM chips at `$F80000` and boots normally.
+2. **Image Loading:** During `S:Startup-Sequence` (or manually in a shell), a MapROM tool (e.g., `BlizKick`, `MuMapROM`, or `CPU FASTROM`) is executed. The tool allocates 512KB of Fast RAM and copies either the physical ROM (for a speed boost) or a `.rom` file from disk into this RAM buffer.
+3. **The Redirect:** The tool activates the redirection using one of two methods:
+   - **Hardware MapROM:** Accelerators with a dedicated memory controller (like Phase5 Blizzards) have a specific hardware register. When toggled, the accelerator's logic physically intercepts any CPU bus accesses to `$F80000` and routes them directly to a dedicated 512KB slice of Fast RAM on the card.
+   - **MMU MapROM:** Tools like `MuMapROM` configure the 68030/040/060 Memory Management Unit (MMU). The MMU translation table is updated so that logical accesses to `$F80000` are translated in silicon to the physical address of the allocated Fast RAM. The MMU page is marked as Cacheable and Read-Only.
+4. **The Reset:** Once the redirect is configured, the tool triggers a system reset (often a "warm" soft-reset via CPU instruction, or triggering the chipset reset line). 
+5. **Execution:** The CPU resets and fetches the initial PC from `$F80000`. Because the Hardware MapROM latch or the specific MMU configuration is designed to *survive* a soft reset, the CPU is now reading from the Fast RAM copy. `exec.library` boots identically to a cold start, but executes entirely from the mapped image.
+
+### Reset Survival and Limitations
+
+* **Soft Resets (Ctrl-A-A):** Hardware MapROM implementations usually survive a keyboard reset because the accelerator's CPLD retains the register state. MMU implementations often drop the MMU tables on a keyboard reset unless a resident program traps the reset vector to restore the MMU state immediately.
+* **Cold Resets (Power Cycle):** No MapROM implementation survives a power cycle. The machine will always fall back to the physical ROMs on a cold boot.
+* **Auto-Mapping:** Some accelerators have their own small boot ROM on the card (acting as an expansion device) that can automatically intercept the boot sequence, copy the physical ROM to RAM, and engage Hardware MapROM before DOS even loads.
+
+### 1 MB Custom ROM Images
+
+Modern Amiga enthusiasts often exhaust the standard 512 KB limit when trying to pack third-party filesystems (like PFS3), updated SCSI/IDE drivers (like `ehide.device`), and patched `icon.library` files into a custom Kickstart. 
+
+To bypass this limit, modders can construct massive 1 MB custom ROM images. This is achieved by combining the primary 512 KB Kickstart with a custom 512 KB Extension ROM. When burned to a 1 MB EPROM (like the 27C800) or a modern Flash adapter, the Amiga effortlessly boots the main kernel from `$F80000` and then auto-discovers the extra drivers housed in the `$E00000` space.
 
 ```
 $E00000–$E7FFFF: Extension ROM (512 KB)
 $F80000–$FFFFFF: Main Kickstart (512 KB)
 ```
 
-Tools like Remus and Capitoline can build combined 1 MB images.
+Tools like Remus and Capitoline can effortlessly build these combined 1 MB images.
 
 ---
 
 ## Burning Physical ROMs
+
+Once you have meticulously crafted and verified a custom Kickstart image using tools like `romtool`, the final frontier is migrating that binary out of the digital realm and into physical silicon. Burning Amiga ROMs requires selecting the correct EPROM type that matches your motherboard's socket specifications, and—crucially—interleaving the data correctly if you are targeting a 32-bit machine.
 
 | ROM Size | EPROM Type | Pin Count | Notes |
 |---|---|---|---|
@@ -439,9 +579,10 @@ print(f'Checksum: \${ s:08X}', '✓' if s == 0xFFFFFFFF else '✗ BAD')
 
 ## References
 
-- NDK39: `exec/resident.h`, `exec/execbase.h`
+- AmigaOS NDK 3.1 / 3.2: `exec/resident.h`, `exec/execbase.h`
 - amitools: `romtool` — https://github.com/cnvogelg/amitools
 - See also: [Cold Boot](cold_boot.md) — boot sequence using the ROM
 - See also: [Kickstart Boot Diagnostics](kickstart-boot-diagnostics.md) — ROM checksum algorithm, CC_BADROMSUM red screen
 - See also: [Kickstart Init](kickstart_init.md) — how residents are initialized
 - See also: [Resident Modules](../06_exec_os/resident_modules.md) — RomTag structure
+omTag structure
