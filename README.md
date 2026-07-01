@@ -86,7 +86,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [**kickstart_rom.md**](02_boot_sequence/kickstart_rom.md) | **Kickstart ROM internals: binary structure, module inventory, extraction tools, custom ROM building** |
 | [kickstart_init.md](02_boot_sequence/kickstart_init.md) | ExecBase creation, capture vectors, ROM scan algorithm, 4-phase resident init |
 | [dos_boot.md](02_boot_sequence/dos_boot.md) | strap module, boot block format and execution, MountList, Startup-Sequence walkthrough |
-| [floppy_vs_hdd_physical_boot.md](02_boot_sequence/floppy_vs_hdd_physical_boot.md) | Physical hardware mechanisms: floppy MFM streaming, HDD RDB scanning, DMA transfers, failure modes |
+| [disk_boot.md](02_boot_sequence/disk_boot.md) | **Disk boot deep dive: floppy MFM physics, HDD/IDE/SCSI boot (PIO vs DMA), RDB partitioning, controller & driver ecosystem (Gayle, GVP, A4091, TF1260), CompactFlash, disk image preparation (amitools, WinUAE, HDToolBox), failure modes** |
 | [early_startup.md](02_boot_sequence/early_startup.md) | Early Startup Control menu: device selection, display mode, recovery scenarios |
 | [kickstart-boot-diagnostics.md](02_boot_sequence/kickstart-boot-diagnostics.md) | **Kickstart POST: color-screen self-test, 7-phase ColdStart, coldCrash handler, diagnostic cartridge, troubleshooting** |
 
