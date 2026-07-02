@@ -14,6 +14,9 @@ The **HUNK** format is the binary container format used throughout AmigaOS. It i
 
 An object file (`.o`) is **intermediate output** from a compiler. It contains relocatable code and unresolved external references. A linker (`slink`, `vlink`) combines one or more `.o` files with library archives into a final executable.
 
+> [!NOTE]
+> **RDB Embedded Drivers:** The loadable executable format (`HUNK_HEADER`) is also used for filesystem drivers embedded directly into a hard drive's Rigid Disk Block (RDB). The `LSEG` blocks in the RDB carry a standard executable file sliced into 492-byte chunks. See [Disk Boot](../02_boot_sequence/disk_boot.md) for details on how the bootstrap loader relocates and registers these before `dos.library` even initializes.
+
 The format is a linear stream of **hunk records**, each identified by a 32-bit type word followed by type-specific data.
 
 ---

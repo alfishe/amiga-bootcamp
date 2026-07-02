@@ -226,28 +226,66 @@ This DiagArea mechanism is what allows a GVP SCSI card to boot an Amiga 2000 fro
 
 The **Rigid Disk Block (RDB)** is the Amiga's partitioning standard — a self-describing, linked-list structure that is far more flexible than the PC's contemporary MBR scheme. Understanding how the Kickstart interprets the RDB at boot time is essential for setting up bootable hard drives.
 
+> [!IMPORTANT]
+> **RDB vs. Boot Block:** Do not confuse the **Rigid Disk Block** with the Amiga's **Boot Block**. 
+> - The **RDB** sits at the physical start of the hard drive. It is a vast reserved area (often 256 KB or more) containing a linked list of 512-byte blocks that defines the disk geometry, partitions, and embedded filesystems. It is initialized by tools like HDToolBox when a drive is first set up.
+> - The **Boot Block** sits at the start of a formatted partition (like `DH0:`) or a floppy disk. It is exactly 1024 bytes long and its only job is to hand off control to `dos.library` to start the OS. It has no knowledge of disk geometry or partitions.
+
 For the complete RDB on-disk structure (field offsets, checksums, PartitionBlock layout, FileSysHdr format), see [Filesystem — RDB section](../07_dos/filesystem.md).
 
-### The RDB Scan — Blocks 0 Through 15
+### The RDB Scan and Reserved Bounds (Blocks 0 to ∞)
 
-When a hard drive device driver reports a drive to the Kickstart, the boot code doesn't just read block 0. It scans **blocks 0 through 15** (`RDB_LOCATION_LIMIT`), looking for the 4-byte signature `RDSK` (`$5244534B`) at offset `$00` of each block. This range exists for three reasons:
+When a hard drive device driver spins up and reports a disk to Kickstart, the boot code doesn't stubbornly look only at block 0. Instead, it begins a **16-block scan**, reading blocks 0 through 15 (defined in the OS headers as `RDB_LOCATION_LIMIT`). It searches each sector for the 4-byte magic signature `RDSK` (`$5244534B`) at offset `$00`. 
 
-1. **Coexistence with other schemes** — If the RDB were locked to block 0, it would conflict with PC MBR partitioning. Allowing it at blocks 1–15 enables dual-format disks.
+This 16-sector search window is a stroke of engineering genius that serves three distinct purposes:
+1. **Coexistence:** If the RDB were permanently locked to block 0, it would instantly conflict with PC MBR partitioning or Mac partition maps. By allowing the `RDSK` block to drift to block 1, 2, or even 15, the Amiga can natively share a drive with other platforms.
+2. **Bad Block Resilience:** If block 0 develops a physical defect (a common reality on 1980s SCSI drives), the RDB can be anchored at block 1 or 2 instead. The partition map survives a single-block failure without condemning the drive.
+3. **Controller Quirks:** Some early controllers arrogantly reserved block 0 for their own internal metadata. The 16-block window effortlessly steps around them.
 
-2. **Bad block resilience** — If block 0 develops a physical defect, the RDB at block 1 (or 2, etc.) remains accessible. The partition map survives a single-block failure.
+#### The "Minimum 16 Sectors" Rule
 
-3. **Layout flexibility** — Some controllers reserve block 0 for their own use. The 16-block scan accommodates this.
+Because the `RDSK` anchor block can technically be located anywhere up to block 15, the actual file systems and partition data must logically start *after* this window to be entirely safe. Consequently, there is an unwritten, practical rule: the absolute **minimum reserved space** for the RDB area must be at least **16 sectors**. 
 
-In practice, most tools (HDToolBox, `rdbtool`) write the RDB to block 0 (or block 2 for legacy SCSI compatibility). The scan is a safety net, not a routine necessity.
+If you were to boldly start your first partition at sector 4, but your partitioning tool wrote the `RDSK` block to sector 2 and its subsequent `PART`/`LSEG` chain naturally spilled into sector 4, formatting that partition would immediately obliterate your RDB chain! By reserving a minimum of 16 sectors (and ensuring the first partition starts at sector 16 or later), the entire `RDB_LOCATION_LIMIT` window acts as an inviolable safe harbor for the partition map. 
+
+#### No Maximum Limit
+
+While 16 sectors is the mathematical minimum for structural safety, the **maximum limit** is completely unbounded. The reserved area for the RDB can span up to the full disk! 
+
+Because the RDB is fundamentally a linked list of independent 512-byte sectors (`RDSK` points to `PART`, which points to `FSHD`, which points to `LSEG`), it simply weaves its way through whatever empty physical space you've left before the first partition begins. If you ever needed to embed a massive 100 MB driver directly into the disk metadata, you would simply instruct your partitioning tool to start `DH0:` at sector 204,800. The Kickstart ROM will blindly follow the linked list, jumping from sector to sector, assembling the massive driver without ever complaining.
+
+### Deep Dive: The RDB Linked List
+
+Once the `RDSK` block is found, it acts as the anchor for a self-describing web of metadata. The RDB is not a flat table; it is a collection of linked blocks pointing to each other by block number. 
+
+```mermaid
+graph TD
+    RDSK["RDSK Block<br/>(Drive Geometry & Pointers)"]
+    PART1["PART Block<br/>(Partition 1: DH0)"]
+    PART2["PART Block<br/>(Partition 2: GDH3)"]
+    FSHD["FSHD Block<br/>(File System Header: FFS v47.4)"]
+    LSEG1["LSEG Block<br/>(Driver Code Chunk 1)"]
+    LSEG2["LSEG Block<br/>(Driver Code Chunk 2)"]
+
+    RDSK -->|rdb_PartitionList| PART1
+    PART1 -->|pb_Next| PART2
+    PART2 -->|pb_Next| NULL["$FFFFFFFF (End)"]
+
+    RDSK -->|rdb_FileSysHdrList| FSHD
+    FSHD -->|fh_Next| NULL2["$FFFFFFFF (End)"]
+    
+    FSHD -->|fh_SegListBlocks| LSEG1
+    LSEG1 -->|ls_Next| LSEG2
+    LSEG2 -->|ls_Next| NULL3["$FFFFFFFF (End)"]
+```
+
+- **`PART` (Partition Block)**: Defines a logical volume (e.g., DH0:). It specifies the start/end cylinders, boot priority, and crucially, the **DosType** (`DOS\1`, `DOS\3`, `PFS\3`) which tells the OS which filesystem driver to use.
+- **`FSHD` (File System Header Block)**: Registers a filesystem driver with the system. It maps a specific DosType to a binary driver.
+- **`LSEG` (LoadSeg Block)**: The actual binary code of the filesystem driver, split across multiple physical sectors.
 
 ### Boot Priority — How Kickstart Picks a Partition
 
-Once the RDB is found, the Kickstart walks the PartitionBlock linked list (starting from `rdb_PartitionList`) and collects every partition that has:
-
-- The **`PBF_BOOTABLE`** flag set (bit 0 of `de_Flags`)
-- The **`PBF_AUTOMOUNT`** flag set (bit 1 of `de_Flags`)
-
-These partitions are sorted by their **`de_BootPri`** field (a signed 8-bit value, range −128 to +127). The partition with the highest BootPri wins. Ties are broken by list order (first in the RDB's linked list wins).
+The Kickstart walks the `PART` linked list and collects every partition that has the **`PBF_BOOTABLE`** and **`PBF_AUTOMOUNT`** flags set. These partitions are sorted by their **`de_BootPri`** field (a signed 8-bit value, range −128 to +127). The partition with the highest BootPri wins. Ties are broken by list order.
 
 | BootPri | Typical Use |
 |---|---|
@@ -257,34 +295,99 @@ These partitions are sorted by their **`de_BootPri`** field (a signed 8-bit valu
 | ≥ 15 | Overrides floppy boot (floppy BootPri is typically 5 on KS 2.0+) |
 
 > [!IMPORTANT]
-> Floppy drives (DF0:) have a **built-in boot priority** that varies by Kickstart version. On KS 1.3, the floppy always boots first if a disk is inserted. On KS 2.0+, the floppy's effective BootPri is around 5, so a hard drive partition with BootPri ≥ 6 boots first even with a floppy inserted. Setting a partition's BootPri to 15 or higher guarantees it boots before any floppy — useful for CF card setups where you never want floppy boot.
+> Floppy drives (DF0:) have a **built-in boot priority**. On KS 2.0+, the floppy's effective BootPri is 5, so a hard drive partition with BootPri ≥ 6 boots first even with a floppy inserted. Setting a partition's BootPri to 15 or higher guarantees it boots before any floppy.
 
 ### Filesystem Loading from RDB
 
-The RDB can store **complete filesystem driver binaries** inline — this is how third-party filesystems like PFS3 and SFS work without modifying the Kickstart ROM. The mechanism:
+The RDB can store **complete filesystem driver binaries** inline. The mechanism:
 
-1. The RDB's `rdb_FileSysHdrList` field points to a chain of **FileSysHdr** blocks, each containing a DosType identifier and the binary code for a filesystem handler.
+1. Each `FSHD` block declares a `DosType`, version, and `patch_flags` (usually `0x180`), along with standard execution variables like `dn_global_vec = -1`. 
+2. The `FSHD` points into a chain of `LSEG` blocks. These blocks hold a standard Amiga **[hunk-format executable](../03_loader_and_exec_format/hunk_format.md)**, sliced into 492-byte pieces (a standard 512-byte block minus the 20-byte `LSEG` header).
+3. At boot, the Kickstart ROM's `strap` module walks the RDB. For any partition whose `DosType` isn't served natively by the ROM (such as `PFS\3` or `SFS\0`), it reconstructs the hunk image from the `LSEG` chain.
+4. It then loads and relocates the image into RAM—just like executing any other Amiga program—and registers it in `FileSystem.resource`.
 
-2. Each PartitionBlock's `de_DosType` field specifies which filesystem to use (e.g., `DOS\1` for FFS, `PFS\3` for PFS3).
+#### Driver Size Limits and the RDB Reserved Area
 
-3. At boot time, the Kickstart matches each partition's DosType to a FileSysHdr in the RDB. If a match is found, it loads the filesystem binary from the RDB into RAM and uses it to mount the partition.
+There is no hardcoded software limit on the length of an `LSEG` chain. The actual size of the drivers you can embed is bounded only by the **RDB Reserved Area**—the physical gap of sectors between the start of the disk (where `RDSK` lives) and the beginning of the first partition (`PART`).
 
-4. If no match is found in the RDB, the Kickstart falls back to the ROM-resident filesystem (FFS from the Kickstart ROM).
+- Historically, Commodore's HDToolBox reserved exactly **2 cylinders** for the RDB area by default. On a standard drive geometry (e.g., 16 heads × 63 sectors), 2 cylinders provides roughly **1 MB** of space.
+- Modern command-line partitioning workflows often auto-reserve around **512 sectors (256 KB)**, which is highly efficient and more than enough space.
+- Standard drivers like `FastFileSystem` (~40 KB) or `pfs3aio` (~70 KB) easily fit within the first few dozen sectors.
+- If an exceptionally large driver is required, the reserved area can simply be expanded by pushing the start cylinder of the first partition further down the disk.
 
-This design means you can install PFS3 on a brand-new hard drive using HDToolBox, and the drive will boot with PFS3 even though the Kickstart ROM knows nothing about PFS3 — the filesystem binary is stored on the drive itself, in the RDB reserved area before the first partition.
+```text
+[ Physical Disk Layout ]
+
+Block 0      Block 2                     Block 512 (Example)                 End of Disk
+│            │                           │                                   │
+▼            ▼                           ▼                                   ▼
+┌────────────┬───────────────────────────┬─────────────────┬─────────────────┐
+│ RDSK Block │ FSHD & LSEG Driver Chains │ Partition DH0:  │ Partition DH1:  │
+│ (Metadata) │ (PFS3, FFS v47.4, etc.)   │ (Boot Volume)   │ (Data Volume)   │
+└────────────┴───────────────────────────┴─────────────────┴─────────────────┘
+             ▲                           ▲
+             │                           │
+             └───────────────────────────┘
+                 RDB Reserved Area
+             (Gap for Embedded Drivers)
+
+*Legend: 1 Block = 1 physical sector (always 512 bytes at the RDB level, regardless of the filesystem's logical block size inside the partitions).*
+```
+
+This elegant design is why a foreign filesystem like PFS3 can boot on a bone-stock A1200 without any ROM updates. The driver is carried directly on the disk and initialized before the `dos.library` even asks for the boot partition.
+
+---
+
+### Real World Example: The 26 GB AmigaOS 3.2 Partition
+
+Consider a modern Amiga setup: an A1200 running OS 3.2.3, booting from a large CompactFlash card (or a VHD image in an emulator). You examine the drive and find a partition named `GDH3` that is **26.0 GB** in size.
+
+If you inspect this partition with HDToolBox, you'll see a specific configuration engineered by the OS 3.2 installer to overcome the classic Amiga's historical limitations:
+
+```text
+[ RDB Partition Configuration ]
+drive:      GDH3
+dos type:   DOS\3 (FFS-Intl)
+size:       26.0 GB (cylinders 474–3873)
+block size: 4096 bytes
+mask:       0x00FFFFFE
+```
+
+How does the classic Amiga boot and mount a 26 GB partition using the legacy FastFileSystem? The secret lies in a carefully orchestrated set of RDB fields:
+
+#### 1. Embedded Filesystem (`FSHD`) and Large Disk Addressing
+The OS 3.2 installer injects the modern **FastFileSystem v47.4** driver directly into the RDB's `LSEG` blocks. The Kickstart ROM (even if it's an older 3.1 ROM) loads this v47.4 driver during the AutoConfig scan. 
+
+This modern FFS version includes support for **TD64** (Trackdisk 64-bit) and **NSD** (New Style Device) addressing. Historically, the Amiga accessed disks using 32-bit byte offsets (`CMD_READ`), which artificially capped disk sizes at **4 GB** (2^32 bytes). TD64 and NSD are extended command sets (`TD_READ64`, `NSD_READ64`) that allow 64-bit offsets, allowing FFS v47.4 to command the `scsi.device` to safely read and write past the 4 GB barrier.
+
+#### 2. The 4096-Byte Block Size (`de_SizeBlock`)
+Classic FFS was designed for 512-byte blocks. On a 26 GB partition, using 512-byte blocks would create an immense amount of metadata overhead (bitmaps, block headers) resulting in severe memory exhaustion and agonizingly slow disk validation.
+
+OS 3.2 solves this by setting the RDB's filesystem block size to **4096 bytes** (8 physical sectors per logical block). 
+- **Performance:** 4K blocks align beautifully with the physical flash pages of modern CF cards and SSDs, drastically improving write speeds (sometimes by 5x to 8x).
+- **Overhead reduction:** The number of blocks the filesystem must track is cut by 8x, keeping the bitmap size small enough to fit in the Amiga's limited RAM.
+
+#### 3. The Mask (`de_Mask`)
+The mask is set to `0x00FFFFFE`. The mask dictates which areas of system RAM the device driver is allowed to DMA into. 
+- The `FE` at the end (even address) ensures the DMA buffer is word-aligned, which is required by most Amiga controllers.
+- The `00FFFFFF` (24-bit) mask was standard on the A500/A2000 because they only had 24-bit address buses. A mask of `0x00FFFFFE` allows data to be DMA'd into 32-bit Fast RAM (e.g., above the 16 MB boundary on accelerator cards), bypassing slow Chip RAM bounces.
+
+By combining the **embedded v47.4 driver** (to break the 4GB barrier), **4096-byte blocks** (to solve memory overhead and speed up flash writes), and a **32-bit DMA mask** (to leverage accelerator RAM), the Amiga elegantly mounts a 26 GB partition using an architecture designed in 1985.
+
+---
 
 ### HDToolBox — The Standard Partitioning Tool
 
-HDToolBox is the Workbench utility for creating and editing RDB partition tables. It ships on the Workbench Install floppy (OS 2.0+) and in the `Tools` drawer of a Workbench installation. Key operations:
+HDToolBox is the Workbench utility for creating and editing RDB partition tables. Key operations:
 
 - **Read Configuration** — detect drive geometry (cylinders, heads, sectors)
 - **Partition Drive** — create, resize, and delete partitions
-- **Change Filesystem** — add filesystem binaries (PFS3, SFS) to the RDB
+- **Change Filesystem** — add filesystem binaries (`FSHD`/`LSEG` blocks) to the RDB
 - **Set Boot Priority** — configure which partition boots first
 - **Save Changes to Drive** — write the RDB and partition blocks to disk
 
 > [!NOTE]
-> HDToolBox requires the correct device driver name in its `SCSI_DEVICE_NAME` ToolType (accessible via the Workbench Icon > Information menu). For Gayle IDE, this is `scsi.device`. For GVP cards, it's `gvpscsi.device`. For WinUAE emulated drives, it's `uaehf.device`. Getting this wrong is the most common reason HDToolBox shows "no drives found."
+> HDToolBox requires the correct device driver name in its `SCSI_DEVICE_NAME` ToolType (accessible via the Workbench Icon > Information menu). For Gayle IDE, this is `scsi.device`. For WinUAE emulated drives, it's `uaehf.device`. Getting this wrong is the most common reason HDToolBox shows "no drives found."
 
 ---
 
@@ -610,28 +713,34 @@ Select the partition icon → **Icons → Format Disk** → choose Quick Format.
 
 ## Historical Context and Modern Analogies
 
+### The Great Confusion: RDB vs. Boot Block
+
+It is extremely common to confuse the Amiga's **Rigid Disk Block (RDB)** with the Amiga's **Boot Block** used on floppy disks, or to mistakenly equate the RDB to the PC's **Master Boot Record (MBR)**. Understanding the distinction is critical to Amiga storage architecture:
+
+- **The RDB** (Physical Drive Level): Sits at the start of the *physical hard drive*. It is **not fixed-length**. Instead of a single static table, it is a vast reserved physical area containing a **linked list** of 512-byte blocks. It is initialized by HDToolbox when you connect disk first time and start partitioning it.
+- **The Boot Block** (Volume Level): Sits at the start of each *formatted partition* (e.g., `DH0:`) or floppy disk. It is exactly **1024 bytes** (2 sectors) in length. Its only job is to hand off control to `dos.library` and start the OS. It has no knowledge of disk geometry or partitions.
+
+
 ### How Competitors Handled Disk Boot
 
-The Amiga's RDB/AutoConfig/DiagArea architecture was remarkably advanced for its era. Contemporary systems used much simpler (and more limited) approaches:
+The Amiga's RDB architecture was remarkably advanced for its era, contrasting sharply with the rigidity of the IBM PC.
 
-| System | Partitioning | Boot Discovery | Driver Loading |
+| Concept | Amiga RDB (1985) | IBM PC MBR (1983) | Modern PC GPT (2006+) |
 |---|---|---|---|
-| **Amiga (1985+)** | RDB — linked-list, unlimited partitions, embedded filesystem drivers | RDB scan → BootPri sort | AutoConfig DiagArea boot ROM |
-| **IBM PC (1981+)** | MBR — 4 primary partitions, 446-byte bootloader | INT 13h BIOS calls → MBR → VBR | BIOS provides basic INT 13h; OS loads its own drivers |
-| **Atari ST (1985+)** | Boot sector only — no partition table on floppies; AHDI for HDD | Read boot sector → execute | No expansion bus; driver in boot sector |
-| **Mac (1984+)** | Apple Partition Map — tagged partitions | SCSI Manager → boot blocks | ROM-resident SCSI Manager; no expansion ROM support until NuBus |
+| **Structure** | Linked list of 512-byte blocks | Fixed 512-byte static table | Static array of 128-byte entries |
+| **Partition Slots** | Practically Unlimited (bounded only by reserved gap) | Exactly 4 primary partitions | Typically 128 partitions |
+| **Embedded Drivers** | Yes (`FSHD`/`LSEG` chains) | No | No (UEFI drivers live in an ESP partition, not the partition table) |
+| **OS Independence** | Self-describing; OS loads foreign drivers directly from disk | Relies entirely on BIOS `INT 13h` | Relies on UEFI firmware |
 
 ### Modern Analogies
 
-| Amiga Concept | Modern Equivalent |
-|---|---|
-| **RDB** | GPT (GUID Partition Table) — both use linked structures, both allow many partitions, both store metadata |
-| **AutoConfig + DiagArea** | UEFI Option ROMs — expansion cards install their drivers into the firmware's driver database at boot |
-| **`trackdisk.device`** | Linux block device layer (`/dev/sdX`) — abstraction over physical media |
-| **FileSysHdr in RDB** | Linux initramfs — filesystem drivers loaded from disk before the root filesystem is mounted |
-| **BootPri** | UEFI Boot Order — numbered priority list determining which device boots first |
-| **HDToolBox** | `gdisk`/`parted` — partition table editors |
-| **`amitools rdbtool`** | `sgdisk` — scriptable partitioning from the command line |
+| Amiga Concept | Modern Equivalent | Explanation |
+|---|---|---|
+| **RDB (Rigid Disk Block)** | GPT (GUID Partition Table) | Both allow a massive number of partitions and store complex metadata. |
+| **Boot Block (1024 bytes)** | VBR (Volume Boot Record) | The OS-specific loader code sitting inside a specific partition. |
+| **FileSysHdr / LSEG in RDB** | Linux `initramfs` | Filesystem drivers loaded from the disk *before* the root filesystem is mounted. |
+| **AutoConfig + DiagArea** | UEFI Option ROMs | Expansion cards automatically inject their drivers into the firmware's database at boot. |
+| **BootPri** | UEFI Boot Order | Numbered priority list determining which device boots first. |
 
 ---
 

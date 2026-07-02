@@ -147,7 +147,7 @@ $00C     1012   BootCode         68000 machine code — entry point at $00C
 | `444F5300` | `DOS\0` | $00 | OFS | Original File System |
 | `444F5301` | `DOS\1` | $01 | FFS | Fast File System |
 | `444F5302` | `DOS\2` | $02 | OFS+I | OFS + International characters |
-| `444F5303` | `DOS\3` | $03 | FFS+I | FFS + International characters |
+| `444F5303` | `DOS\3` | $03 | FFS+I | FFS + International characters (often paired with 4K block sizes on modern OS 3.2 volumes) |
 | `444F5304` | `DOS\4` | $04 | OFS+DC | OFS + Directory Cache |
 | `444F5305` | `DOS\5` | $05 | FFS+DC | FFS + Directory Cache |
 | `444F5306` | `DOS\6` | $06 | OFS+LFN | OFS + Long Filenames (OS 3.2) |
@@ -200,6 +200,9 @@ if (ComputeBootChecksum(bootBlock) == bootBlock[1])
 /* 2. Calls dos.library's boot entry point */
 /* Return value: 0 = success, non-zero = failure (try next device) */
 ```
+
+> [!NOTE]
+> **Filesystem Handoff:** The bootblock code itself has no filesystem driver embedded in it. When `dos.library` takes over via the `rt_Init` return vector, the OS looks up the filesystem driver based on the partition's `DosType`. For hard drives, if the RDB contained an embedded filesystem (e.g., FFS v47.4 or PFS3), the Kickstart already loaded that driver into RAM during the AutoConfig scan. The bootstrap module seamlessly hands off control to this pre-loaded RDB driver, ensuring the OS can read the root directory and execute `S:Startup-Sequence` even if the Kickstart ROM doesn't natively support the filesystem or block geometry.
 
 ### Standard DOS Boot Block Code
 

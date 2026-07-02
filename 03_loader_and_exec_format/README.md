@@ -15,7 +15,7 @@ This section covers the complete lifecycle of an AmigaOS executable:
 
 | File | Topic |
 |---|---|
-| [hunk_format.md](hunk_format.md) | Complete HUNK binary specification — all 22 hunk type codes with wire format, memory flags, advisory bits |
+| [hunk_format.md](hunk_format.md) | Complete HUNK binary specification — all 22 hunk type codes, RDB embedded driver usage, memory flags, advisory bits |
 | [hunk_ext_deep_dive.md](hunk_ext_deep_dive.md) | HUNK_EXT: exports (EXT_DEF), imports (EXT_REF32), commons, linker resolution |
 | [hunk_relocation.md](hunk_relocation.md) | Relocation mechanics: visual before/after, patching algorithm, RELOC32/SHORT/DREL32, PC-relative impact |
 | [hunk_debug_info.md](hunk_debug_info.md) | HUNK_SYMBOL and HUNK_DEBUG: stabs format (SAS/C, GCC), debugger consumption, stripping |
