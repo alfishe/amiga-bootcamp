@@ -11,6 +11,7 @@ Shared libraries beyond the core exec/dos/graphics/intuition subsystems. These p
 | [utility.md](utility.md) | TagItem lists with chaining (TAG_MORE), callback hooks (register convention), date/time utilities, tag iteration patterns |
 | [expansion.md](expansion.md) | Zorro II/III bus architecture, AutoConfig ROM layout, board enumeration, FPGA implementation notes |
 | [icon.md](icon.md) | Workbench icons (.info): DiskObject structure, ToolType parsing, icon types, OS 3.5+ true-color icons |
+| [icon_format.md](icon_format.md) | **Icon file binary format deep dive: .info byte layout (DiskObject, Gadget, Image structs), MagicWB 8-color palette standard, NewIcons ASCII encoding, OS 3.5 ColorIcons (FORM ICON IFF), GlowIcons/PNG (ARMS chunk), NeXTSTEP design influence, historical timeline, create/read/edit examples, Python extraction, cross-platform format detection** |
 | [workbench.md](workbench.md) | Workbench integration: WBStartup handling, AppWindow drag-and-drop, AppIcon, AppMenuItem |
 | [iffparse.md](iffparse.md) | IFF file parsing: ILBM/8SVX/ANIM, nested chunk hierarchy, ByteRun1 compression, PBM planar deinterleaving, clipboard integration, decision guide vs DataTypes |
 | [locale.md](locale.md) | Internationalization: catalog system (.cd/.ct files), locale-aware date/number formatting, character classification |

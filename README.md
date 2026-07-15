@@ -261,6 +261,7 @@ The Amiga's documentation was scattered across out-of-print manuals, Usenet post
 | [utility.md](11_libraries/utility.md) | TagItems, hooks, date utilities |
 | [expansion.md](11_libraries/expansion.md) | Zorro bus, AutoConfig |
 | [icon.md](11_libraries/icon.md) | Workbench icons, DiskObject |
+| [icon_format.md](11_libraries/icon_format.md) | **Icon file binary format: .info byte layout, MagicWB palette, NewIcons (ASCII in ToolTypes), ColorIcons (FORM ICON), GlowIcons/PNG (ARMS chunk), create/read/edit, Python examples** |
 | [workbench.md](11_libraries/workbench.md) | WBStartup, AppWindow |
 | [iffparse.md](11_libraries/iffparse.md) | IFF file parsing: ILBM/8SVX/ANIM, nested chunks, ByteRun1, PBM deinterleaving, clipboard, decision guide vs DataTypes |
 | [locale.md](11_libraries/locale.md) | Internationalization, catalogs |
