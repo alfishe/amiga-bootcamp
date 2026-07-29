@@ -7,3 +7,4 @@ theme: materialx
 
 plugins:
   - same-dir
+  - search
