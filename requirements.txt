@@ -1,0 +1,3 @@
+properdocs 
+mkdocs-materialx 
+mkdocs-same-dir
