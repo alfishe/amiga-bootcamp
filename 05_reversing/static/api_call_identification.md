@@ -216,45 +216,49 @@ So immediately before the JSR:
 | −48 | 48 | `Write` | D1=handle, D2=buf, D3=len | D0=actual |
 | −54 | 54 | `Input` | — | D0=stdin handle |
 | −60 | 60 | `Output` | — | D0=stdout handle |
-| −66 | 66 | `IoErr` | — | D0=last error code |
-| −78 | 78 | `CreateDir` | D1=name | D0=lock |
-| −84 | 84 | `CurrentDir` | D1=lock | D0=old lock |
-| −90 | 90 | `Lock` | D1=name, D2=mode | D0=lock |
-| −96 | 96 | `UnLock` | D1=lock | — |
-| −102 | 102 | `DupLock` | D1=lock | D0=new lock |
-| −108 | 108 | `Examine` | D1=lock, D2=fib | D0=bool |
-| −120 | 120 | `ExNext` | D1=lock, D2=fib | D0=bool |
-| −126 | 126 | `Info` | D1=lock, D2=infoblock | D0=bool |
-| −132 | 132 | `Execute` | D1=string, D2=input, D3=output | D0=bool |
-| −138 | 138 | `Delay` | D1=ticks | — |
-| −144 | 144 | `DateStamp` | D1=datestamp | D0=datestamp |
-| −150 | 150 | `Exit` | D1=returnCode | — |
-| −156 | 156 | `LoadSeg` | D1=name | D0=seglist |
-| −162 | 162 | `UnLoadSeg` | D1=seglist | — |
+| −66 | 66 | `Seek` | D1=file, D2=pos, D3=mode | D0=old pos |
+| −72 | 72 | `DeleteFile` | D1=name | D0=bool |
+| −78 | 78 | `Rename` | D1=old, D2=new | D0=bool |
+| −84 | 84 | `Lock` | D1=name, D2=mode | D0=lock |
+| −90 | 90 | `UnLock` | D1=lock | — |
+| −96 | 96 | `DupLock` | D1=lock | D0=new lock |
+| −102 | 102 | `Examine` | D1=lock, D2=fib | D0=bool |
+| −108 | 108 | `ExNext` | D1=lock, D2=fib | D0=bool |
+| −114 | 114 | `Info` | D1=lock, D2=infoblock | D0=bool |
+| −120 | 120 | `CreateDir` | D1=name | D0=lock |
+| −126 | 126 | `CurrentDir` | D1=lock | D0=old lock |
+| −132 | 132 | `IoErr` | — | D0=last error code |
+| −138 | 138 | `CreateProc` | D1=name, D2=pri, D3=seglist, D4=stack | D0=port |
+| −144 | 144 | `Exit` | D1=returnCode | — |
+| −150 | 150 | `LoadSeg` | D1=name | D0=seglist |
+| −156 | 156 | `UnLoadSeg` | D1=seglist | — |
+| −192 | 192 | `DateStamp` | D1=datestamp | D0=datestamp |
+| −198 | 198 | `Delay` | D1=ticks | — |
+| −222 | 222 | `Execute` | D1=string, D2=input, D3=output | D0=bool |
 
 ## Quick LVO Reference: exec.library (selected)
 
 | LVO | Bias | Function | Args | Return |
 |---|---|---|---|---|
-| −6 | 6 | `Supervisor` | A5=func | — |
-| −120 | 120 | `Forbid` | — | — |
-| −126 | 126 | `Permit` | — | — |
-| −132 | 132 | `Disable` | — | — |
-| −138 | 138 | `Enable` | — | — |
-| −168 | 168 | `FindTask` | A1=name | D0=task |
-| −174 | 174 | `SetTaskPri` | A1=task, D0=pri | D0=old |
-| −192 | 192 | `Signal` | A1=task, D0=signals | — |
+| −30 | 30 | `Supervisor` | A5=func | — |
+| −120 | 120 | `Disable` | — | — |
+| −126 | 126 | `Enable` | — | — |
+| −132 | 132 | `Forbid` | — | — |
+| −138 | 138 | `Permit` | — | — |
 | −198 | 198 | `AllocMem` | D0=size, D1=attrs | D0=ptr |
 | −210 | 210 | `FreeMem` | A1=ptr, D0=size | — |
-| −234 | 234 | `Wait` | D0=signals | D0=set |
-| −270 | 270 | `AddPort` | A1=port | — |
 | −276 | 276 | `FindName` | A0=list, A1=name | D0=node |
-| −378 | 378 | `PutMsg` | A0=port, A1=msg | — |
-| −384 | 384 | `GetMsg` | A0=port | D0=msg |
-| −408 | 408 | `WaitPort` | A0=port | D0=msg |
+| −294 | 294 | `FindTask` | A1=name | D0=task |
+| −300 | 300 | `SetTaskPri` | A1=task, D0=pri | D0=old |
+| −318 | 318 | `Wait` | D0=signals | D0=set |
+| −324 | 324 | `Signal` | A1=task, D0=signals | — |
+| −354 | 354 | `AddPort` | A1=port | — |
+| −366 | 366 | `PutMsg` | A0=port, A1=msg | — |
+| −372 | 372 | `GetMsg` | A0=port | D0=msg |
+| −384 | 384 | `WaitPort` | A0=port | D0=msg |
+| −414 | 414 | `CloseLibrary` | A1=lib | — |
 | −420 | 420 | `SetFunction` | A1=lib, A0=lvo, D0=func | D0=old |
 | −552 | 552 | `OpenLibrary` | A1=name, D0=ver | D0=base |
-| −558 | 558 | `CloseLibrary` | A1=lib | — |
 
 Full tables: [[lvo_table.md](../../04_linking_and_libraries/lvo_table.md)](../../../04_linking_and_libraries/lvo_table.md)
 
@@ -267,16 +271,17 @@ Full tables: [[lvo_table.md](../../04_linking_and_libraries/lvo_table.md)](../..
 import idaapi, idc, idautils
 
 DOS_LVO = {
-    -30: "Open",   -36: "Close",   -42: "Read",    -48: "Write",
-    -54: "Input",  -60: "Output",  -66: "IoErr",   -132: "Execute",
-    -138: "Delay", -156: "LoadSeg",-162: "UnLoadSeg",
+    -30: "Open",     -36: "Close",     -42: "Read",       -48: "Write",
+    -54: "Input",    -60: "Output",    -66: "Seek",       -132: "IoErr",
+    -138: "CreateProc", -150: "LoadSeg", -156: "UnLoadSeg",
+    -198: "Delay",   -222: "Execute",
 }
 
 EXEC_LVO = {
-    -120: "Forbid",   -126: "Permit", -132: "Disable",  -138: "Enable",
-    -198: "AllocMem", -210: "FreeMem",-234: "Wait",
-    -378: "PutMsg",   -384: "GetMsg", -408: "WaitPort",
-    -420: "SetFunction", -552: "OpenLibrary", -558: "CloseLibrary",
+    -120: "Disable", -126: "Enable",  -132: "Forbid",   -138: "Permit",
+    -198: "AllocMem",-210: "FreeMem", -318: "Wait",
+    -366: "PutMsg",  -372: "GetMsg",  -378: "ReplyMsg", -384: "WaitPort",
+    -414: "CloseLibrary", -420: "SetFunction", -552: "OpenLibrary",
 }
 
 def apply_lvos(lib_global_name, lvo_map):
@@ -369,17 +374,17 @@ elif get_name(global_ptr) == "_GfxBase":
 MOVEA.L  4.W, A6            ; exec base — but this is never used
 MOVEA.L  (_DOSBase).L, A6   ; A6 overwritten with DOS base
 JSR      (-552,A6)          ; WRONG assumption: this is NOT exec OpenLibrary
-                            ; Correct: LVO -552 for dos.library is ExAll
+                            ; Correct: LVO -552 for dos.library is MaxCli
 ```
 
-**Why it fails:** The disassembler shows `JSR (-552,A6)` and annotates it as `exec.library OpenLibrary()` because that's the most common match. But A6 was reloaded with `_DOSBase` — the actual call is `dos.library ExAll()` at LVO `-552`. Same LVO, different library, completely different behavior.
+**Why it fails:** The disassembler shows `JSR (-552,A6)` and annotates it as `exec.library OpenLibrary()` because that's the most common match. But A6 was reloaded with `_DOSBase` — the actual call is `dos.library MaxCli()` at LVO `-552`. Same LVO, different library, completely different behavior.
 
 **Correct:** Track A6's value at every `JSR`. Never assume A6 is static across a function.
 
 ```asm
 MOVEA.L  4.W, A6            ; A6 = SysBase (verified: exec at $4)
 MOVEA.L  (_DOSBase).L, A6   ; A6 = DOSBase (verified: global labeled)
-JSR      (-552,A6)          ; LVO -552 in dos.library = ExAll
+JSR      (-552,A6)          ; LVO -552 in dos.library = MaxCli
 ```
 
 ### 3. \"The Stale Base\"
@@ -393,7 +398,7 @@ if (result)
     DOSBase->DoSometime();  // DOSBase is now stale — crash or call into freed memory
 ```
 
-In disassembly, you see `JSR (-N,A6)` after a `JSR (-558,A6)` (CloseLibrary). A6 becomes a dangling pointer. Any subsequent call through it hits freed memory — a crash or, worse, silent corruption.
+In disassembly, you see `JSR (-N,A6)` after a `JSR (-414,A6)` (CloseLibrary). A6 becomes a dangling pointer. Any subsequent call through it hits freed memory — a crash or, worse, silent corruption.
 
 **Correct:** After `CloseLibrary`, zero the base pointer. In the disassembly, flag any `JSR` that follows a `CloseLibrary` sequence as suspicious.
 
@@ -457,9 +462,9 @@ To identify every file open/read/write/close in a binary:
 
 ### Trace an Unknown Message Flow
 
-1. Find `JSR (-378,A6)` (exec PutMsg) — identifies message senders
-2. Find `JSR (-384,A6)` (exec GetMsg) — identifies message receivers
-3. Find `JSR (-408,A6)` (exec WaitPort) — identifies blocking receivers
+1. Find `JSR (-366,A6)` (exec PutMsg) — identifies message senders
+2. Find `JSR (-372,A6)` (exec GetMsg) — identifies message receivers
+3. Find `JSR (-384,A6)` (exec WaitPort) — identifies blocking receivers
 4. Trace `A0` before each `PutMsg` to identify **which port** the message targets
 5. Trace `A0` before each `GetMsg` to identify **which port** the receiver listens on
 6. If sender and receiver port names match, you've found a communication pair
