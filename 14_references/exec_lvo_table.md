@@ -21,10 +21,10 @@
 | −102 | 102 | InitResident |
 | −108 | 108 | Alert |
 | −114 | 114 | Debug |
-| −120 | 120 | Forbid |
-| −126 | 126 | Permit |
-| −132 | 132 | Disable |
-| −138 | 138 | Enable |
+| −120 | 120 | Disable |
+| −126 | 126 | Enable |
+| −132 | 132 | Forbid |
+| −138 | 138 | Permit |
 | −144 | 144 | SetSR |
 | −150 | 150 | SuperState |
 | −156 | 156 | UserState |

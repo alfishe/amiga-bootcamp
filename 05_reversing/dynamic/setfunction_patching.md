@@ -53,7 +53,7 @@ APTR SetFunction(struct Library *library, LONG funcOffset, APTR newFunction);
 ; Example: hook dos.library Write() at LVO -48
 
     MOVEA.L  _SysBase, A6
-    JSR      (-120,A6)          ; Forbid() — prevent preemption during patch
+    JSR      (-132,A6)          ; Forbid() — prevent preemption during patch
 
     MOVEA.L  _DOSBase, A1
     MOVE.L   #-48, A0           ; LVO for Write
@@ -61,7 +61,7 @@ APTR SetFunction(struct Library *library, LONG funcOffset, APTR newFunction);
     JSR      (-420,A6)          ; SetFunction(DOSBase, -48, &my_write)
     MOVE.L   D0, _orig_write    ; save original function pointer
 
-    JSR      (-126,A6)          ; Permit()
+    JSR      (-138,A6)          ; Permit()
 ```
 
 ### C equivalent:
